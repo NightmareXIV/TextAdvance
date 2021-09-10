@@ -41,7 +41,11 @@ namespace TextAdvance
             clickManager = new ClickManager(this);
             pi.Framework.OnUpdateEvent += Tick;
             pi.ClientState.OnLogout += Logout;
-            pi.CommandManager.AddHandler("/at", new CommandInfo(HandleCommand));
+            pi.CommandManager.AddHandler("/at", new CommandInfo(HandleCommand)
+            {
+                ShowInHelp = true,
+                HelpMessage = "toggles TextAdvance plugin. Note: you MUST enable it every time you are logging in for it to work. Every time you log out, plugin will disable itself."
+            });
         }
 
         private void Logout(object sender, EventArgs e)

@@ -34,11 +34,11 @@ namespace TextAdvance
             {
                 SendClick(arg1, arg2, arg3, target, IntPtr.Zero);
                 NextClick = Environment.TickCount + ThrottleTime;
-                pi.Framework.Gui.Chat.Print("Click Sent");
+                //pi.Framework.Gui.Chat.Print("Click Sent");
             }
             else
             {
-                pi.Framework.Gui.Chat.Print("Click Throttled");
+                pi.Log("Click Throttled");
             }
         }
         internal void SendClickThrottled(IntPtr arg1, EventType arg2, uint arg3, void* target, IntPtr arg5)
@@ -47,11 +47,11 @@ namespace TextAdvance
             {
                 SendClick(arg1, arg2, arg3, target, arg5);
                 NextClick = Environment.TickCount + ThrottleTime;
-                pi.Framework.Gui.Chat.Print("Click Sent 2");
+                //pi.Framework.Gui.Chat.Print("Click Sent 2");
             }
             else
             {
-                pi.Framework.Gui.Chat.Print("Click Throttled 2");
+                pi.Log("Click Throttled 2");
             }
         }
 
