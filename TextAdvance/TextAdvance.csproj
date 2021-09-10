@@ -62,9 +62,11 @@
     <Reference Include="Lumina.Excel">
       <HintPath>..\..\dev\Lumina.Excel.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClickManager.cs" />
+    <Compile Include="Native.cs" />
     <Compile Include="TextAdvance.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
