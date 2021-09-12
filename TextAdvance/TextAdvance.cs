@@ -136,7 +136,7 @@ namespace TextAdvance
                 return;
             }
             ticksQuestCompleteVisible++;
-            if (ticksQuestCompleteVisible < 2) return;
+            if (ticksQuestCompleteVisible < 3) return;
             var questAddon = (AtkUnitBase*)addon;
             if (questAddon->UldManager.NodeListCount <= 4) return;
             var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[4];
@@ -160,7 +160,7 @@ namespace TextAdvance
                 return;
             }
             ticksQuestAcceptVisible++;
-            if (ticksQuestAcceptVisible < 2) return;
+            if (ticksQuestAcceptVisible < 3) return;
             var questAddon = (AtkUnitBase*)addon;
             if (questAddon->UldManager.NodeListCount <= 6) return;
             var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[6];
