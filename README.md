@@ -1,5 +1,6 @@
 # TextAdvance [beta]
 A tool to assist with questing. 
+**Note: only works with english client currently. If you want support for other language, please proceed into Issues and provide me some information, and I will add the support.**
 
 Current functions:
 - Automatically skip quest subtitles
