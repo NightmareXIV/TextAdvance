@@ -1,9 +1,14 @@
 # TextAdvance [beta]
-Automatically skips subtitle boxes and confirms cutscene skipping.
+A tool to assist with questing. 
+
+Current functions:
+- Automatically skip quest subtitles
+- Automatically skip cutscenes (if several cutscenes are played sequentially, only first will be skipped automatically)
+- Automatically confirm cutscene skipping
+- Automatically accept quest (hold shift while accepting quest to temporarily pause this function)
+- Automatically confirm quest completion
 
 **TextAdvance automatically disables itself every time you log out and requires you to type `/at` command whenever you want to reenable it.**
-
-This tool was mainly written to assist levelling alts. It will auto-skip skippable quest text and skip skippable cutscenes automatically. **Unskippable cutscenes will not be skipped**, but text inside them will be clicked.
 
 If several cutscenes play back to back you will have to press esc for 2nd and further cutscenes yourself. I was too lazy to implement autoskipping for that case since it happens not very often.
 
