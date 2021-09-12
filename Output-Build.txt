@@ -1,0 +1,6 @@
+﻿Build started...
+1>------ Build started: Project: TextAdvance, Configuration: Release Any CPU ------
+1>C:\VS\TextAdvance\TextAdvance\ClickManager.cs(41,17,41,42): warning CS0612: 'DalamudPluginInterface.Log(string, params object[])' is obsolete
+1>C:\VS\TextAdvance\TextAdvance\ClickManager.cs(54,17,54,44): warning CS0612: 'DalamudPluginInterface.Log(string, params object[])' is obsolete
+1>  TextAdvance -> C:\VS\TextAdvance\TextAdvance\bin\Release\TextAdvance.dll
+========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========

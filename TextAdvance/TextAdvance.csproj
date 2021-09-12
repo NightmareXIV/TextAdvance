@@ -47,24 +47,31 @@
   <ItemGroup>
     <Reference Include="Dalamud">
       <HintPath>..\..\dev\Dalamud.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="EasyHook">
       <HintPath>..\..\dev\EasyHook.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="FFXIVClientStructs">
       <HintPath>..\..\dev\FFXIVClientStructs.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ImGui.NET">
       <HintPath>..\..\dev\ImGui.NET.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ImGuiScene">
       <HintPath>..\..\dev\ImGuiScene.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Lumina">
       <HintPath>..\..\dev\Lumina.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Lumina.Excel">
       <HintPath>..\..\dev\Lumina.Excel.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>

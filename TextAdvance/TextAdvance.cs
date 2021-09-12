@@ -5,6 +5,7 @@ using Dalamud.Game.Internal.Gui.Toast;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +14,7 @@ using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static TextAdvance.ClickManager;
 
 namespace TextAdvance
 {
@@ -56,7 +58,7 @@ namespace TextAdvance
         private void HandleCommand(string command, string arguments)
         {
             Enabled = !Enabled;
-            pi.Framework.Gui.Toast.ShowQuest("Auto advance " + (Enabled ? "Enabled" : "Disabled"), 
+            pi.Framework.Gui.Toast.ShowQuest("Auto advance " + (Enabled ? "Enabled" : "Disabled"),
                 new QuestToastOptions() { PlaySound = true, DisplayCheckmark = true });
         }
 
@@ -105,19 +107,73 @@ namespace TextAdvance
                 {
                     CanPressEsc = true;
                 }
-                TickTalk();
-                TickSelectSkip();
+                if (InCutscene)
+                {
+                    TickSelectSkip();
+                }
+                if (pi.ClientState.Condition[ConditionFlag.OccupiedInQuestEvent] ||
+                    pi.ClientState.Condition[ConditionFlag.Occupied33] || InCutscene)
+                {
+                    TickTalk();
+                    TickQuestComplete();
+                    TickQuestAccept();
+                }
                 WasInCutscene = InCutscene;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 pi.Framework.Gui.Chat.Print(e.Message + "" + e.StackTrace);
             }
         }
 
+        uint ticksQuestCompleteVisible = 0;
+        void TickQuestComplete()
+        {
+            var addon = pi.Framework.Gui.GetUiObjectByName("JournalResult", 1);
+            if (addon == IntPtr.Zero)
+            {
+                ticksQuestCompleteVisible = 0;
+                return;
+            }
+            ticksQuestCompleteVisible++;
+            if (ticksQuestCompleteVisible < 2) return;
+            var questAddon = (AtkUnitBase*)addon;
+            if (questAddon->UldManager.NodeListCount <= 4) return;
+            var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[4];
+            if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
+            var textComponent = (AtkTextNode*)buttonNode->Component->UldManager.NodeList[2];
+            if ("Complete" != Marshal.PtrToStringAnsi((IntPtr)textComponent->NodeText.StringPtr)) return;
+            if (textComponent->AtkResNode.Color.A != 255) return;
+            //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Pass");
+            if(!((AddonJournalResult*)addon)->CompleteButton->IsEnabled) return;
+            clickManager.SendClickThrottled(addon, EventType.CHANGE, 1, ((AddonJournalResult*)addon)->CompleteButton->AtkComponentBase.OwnerNode);
+        }
+
+        uint ticksQuestAcceptVisible = 0;
+        void TickQuestAccept()
+        {
+            if (ImGui.GetIO().KeyShift) return;
+            var addon = pi.Framework.Gui.GetUiObjectByName("JournalAccept", 1);
+            if (addon == IntPtr.Zero)
+            {
+                ticksQuestAcceptVisible = 0;
+                return;
+            }
+            ticksQuestAcceptVisible++;
+            if (ticksQuestAcceptVisible < 2) return;
+            var questAddon = (AtkUnitBase*)addon;
+            if (questAddon->UldManager.NodeListCount <= 6) return;
+            var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[6];
+            if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
+            var textComponent = (AtkTextNode*)buttonNode->Component->UldManager.NodeList[2];
+            if ("Accept" != Marshal.PtrToStringAnsi((IntPtr)textComponent->NodeText.StringPtr)) return;
+            if (textComponent->AtkResNode.Color.A != 255) return;
+            //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Pass");
+            clickManager.SendClickThrottled(addon, EventType.CHANGE, 1, buttonNode);
+        }
+
         void TickTalk()
         {
-            if (!pi.ClientState.Condition[ConditionFlag.OccupiedInQuestEvent]) return;
             var addon = pi.Framework.Gui.GetUiObjectByName("Talk", 1);
             if (addon == IntPtr.Zero) return;
             var talkAddon = (AtkUnitBase*)addon;
@@ -129,7 +185,6 @@ namespace TextAdvance
 
         void TickSelectSkip()
         {
-            if (!InCutscene) return;
             var addon = pi.Framework.Gui.GetUiObjectByName("SelectString", 1);
             if (addon == IntPtr.Zero) return;
             var selectStrAddon = (AtkUnitBase*)addon;

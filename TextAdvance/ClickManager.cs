@@ -14,7 +14,7 @@ namespace TextAdvance
     {
         TextAdvance p;
         DalamudPluginInterface pi;
-        const int ThrottleTime = 500;
+        const int ThrottleTime = 1000;
 
         public ClickManager(TextAdvance p)
         {
@@ -34,7 +34,7 @@ namespace TextAdvance
             {
                 SendClick(arg1, arg2, arg3, target, IntPtr.Zero);
                 NextClick = Environment.TickCount + ThrottleTime;
-                //pi.Framework.Gui.Chat.Print("Click Sent");
+                pi.Framework.Gui.Chat.Print("Click Sent");
             }
             else
             {
