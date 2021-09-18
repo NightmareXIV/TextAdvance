@@ -1,6 +1,8 @@
 # TextAdvance [beta]
 A tool to assist with questing. 
 
+<p align="center"><img src="https://raw.githubusercontent.com/Eternita-S/TextAdvance/master/TextAdvance/res/icon.png"></p>
+
 **Note: only works with english client currently. If you want support for other language, please proceed into Issues and provide me some information, and I will add the support.**
 
 Current functions:
