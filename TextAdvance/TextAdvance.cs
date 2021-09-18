@@ -1,7 +1,9 @@
-﻿using Dalamud.Game.ClientState;
+﻿using Dalamud.Game;
+using Dalamud.Game.ClientState;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Command;
+using Dalamud.Game.Gui.Toast;
 using Dalamud.Game.Internal;
-using Dalamud.Game.Internal.Gui.Toast;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -10,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -20,7 +23,6 @@ namespace TextAdvance
 {
     unsafe class TextAdvance : IDalamudPlugin
     {
-        internal DalamudPluginInterface pi;
         internal ClickManager clickManager;
         internal bool InCutscene = false;
         internal bool WasInCutscene = false;
@@ -31,19 +33,18 @@ namespace TextAdvance
 
         public void Dispose()
         {
-            pi.Framework.OnUpdateEvent -= Tick;
-            pi.ClientState.OnLogout -= Logout;
-            pi.CommandManager.RemoveHandler("/at");
-            pi.Dispose();
+            Svc.Framework.Update -= Tick;
+            Svc.ClientState.Logout -= Logout;
+            Svc.Commands.RemoveHandler("/at");
         }
 
-        public void Initialize(DalamudPluginInterface pluginInterface)
+        public TextAdvance(DalamudPluginInterface pluginInterface)
         {
-            this.pi = pluginInterface;
+            pluginInterface.Create<Svc>();
             clickManager = new ClickManager(this);
-            pi.Framework.OnUpdateEvent += Tick;
-            pi.ClientState.OnLogout += Logout;
-            pi.CommandManager.AddHandler("/at", new CommandInfo(HandleCommand)
+            Svc.Framework.Update += Tick;
+            Svc.ClientState.Logout += Logout;
+            Svc.Commands.AddHandler("/at", new CommandInfo(HandleCommand)
             {
                 ShowInHelp = true,
                 HelpMessage = "toggles TextAdvance plugin. Note: you MUST enable it every time you are logging in for it to work. Every time you log out, plugin will disable itself."
@@ -58,7 +59,7 @@ namespace TextAdvance
         private void HandleCommand(string command, string arguments)
         {
             Enabled = !Enabled;
-            pi.Framework.Gui.Toast.ShowQuest("Auto advance " + (Enabled ? "Enabled" : "Disabled"),
+            Svc.Toasts.ShowQuest("Auto advance " + (Enabled ? "Enabled" : "Disabled"),
                 new QuestToastOptions() { PlaySound = true, DisplayCheckmark = true });
         }
 
@@ -69,11 +70,11 @@ namespace TextAdvance
             try
             {
                 if (!Enabled) return;
-                InCutscene = pi.ClientState.Condition[ConditionFlag.OccupiedInCutSceneEvent]
-                    || pi.ClientState.Condition[ConditionFlag.WatchingCutscene78];
-                var nLoading = pi.Framework.Gui.GetUiObjectByName("NowLoading", 1);
+                InCutscene = Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
+                    || Svc.Condition[ConditionFlag.WatchingCutscene78];
+                var nLoading = Svc.GameGui.GetAddonByName("NowLoading", 1);
                 var skip = true;
-                var addon = pi.Framework.Gui.GetUiObjectByName("SelectString", 1);
+                var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
                 if (addon == IntPtr.Zero)
                 {
                     skip = false;
@@ -111,8 +112,14 @@ namespace TextAdvance
                 {
                     TickSelectSkip();
                 }
-                if (pi.ClientState.Condition[ConditionFlag.OccupiedInQuestEvent] ||
-                    pi.ClientState.Condition[ConditionFlag.Occupied33] || InCutscene)
+                if (Svc.Condition[ConditionFlag.OccupiedInQuestEvent] ||
+                    Svc.Condition[ConditionFlag.Occupied33] ||
+                    Svc.Condition[ConditionFlag.OccupiedInEvent] ||
+                    Svc.Condition[ConditionFlag.Occupied30] ||
+                    Svc.Condition[ConditionFlag.Occupied38] ||
+                    Svc.Condition[ConditionFlag.Occupied39] ||
+                    Svc.Condition[ConditionFlag.OccupiedSummoningBell] ||
+                    InCutscene)
                 {
                     TickTalk();
                     TickQuestComplete();
@@ -122,21 +129,21 @@ namespace TextAdvance
             }
             catch (Exception e)
             {
-                pi.Framework.Gui.Chat.Print(e.Message + "" + e.StackTrace);
+                Svc.Chat.Print(e.Message + "" + e.StackTrace);
             }
         }
 
         uint ticksQuestCompleteVisible = 0;
         void TickQuestComplete()
         {
-            var addon = pi.Framework.Gui.GetUiObjectByName("JournalResult", 1);
+            var addon = Svc.GameGui.GetAddonByName("JournalResult", 1);
             if (addon == IntPtr.Zero)
             {
                 ticksQuestCompleteVisible = 0;
                 return;
             }
             ticksQuestCompleteVisible++;
-            if (ticksQuestCompleteVisible < 3) return;
+            if (ticksQuestCompleteVisible < 5) return;
             var questAddon = (AtkUnitBase*)addon;
             if (questAddon->UldManager.NodeListCount <= 4) return;
             var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[4];
@@ -153,14 +160,14 @@ namespace TextAdvance
         void TickQuestAccept()
         {
             if (ImGui.GetIO().KeyShift) return;
-            var addon = pi.Framework.Gui.GetUiObjectByName("JournalAccept", 1);
+            var addon = Svc.GameGui.GetAddonByName("JournalAccept", 1);
             if (addon == IntPtr.Zero)
             {
                 ticksQuestAcceptVisible = 0;
                 return;
             }
             ticksQuestAcceptVisible++;
-            if (ticksQuestAcceptVisible < 3) return;
+            if (ticksQuestAcceptVisible < 5) return;
             var questAddon = (AtkUnitBase*)addon;
             if (questAddon->UldManager.NodeListCount <= 6) return;
             var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[6];
@@ -174,7 +181,7 @@ namespace TextAdvance
 
         void TickTalk()
         {
-            var addon = pi.Framework.Gui.GetUiObjectByName("Talk", 1);
+            var addon = Svc.GameGui.GetAddonByName("Talk", 1);
             if (addon == IntPtr.Zero) return;
             var talkAddon = (AtkUnitBase*)addon;
             if (!talkAddon->IsVisible/* || !talkAddon->UldManager.NodeList[14]->IsVisible*/) return;
@@ -185,7 +192,7 @@ namespace TextAdvance
 
         void TickSelectSkip()
         {
-            var addon = pi.Framework.Gui.GetUiObjectByName("SelectString", 1);
+            var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
             if (addon == IntPtr.Zero) return;
             var selectStrAddon = (AtkUnitBase*)addon;
             if (!selectStrAddon->IsVisible)

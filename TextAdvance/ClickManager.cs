@@ -1,4 +1,5 @@
-﻿using Dalamud.Plugin;
+﻿using Dalamud.Logging;
+using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
@@ -13,13 +14,11 @@ namespace TextAdvance
     unsafe class ClickManager
     {
         TextAdvance p;
-        DalamudPluginInterface pi;
-        const int ThrottleTime = 1000;
+        const int ThrottleTime = 500;
 
         public ClickManager(TextAdvance p)
         {
             this.p = p;
-            this.pi = p.pi;
         }
         protected ReceiveEventDelegate GetReceiveEventDelegate(AtkEventListener* eventListener)
         {
@@ -34,11 +33,11 @@ namespace TextAdvance
             {
                 SendClick(arg1, arg2, arg3, target, IntPtr.Zero);
                 NextClick = Environment.TickCount + ThrottleTime;
-                pi.Framework.Gui.Chat.Print("Click Sent");
+                //pi.Framework.Gui.Chat.Print("Click Sent");
             }
             else
             {
-                pi.Log("Click Throttled");
+                PluginLog.Log("Click Throttled");
             }
         }
         internal void SendClickThrottled(IntPtr arg1, EventType arg2, uint arg3, void* target, IntPtr arg5)
@@ -51,7 +50,7 @@ namespace TextAdvance
             }
             else
             {
-                pi.Log("Click Throttled 2");
+                PluginLog.Log("Click Throttled 2");
             }
         }
 
