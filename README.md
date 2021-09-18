@@ -1,6 +1,8 @@
 # TextAdvance [beta]
 A tool to assist with questing. 
 
+**Note: only works with english client currently. If you want support for other language, please proceed into Issues and provide me some information, and I will add the support.**
+
 Current functions:
 - Automatically skip quest subtitles
 - Automatically skip cutscenes (if several cutscenes are played sequentially, only first will be skipped automatically)
