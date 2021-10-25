@@ -28,6 +28,10 @@ namespace TextAdvance
         internal bool WasInCutscene = false;
         internal bool Enabled = false;
         bool CanPressEsc = false;
+        static string[] AcceptStr = { "Accept", "接受" };
+        static string[] SkipCutsceneStr = { "Skip cutscene?", "要跳过这段过场动画吗？" };
+        static string[] YesStr = { "Yes.", "是" };
+        static string[] CompleteStr = { "Complete", "完成" };
 
         public string Name => "TextAdvance";
 
@@ -149,7 +153,7 @@ namespace TextAdvance
             var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[4];
             if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
             var textComponent = (AtkTextNode*)buttonNode->Component->UldManager.NodeList[2];
-            if ("Complete" != Marshal.PtrToStringAnsi((IntPtr)textComponent->NodeText.StringPtr)) return;
+            if (!CompleteStr.Contains(Marshal.PtrToStringAnsi((IntPtr)textComponent->NodeText.StringPtr))) return;
             if (textComponent->AtkResNode.Color.A != 255) return;
             //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Pass");
             if(!((AddonJournalResult*)addon)->CompleteButton->IsEnabled) return;
@@ -173,7 +177,7 @@ namespace TextAdvance
             var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[6];
             if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
             var textComponent = (AtkTextNode*)buttonNode->Component->UldManager.NodeList[2];
-            if ("Accept" != Marshal.PtrToStringAnsi((IntPtr)textComponent->NodeText.StringPtr)) return;
+            if (!AcceptStr.Contains(Marshal.PtrToStringAnsi((IntPtr)textComponent->NodeText.StringPtr))) return;
             if (textComponent->AtkResNode.Color.A != 255) return;
             //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Pass");
             clickManager.SendClickThrottled(addon, EventType.CHANGE, 1, buttonNode);
@@ -203,12 +207,12 @@ namespace TextAdvance
             if (selectStrAddon->UldManager.NodeListCount <= 3) return;
             var a = (AtkComponentNode*)selectStrAddon->UldManager.NodeList[2];
             var txt = (AtkTextNode*)selectStrAddon->UldManager.NodeList[3];
-            if ("Skip cutscene?" != Marshal.PtrToStringAnsi((IntPtr)txt->NodeText.StringPtr)) return;
+            if (!SkipCutsceneStr.Contains(Marshal.PtrToStringAnsi((IntPtr)txt->NodeText.StringPtr))) return;
             if (a->Component->UldManager.NodeListCount <= 2) return;
             var b = (AtkComponentNode*)a->Component->UldManager.NodeList[1];
             if (b->Component->UldManager.NodeListCount <= 3) return;
             var c = (AtkTextNode*)b->Component->UldManager.NodeList[3];
-            if ("Yes." != Marshal.PtrToStringAnsi((IntPtr)c->NodeText.StringPtr)) return;
+            if (!YesStr.Contains(Marshal.PtrToStringAnsi((IntPtr)c->NodeText.StringPtr))) return;
             clickManager.SelectStringClick(addon, 0);
         }
     }

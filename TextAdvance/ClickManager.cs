@@ -37,7 +37,7 @@ namespace TextAdvance
             }
             else
             {
-                PluginLog.Log("Click Throttled");
+                PluginLog.Debug("Click Throttled");
             }
         }
         internal void SendClickThrottled(IntPtr arg1, EventType arg2, uint arg3, void* target, IntPtr arg5)
