@@ -51,7 +51,8 @@ namespace TextAdvance
             Svc.Commands.AddHandler("/at", new CommandInfo(HandleCommand)
             {
                 ShowInHelp = true,
-                HelpMessage = "toggles TextAdvance plugin. Note: you MUST enable it every time you are logging in for it to work. Every time you log out, plugin will disable itself."
+                HelpMessage = "toggles TextAdvance plugin. Note: you MUST enable it every time you are logging in for it to work. Every time you log out, plugin will disable itself." +
+                "\nHold shift when plugin is on to temporarily pause skipping. Hold ctrl to temporarily enable skipping while plugin is disabled."
             });
         }
 
