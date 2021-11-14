@@ -28,10 +28,10 @@ namespace TextAdvance
         internal bool WasInCutscene = false;
         internal bool Enabled = false;
         bool CanPressEsc = false;
-        static string[] AcceptStr = { "Accept", "接受" };
-        static string[] SkipCutsceneStr = { "Skip cutscene?", "要跳过这段过场动画吗？" };
-        static string[] YesStr = { "Yes.", "是" };
-        static string[] CompleteStr = { "Complete", "完成" };
+        static string[] AcceptStr = { "Accept", "接受", "Annehmen" };
+        static string[] SkipCutsceneStr = { "Skip cutscene?", "要跳过这段过场动画吗？", "Videosequenz überspringen?" };
+        static string[] YesStr = { "Yes.", "是", "Ja" };
+        static string[] CompleteStr = { "Complete", "完成", "Abschließen" };
 
         public string Name => "TextAdvance";
 
@@ -73,61 +73,67 @@ namespace TextAdvance
         {
             try
             {
-                if (!Enabled) return;
                 InCutscene = Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
                     || Svc.Condition[ConditionFlag.WatchingCutscene78];
-                var nLoading = Svc.GameGui.GetAddonByName("NowLoading", 1);
-                var skip = true;
-                var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
-                if (addon == IntPtr.Zero)
+                if (!ImGui.GetIO().KeyShift)
                 {
-                    skip = false;
-                }
-                else
-                {
-                    var selectStrAddon = (AtkUnitBase*)addon;
-                    if (!selectStrAddon->IsVisible) skip = false;
-                }
-                if (InCutscene && !skip)
-                {
-                    if (nLoading != IntPtr.Zero)
+                    if (Enabled)
                     {
-                        var nowLoading = (AtkUnitBase*)nLoading;
-                        if (nowLoading->IsVisible)
+                        var nLoading = Svc.GameGui.GetAddonByName("NowLoading", 1);
+                        var skip = true;
+                        var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
+                        if (addon == IntPtr.Zero)
                         {
-                            //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading visible");
+                            skip = false;
                         }
                         else
                         {
-                            //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading not visible");
-                            if (CanPressEsc)
+                            var selectStrAddon = (AtkUnitBase*)addon;
+                            if (!selectStrAddon->IsVisible) skip = false;
+                        }
+                        if (InCutscene && !skip)
+                        {
+                            if (nLoading != IntPtr.Zero)
                             {
-                                Native.Keypress.SendKeycode(Process.GetCurrentProcess().MainWindowHandle, Native.Keypress.Escape);
-                                CanPressEsc = false;
+                                var nowLoading = (AtkUnitBase*)nLoading;
+                                if (nowLoading->IsVisible)
+                                {
+                                    //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading visible");
+                                }
+                                else
+                                {
+                                    //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading not visible");
+                                    if (CanPressEsc)
+                                    {
+                                        Native.Keypress.SendKeycode(Process.GetCurrentProcess().MainWindowHandle, Native.Keypress.Escape);
+                                        CanPressEsc = false;
+                                    }
+                                }
                             }
                         }
+                        else
+                        {
+                            CanPressEsc = true;
+                        }
+                        if (InCutscene)
+                        {
+                            TickSelectSkip();
+                        }
                     }
-                }
-                else
-                {
-                    CanPressEsc = true;
-                }
-                if (InCutscene)
-                {
-                    TickSelectSkip();
-                }
-                if (Svc.Condition[ConditionFlag.OccupiedInQuestEvent] ||
-                    Svc.Condition[ConditionFlag.Occupied33] ||
-                    Svc.Condition[ConditionFlag.OccupiedInEvent] ||
-                    Svc.Condition[ConditionFlag.Occupied30] ||
-                    Svc.Condition[ConditionFlag.Occupied38] ||
-                    Svc.Condition[ConditionFlag.Occupied39] ||
-                    Svc.Condition[ConditionFlag.OccupiedSummoningBell] ||
-                    InCutscene)
-                {
-                    TickTalk();
-                    TickQuestComplete();
-                    TickQuestAccept();
+                    if ((Enabled || (ImGui.GetIO().KeyCtrl && Native.ApplicationIsActivated())) &&
+                        (Svc.Condition[ConditionFlag.OccupiedInQuestEvent] ||
+                        Svc.Condition[ConditionFlag.Occupied33] ||
+                        Svc.Condition[ConditionFlag.OccupiedInEvent] ||
+                        Svc.Condition[ConditionFlag.Occupied30] ||
+                        Svc.Condition[ConditionFlag.Occupied38] ||
+                        Svc.Condition[ConditionFlag.Occupied39] ||
+                        Svc.Condition[ConditionFlag.OccupiedSummoningBell] ||
+                        InCutscene))
+                    {
+                        TickTalk();
+                        TickQuestComplete();
+                        TickQuestAccept();
+                    }
                 }
                 WasInCutscene = InCutscene;
             }
@@ -153,7 +159,7 @@ namespace TextAdvance
             var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[4];
             if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
             var textComponent = (AtkTextNode*)buttonNode->Component->UldManager.NodeList[2];
-            if (!CompleteStr.Contains(Marshal.PtrToStringAnsi((IntPtr)textComponent->NodeText.StringPtr))) return;
+            if (!CompleteStr.Contains(Marshal.PtrToStringUTF8((IntPtr)textComponent->NodeText.StringPtr))) return;
             if (textComponent->AtkResNode.Color.A != 255) return;
             //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Pass");
             if(!((AddonJournalResult*)addon)->CompleteButton->IsEnabled) return;
@@ -163,7 +169,6 @@ namespace TextAdvance
         uint ticksQuestAcceptVisible = 0;
         void TickQuestAccept()
         {
-            if (ImGui.GetIO().KeyShift) return;
             var addon = Svc.GameGui.GetAddonByName("JournalAccept", 1);
             if (addon == IntPtr.Zero)
             {
@@ -177,7 +182,7 @@ namespace TextAdvance
             var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[6];
             if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
             var textComponent = (AtkTextNode*)buttonNode->Component->UldManager.NodeList[2];
-            if (!AcceptStr.Contains(Marshal.PtrToStringAnsi((IntPtr)textComponent->NodeText.StringPtr))) return;
+            if (!AcceptStr.Contains(Marshal.PtrToStringUTF8((IntPtr)textComponent->NodeText.StringPtr))) return;
             if (textComponent->AtkResNode.Color.A != 255) return;
             //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Pass");
             clickManager.SendClickThrottled(addon, EventType.CHANGE, 1, buttonNode);
@@ -207,12 +212,12 @@ namespace TextAdvance
             if (selectStrAddon->UldManager.NodeListCount <= 3) return;
             var a = (AtkComponentNode*)selectStrAddon->UldManager.NodeList[2];
             var txt = (AtkTextNode*)selectStrAddon->UldManager.NodeList[3];
-            if (!SkipCutsceneStr.Contains(Marshal.PtrToStringAnsi((IntPtr)txt->NodeText.StringPtr))) return;
+            if (!SkipCutsceneStr.Contains(Marshal.PtrToStringUTF8((IntPtr)txt->NodeText.StringPtr))) return;
             if (a->Component->UldManager.NodeListCount <= 2) return;
             var b = (AtkComponentNode*)a->Component->UldManager.NodeList[1];
             if (b->Component->UldManager.NodeListCount <= 3) return;
             var c = (AtkTextNode*)b->Component->UldManager.NodeList[3];
-            if (!YesStr.Contains(Marshal.PtrToStringAnsi((IntPtr)c->NodeText.StringPtr))) return;
+            if (!YesStr.Contains(Marshal.PtrToStringUTF8((IntPtr)c->NodeText.StringPtr))) return;
             clickManager.SelectStringClick(addon, 0);
         }
     }
