@@ -12,9 +12,10 @@ using static TextAdvance.ImGuiEx;
 
 namespace TextAdvance
 {
-    internal class ConfigGui : Window
+    internal class ConfigGui : Window, IDisposable
     {
         TextAdvance p;
+        WindowSystem ws = new();
         public ConfigGui(TextAdvance plugin) : base("TextAdvance config")
         {
             this.p = plugin;
@@ -23,14 +24,19 @@ namespace TextAdvance
                 MinimumSize = new Vector2(400, 200),
                 MaximumSize = new Vector2(99999, 99999),
             };
+            ws.AddWindow(this);
+            Svc.PluginInterface.UiBuilder.Draw += ws.Draw;
         }
 
         public override void Draw()
         {
-            ImGui.Checkbox("Enable plugin (non-persistend)", ref p.Enabled);
+            ImGui.Checkbox("Enable plugin (non-persistent)", ref p.Enabled);
+            ImGui.Text("Button to hold to temporarily disable plugin when active:");
             ImGui.SetNextItemWidth(200f);
-            ImGuiEnumCombo("Button to hold to temporarily disable plugin when active", ref p.config.TempDisableButton);
-            ImGuiEnumCombo("Button to hold to temporarily enable plugin when inactive", ref p.config.TempEnableButton);
+            ImGuiEnumCombo("##HoldDisable", ref p.config.TempDisableButton);
+            ImGui.Text("Button to hold to temporarily enable plugin when inactive:");
+            ImGui.SetNextItemWidth(200f);
+            ImGuiEnumCombo("##HoldEnable", ref p.config.TempEnableButton);
             ImGui.Text("Auto-enable plugin when you log in with characters:");
             string dele = null;
             foreach(var s in p.config.AutoEnableNames)
@@ -63,6 +69,11 @@ namespace TextAdvance
             Svc.PluginInterface.SavePluginConfig(p.config);
             Svc.PluginInterface.UiBuilder.AddNotification("Configuration saved", "TextAdvance", NotificationType.Success);
             base.OnClose();
+        }
+
+        public void Dispose()
+        {
+            Svc.PluginInterface.UiBuilder.Draw -= ws.Draw;
         }
     }
 }

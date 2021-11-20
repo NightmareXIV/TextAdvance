@@ -4,6 +4,7 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Command;
 using Dalamud.Game.Gui.Toast;
 using Dalamud.Game.Internal;
+using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -105,7 +106,7 @@ namespace TextAdvance
                 }
                 InCutscene = Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
                     || Svc.Condition[ConditionFlag.WatchingCutscene78];
-                if (!IsDisableButtonHeld())
+                if (!IsDisableButtonHeld() || !Enabled)
                 {
                     if (Enabled)
                     {
