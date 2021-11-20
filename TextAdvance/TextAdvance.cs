@@ -4,6 +4,7 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Command;
 using Dalamud.Game.Gui.Toast;
 using Dalamud.Game.Internal;
+using Dalamud.Logging;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -19,6 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static TextAdvance.ClickManager;
 
+// some code has been copied from https://github.com/daemitus/ClickLib
 namespace TextAdvance
 {
     unsafe class TextAdvance : IDalamudPlugin
@@ -32,6 +34,9 @@ namespace TextAdvance
         static string[] SkipCutsceneStr = { "Skip cutscene?", "要跳过这段过场动画吗？", "Videosequenz überspringen?" };
         static string[] YesStr = { "Yes.", "是", "Ja" };
         static string[] CompleteStr = { "Complete", "完成", "Abschließen" };
+        internal Config config;
+        internal ConfigGui configGui;
+        bool loggedIn = false;
 
         public string Name => "TextAdvance";
 
@@ -39,26 +44,40 @@ namespace TextAdvance
         {
             Svc.Framework.Update -= Tick;
             Svc.ClientState.Logout -= Logout;
+            Svc.ClientState.Login -= Login;
             Svc.Commands.RemoveHandler("/at");
         }
 
         public TextAdvance(DalamudPluginInterface pluginInterface)
         {
             pluginInterface.Create<Svc>();
+            config = Svc.PluginInterface.GetPluginConfig() as Config ?? new Config();
             clickManager = new ClickManager(this);
             Svc.Framework.Update += Tick;
             Svc.ClientState.Logout += Logout;
+            Svc.ClientState.Login += Login;
+            configGui = new ConfigGui(this);
+            Svc.PluginInterface.UiBuilder.OpenConfigUi += delegate { configGui.IsOpen = true; };
             Svc.Commands.AddHandler("/at", new CommandInfo(HandleCommand)
             {
                 ShowInHelp = true,
                 HelpMessage = "toggles TextAdvance plugin. Note: you MUST enable it every time you are logging in for it to work. Every time you log out, plugin will disable itself." +
                 "\nHold shift when plugin is on to temporarily pause skipping. Hold alt to temporarily enable skipping while plugin is disabled."
             });
+            if (Svc.ClientState.IsLoggedIn)
+            {
+                loggedIn = true;
+            }
         }
 
         private void Logout(object sender, EventArgs e)
         {
             Enabled = false;
+        }
+
+        private void Login(object sender, EventArgs e)
+        {
+            loggedIn = true;
         }
 
         private void HandleCommand(string command, string arguments)
@@ -74,9 +93,19 @@ namespace TextAdvance
         {
             try
             {
+                if(loggedIn && Svc.ClientState.LocalPlayer != null)
+                {
+                    loggedIn = false;
+                    if(config.AutoEnableNames.Contains(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.GameData.Name))
+                    {
+                        Enabled = true;
+                        Svc.Toasts.ShowQuest("Auto text advance has been automatically enabled on this character",
+                            new QuestToastOptions() { PlaySound = true, DisplayCheckmark = true });
+                    }
+                }
                 InCutscene = Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
                     || Svc.Condition[ConditionFlag.WatchingCutscene78];
-                if (!ImGui.GetIO().KeyShift)
+                if (!IsDisableButtonHeld())
                 {
                     if (Enabled)
                     {
@@ -121,7 +150,7 @@ namespace TextAdvance
                             TickSelectSkip();
                         }
                     }
-                    if ((Enabled || (ImGui.GetIO().KeyAlt && Native.ApplicationIsActivated())) &&
+                    if ((Enabled || (IsEnableButtonHeld() && Native.ApplicationIsActivated())) &&
                         (Svc.Condition[ConditionFlag.OccupiedInQuestEvent] ||
                         Svc.Condition[ConditionFlag.Occupied33] ||
                         Svc.Condition[ConditionFlag.OccupiedInEvent] ||
@@ -220,6 +249,22 @@ namespace TextAdvance
             var c = (AtkTextNode*)b->Component->UldManager.NodeList[3];
             if (!YesStr.Contains(Marshal.PtrToStringUTF8((IntPtr)c->NodeText.StringPtr))) return;
             clickManager.SelectStringClick(addon, 0);
+        }
+
+        bool IsDisableButtonHeld()
+        {
+            if (config.TempDisableButton == Button.ALT && ImGui.GetIO().KeyAlt) return true;
+            if (config.TempDisableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return true;
+            if (config.TempDisableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return true;
+            return false;
+        }
+
+        bool IsEnableButtonHeld()
+        {
+            if (config.TempEnableButton == Button.ALT && ImGui.GetIO().KeyAlt) return true;
+            if (config.TempEnableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return true;
+            if (config.TempEnableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return true;
+            return false;
         }
     }
 }

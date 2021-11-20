@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
+// some code has been copied from https://github.com/daemitus/ClickLib
 namespace TextAdvance
 {
     unsafe class ClickManager
