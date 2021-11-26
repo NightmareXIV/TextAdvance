@@ -11,8 +11,8 @@
 		<LangVersion>latest</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<OutputPath>bin\$(Configuration)\</OutputPath>
 		<NoWarn>CS1591</NoWarn>
 	</PropertyGroup>
@@ -35,6 +35,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\repos\ClickLib\ClickLib\ClickLib.csproj" />
+		<ProjectReference Include="..\..\repos\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" />
 		<PackageReference Include="DalamudLinter" Version="1.0.3" />
 		<PackageReference Include="DalamudPackager" Version="2.1.2" />
 		<Reference Include="Newtonsoft.Json">
@@ -55,10 +57,6 @@
 		</Reference>
 		<Reference Include="Lumina.Excel">
 			<HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
-		<Reference Include="FFXIVClientStructs">
-			<HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>

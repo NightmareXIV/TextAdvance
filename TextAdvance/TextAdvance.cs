@@ -1,9 +1,12 @@
-﻿using Dalamud.Game;
+﻿using ClickLib;
+using ClickLib.Clicks;
+using Dalamud.Game;
 using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Command;
 using Dalamud.Game.Gui.Toast;
 using Dalamud.Game.Internal;
+using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Plugin;
@@ -35,6 +38,7 @@ namespace TextAdvance
         static string[] SkipCutsceneStr = { "Skip cutscene?", "要跳过这段过场动画吗？", "Videosequenz überspringen?" };
         static string[] YesStr = { "Yes.", "是", "Ja" };
         static string[] CompleteStr = { "Complete", "完成", "Abschließen" };
+        static string[] HandOverStr = { "Hand Over" };
         internal Config config;
         internal ConfigGui configGui;
         bool loggedIn = false;
@@ -69,6 +73,7 @@ namespace TextAdvance
             {
                 loggedIn = true;
             }
+            //Click.Initialize();
         }
 
         private void Logout(object sender, EventArgs e)
@@ -83,6 +88,19 @@ namespace TextAdvance
 
         private void HandleCommand(string command, string arguments)
         {
+            if(arguments == "test")
+            {
+                try
+                {
+                    Svc.Chat.Print("test");
+                    //ClickRequest.Using(Svc.GameGui.GetAddonByName("Request", 1)).RightClickItem(0);
+                }
+                catch(Exception e)
+                {
+                    Svc.Chat.Print($"{e.Message}\n{e.StackTrace ?? ""}");
+                }
+                return;
+            }
             Enabled = !Enabled;
             Svc.Toasts.ShowQuest("Auto advance " + (Enabled ? "Enabled" : "Disabled"),
                 new QuestToastOptions() { PlaySound = true, DisplayCheckmark = true });
@@ -100,8 +118,8 @@ namespace TextAdvance
                     if(config.AutoEnableNames.Contains(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.GameData.Name))
                     {
                         Enabled = true;
-                        Svc.Toasts.ShowQuest("Auto text advance has been automatically enabled on this character",
-                            new QuestToastOptions() { PlaySound = true, DisplayCheckmark = true });
+                        Svc.PluginInterface.UiBuilder.AddNotification("Auto text advance has been automatically enabled on this character",
+                            "TextAdvance", NotificationType.Info, 10000);
                     }
                 }
                 InCutscene = Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
@@ -159,18 +177,63 @@ namespace TextAdvance
                         Svc.Condition[ConditionFlag.Occupied38] ||
                         Svc.Condition[ConditionFlag.Occupied39] ||
                         Svc.Condition[ConditionFlag.OccupiedSummoningBell] ||
+                        Svc.Condition[ConditionFlag.WatchingCutscene] ||
                         InCutscene))
                     {
                         TickTalk();
                         TickQuestComplete();
                         TickQuestAccept();
+                        TickRequestComplete();
                     }
                 }
                 WasInCutscene = InCutscene;
             }
+            catch(NullReferenceException e)
+            {
+                PluginLog.Debug(e.Message + "" + e.StackTrace);
+                Svc.Chat.Print(e.Message + "" + e.StackTrace);
+            }
             catch (Exception e)
             {
                 Svc.Chat.Print(e.Message + "" + e.StackTrace);
+            }
+        }
+
+        long requestAllow = 0;
+        void TickRequestComplete()
+        {
+            var addon = Svc.GameGui.GetAddonByName("Request", 1);
+            if (addon == IntPtr.Zero)
+            {
+                requestAllow = 0;
+                return;
+            }
+            if(requestAllow == 0)
+            {
+                requestAllow = Environment.TickCount64 + 500;
+            }
+            if (Environment.TickCount64 < requestAllow) return;
+            var request = (AddonRequest*)addon;
+            var questAddon = (AtkUnitBase*)addon;
+            if (!questAddon->IsVisible) return;
+            if (questAddon->UldManager.NodeListCount <= 16) return;
+            var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[4];
+            if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
+            var textComponent = (AtkTextNode*)buttonNode->Component->UldManager.NodeList[2];
+            //if (!HandOverStr.Contains(Marshal.PtrToStringUTF8((IntPtr)textComponent->NodeText.StringPtr))) return;
+            if (textComponent->AtkResNode.Color.A != 255) return;
+            for(var i = 16; i <= 12; i--)
+            {
+                if (((AtkComponentNode*)questAddon->UldManager.NodeList[i])->AtkResNode.IsVisible
+                    && ((AtkComponentNode*)questAddon->UldManager.NodeList[i - 6])->AtkResNode.IsVisible) return;
+            }
+            if (request->HandOverButton != null && request->HandOverButton->IsEnabled)
+            {
+                ThrottleManager.Throttle(delegate
+                {
+                    Svc.PluginInterface.UiBuilder.AddNotification("Clicking");
+                    //ClickRequest.Using(addon).HandOver();
+                }, 500);
             }
         }
 
@@ -186,6 +249,7 @@ namespace TextAdvance
             ticksQuestCompleteVisible++;
             if (ticksQuestCompleteVisible < 5) return;
             var questAddon = (AtkUnitBase*)addon;
+            if (!questAddon->IsVisible) return;
             if (questAddon->UldManager.NodeListCount <= 4) return;
             var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[4];
             if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
@@ -209,6 +273,7 @@ namespace TextAdvance
             ticksQuestAcceptVisible++;
             if (ticksQuestAcceptVisible < 5) return;
             var questAddon = (AtkUnitBase*)addon;
+            if (!questAddon->IsVisible) return;
             if (questAddon->UldManager.NodeListCount <= 6) return;
             var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[6];
             if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
@@ -227,7 +292,7 @@ namespace TextAdvance
             if (!talkAddon->IsVisible/* || !talkAddon->UldManager.NodeList[14]->IsVisible*/) return;
             //var imageNode = (AtkImageNode*)talkAddon->UldManager.NodeList[14];
             //if (imageNode->PartsList->Parts[imageNode->PartId].U != 288) return;
-            clickManager.SendClick(addon, ClickManager.EventType.MOUSE_CLICK, 0, ((AddonTalk*)talkAddon)->AtkStage);
+            clickManager.SendClick(addon, EventType.MOUSE_CLICK, 0, ((AddonTalk*)talkAddon)->AtkStage);
         }
 
         void TickSelectSkip()

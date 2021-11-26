@@ -1,4 +1,5 @@
-﻿using Dalamud.Logging;
+﻿using ClickLib;
+using Dalamud.Logging;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -88,7 +89,7 @@ namespace TextAdvance
         {
             var addon = (AddonSelectString*)addonPtr;
             var popupMenu = &addon->PopupMenu;
-            var componentList = popupMenu->List;
+            var componentList = popupMenu->PopupMenu.List;
 
             var arg5 = Marshal.AllocHGlobal(0x40);
             for (var i = 0; i < 0x40; i++)
@@ -103,7 +104,7 @@ namespace TextAdvance
 
         protected delegate void ReceiveEventDelegate(IntPtr addon, EventType evt, uint a3, IntPtr a4, IntPtr a5);
 
-        public enum EventType : ushort
+        /*public enum EventType : ushort
         {
             NORMAL = 1,
             NORMAL_MAX = 2,
@@ -181,6 +182,6 @@ namespace TextAdvance
             COMPONENT_OUT = 74,
             COMPONENT_SCROLL = 75,
             COMPONENT_FOCUSED = 76 // Maybe
-        }
+        }*/
     }
 }
