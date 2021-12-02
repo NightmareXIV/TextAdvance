@@ -38,7 +38,7 @@ namespace TextAdvance
         [PluginService] static internal GameGui GameGui { get; private set; }
         //[PluginService] static internal GameNetwork GameNetwork { get; private set; }
         //[PluginService] static internal JobGauges Gauges { get; private set; }
-        //[PluginService] static internal KeyState KeyState { get; private set; }
+        [PluginService] static internal KeyState KeyState { get; private set; }
         //[PluginService] static internal LibcFunction LibcFunction { get; private set; }
         //[PluginService] static internal ObjectTable Objects { get; private set; }
         //[PluginService] static internal PartyFinderGui PfGui { get; private set; }

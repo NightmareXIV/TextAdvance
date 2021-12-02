@@ -3,6 +3,7 @@ using ClickLib.Clicks;
 using Dalamud.Game;
 using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.Keys;
 using Dalamud.Game.Command;
 using Dalamud.Game.Gui.Toast;
 using Dalamud.Game.Internal;
@@ -42,6 +43,8 @@ namespace TextAdvance
         internal Config config;
         internal ConfigGui configGui;
         bool loggedIn = false;
+        delegate ref int GetRefValue(int vkCode);
+        GetRefValue getRefValue;
 
         public string Name => "TextAdvance";
 
@@ -92,12 +95,15 @@ namespace TextAdvance
             {
                 try
                 {
-                    Svc.Chat.Print("test");
-                    //ClickRequest.Using(Svc.GameGui.GetAddonByName("Request", 1)).RightClickItem(0);
+                    getRefValue = (GetRefValue)Delegate.CreateDelegate(typeof(GetRefValue), Svc.KeyState, 
+                        Svc.KeyState.GetType().GetMethod("GetRefValue", 
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, 
+                        null, new Type[] { typeof(int) }, null));
+                    getRefValue((int)VirtualKey.ESCAPE) = 3;
                 }
                 catch(Exception e)
                 {
-                    Svc.Chat.Print($"{e.Message}\n{e.StackTrace ?? ""}");
+                    PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
                 }
                 return;
             }
@@ -154,7 +160,7 @@ namespace TextAdvance
                                     //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading not visible");
                                     if (CanPressEsc)
                                     {
-                                        Native.Keypress.SendKeycode(Process.GetCurrentProcess().MainWindowHandle, Native.Keypress.Escape);
+                                        getRefValue((int)VirtualKey.ESCAPE) = 3;
                                         CanPressEsc = false;
                                     }
                                 }
@@ -191,7 +197,7 @@ namespace TextAdvance
             catch(NullReferenceException e)
             {
                 PluginLog.Debug(e.Message + "" + e.StackTrace);
-                Svc.Chat.Print(e.Message + "" + e.StackTrace);
+                //Svc.Chat.Print(e.Message + "" + e.StackTrace);
             }
             catch (Exception e)
             {

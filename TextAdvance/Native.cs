@@ -32,7 +32,7 @@ namespace TextAdvance
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern IntPtr GetForegroundWindow();
 
-        public class Keypress
+        /*public class Keypress
         {
             public const int LControlKey = 162;
             public const int Space = 32;
@@ -50,6 +50,6 @@ namespace TextAdvance
                 SendMessage(hwnd, WM_KEYDOWN, (IntPtr)keycode, (IntPtr)0);
                 SendMessage(hwnd, WM_KEYUP, (IntPtr)keycode, (IntPtr)0);
             }
-        }
+        }*/
     }
 }
