@@ -72,6 +72,10 @@ namespace TextAdvance
                 HelpMessage = "toggles TextAdvance plugin. Note: you MUST enable it every time you are logging in for it to work. Every time you log out, plugin will disable itself." +
                 "\nHold shift when plugin is on to temporarily pause skipping. Hold alt to temporarily enable skipping while plugin is disabled."
             });
+            getRefValue = (GetRefValue)Delegate.CreateDelegate(typeof(GetRefValue), Svc.KeyState,
+                        Svc.KeyState.GetType().GetMethod("GetRefValue",
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
+                        null, new Type[] { typeof(int) }, null));
             if (Svc.ClientState.IsLoggedIn)
             {
                 loggedIn = true;
@@ -95,10 +99,6 @@ namespace TextAdvance
             {
                 try
                 {
-                    getRefValue = (GetRefValue)Delegate.CreateDelegate(typeof(GetRefValue), Svc.KeyState, 
-                        Svc.KeyState.GetType().GetMethod("GetRefValue", 
-                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, 
-                        null, new Type[] { typeof(int) }, null));
                     getRefValue((int)VirtualKey.ESCAPE) = 3;
                 }
                 catch(Exception e)
