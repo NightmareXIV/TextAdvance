@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>Eternita</Authors>
-		<Version>2.0.1.0</Version>
+		<Version>2.1.0.0</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -36,9 +36,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\repos\ClickLib\ClickLib\ClickLib.csproj" />
-		<ProjectReference Include="..\..\repos\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" />
 		<PackageReference Include="DalamudLinter" Version="1.0.3" />
-		<PackageReference Include="DalamudPackager" Version="2.1.2" />
+		<PackageReference Include="DalamudPackager" Version="2.1.5" />
 		<Reference Include="Newtonsoft.Json">
 			<HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>
@@ -57,6 +56,10 @@
 		</Reference>
 		<Reference Include="Lumina.Excel">
 			<HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="FFXIVClientStructs">
+			<HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>

@@ -23,14 +23,12 @@ using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using static TextAdvance.ClickManager;
 
 // some code has been copied from https://github.com/daemitus/ClickLib
 namespace TextAdvance
 {
     unsafe class TextAdvance : IDalamudPlugin
     {
-        internal ClickManager clickManager;
         internal bool InCutscene = false;
         internal bool WasInCutscene = false;
         internal bool Enabled = false;
@@ -60,7 +58,6 @@ namespace TextAdvance
         {
             pluginInterface.Create<Svc>();
             config = Svc.PluginInterface.GetPluginConfig() as Config ?? new Config();
-            clickManager = new ClickManager(this);
             Svc.Framework.Update += Tick;
             Svc.ClientState.Logout += Logout;
             Svc.ClientState.Login += Login;
@@ -69,8 +66,7 @@ namespace TextAdvance
             Svc.Commands.AddHandler("/at", new CommandInfo(HandleCommand)
             {
                 ShowInHelp = true,
-                HelpMessage = "toggles TextAdvance plugin. Note: you MUST enable it every time you are logging in for it to work. Every time you log out, plugin will disable itself." +
-                "\nHold shift when plugin is on to temporarily pause skipping. Hold alt to temporarily enable skipping while plugin is disabled."
+                HelpMessage = "toggles TextAdvance plugin. "
             });
             getRefValue = (GetRefValue)Delegate.CreateDelegate(typeof(GetRefValue), Svc.KeyState,
                         Svc.KeyState.GetType().GetMethod("GetRefValue",
@@ -79,6 +75,7 @@ namespace TextAdvance
             if (Svc.ClientState.IsLoggedIn)
             {
                 loggedIn = true;
+                PrintNotice();
             }
             //Click.Initialize();
         }
@@ -91,6 +88,14 @@ namespace TextAdvance
         private void Login(object sender, EventArgs e)
         {
             loggedIn = true;
+            PrintNotice();
+        }
+
+        void PrintNotice()
+        {
+            Svc.Chat.Print("[TextAdvance] Thank you for using TextAdvance! This plugin wasn't much tested" +
+                " in Endwalker and using it can possibly lead to game crashing. Should you be uncomfortable with it - " +
+                "please uninstall it for now (or simply don't enable) and wait some time until testing is complete.");
         }
 
         private void HandleCommand(string command, string arguments)
@@ -237,7 +242,7 @@ namespace TextAdvance
             {
                 ThrottleManager.Throttle(delegate
                 {
-                    //Svc.PluginInterface.UiBuilder.AddNotification("Clicking");
+                    PluginLog.Debug("Handing over request");
                     ClickRequest.Using(addon).HandOver();
                 }, 500);
             }
@@ -264,7 +269,11 @@ namespace TextAdvance
             if (textComponent->AtkResNode.Color.A != 255) return;
             //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Pass");
             if(!((AddonJournalResult*)addon)->CompleteButton->IsEnabled) return;
-            clickManager.SendClickThrottled(addon, EventType.CHANGE, 1, ((AddonJournalResult*)addon)->CompleteButton->AtkComponentBase.OwnerNode);
+            ThrottleManager.Throttle(delegate
+            {
+                PluginLog.Debug("Completing quest");
+                ClickJournalResult.Using(addon).Complete();
+            }, 500);
         }
 
         uint ticksQuestAcceptVisible = 0;
@@ -287,7 +296,11 @@ namespace TextAdvance
             if (!AcceptStr.Contains(Marshal.PtrToStringUTF8((IntPtr)textComponent->NodeText.StringPtr))) return;
             if (textComponent->AtkResNode.Color.A != 255) return;
             //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Pass");
-            clickManager.SendClickThrottled(addon, EventType.CHANGE, 1, buttonNode);
+            ThrottleManager.Throttle(delegate
+            {
+                PluginLog.Debug("Accepting quest");
+                ClickJournalAccept.Using(addon).Accept((AtkComponentButton*)buttonNode);
+            }, 500);
         }
 
         void TickTalk()
@@ -298,7 +311,7 @@ namespace TextAdvance
             if (!talkAddon->IsVisible/* || !talkAddon->UldManager.NodeList[14]->IsVisible*/) return;
             //var imageNode = (AtkImageNode*)talkAddon->UldManager.NodeList[14];
             //if (imageNode->PartsList->Parts[imageNode->PartId].U != 288) return;
-            clickManager.SendClick(addon, EventType.MOUSE_CLICK, 0, ((AddonTalk*)talkAddon)->AtkStage);
+            ClickTalk.Using(addon).Click();
         }
 
         void TickSelectSkip()
@@ -320,7 +333,11 @@ namespace TextAdvance
             if (b->Component->UldManager.NodeListCount <= 3) return;
             var c = (AtkTextNode*)b->Component->UldManager.NodeList[3];
             if (!YesStr.Contains(Marshal.PtrToStringUTF8((IntPtr)c->NodeText.StringPtr))) return;
-            clickManager.SelectStringClick(addon, 0);
+            ThrottleManager.Throttle(delegate
+            {
+                PluginLog.Debug("Selecting cutscene skipping");
+                ClickSelectString.Using(addon).SelectItem(0);
+            }, 500);
         }
 
         bool IsDisableButtonHeld()
