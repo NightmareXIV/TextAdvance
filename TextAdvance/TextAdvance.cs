@@ -23,6 +23,7 @@ using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static TextAdvance.Native;
 
 // some code has been copied from https://github.com/daemitus/ClickLib
 namespace TextAdvance
@@ -41,8 +42,8 @@ namespace TextAdvance
         internal Config config;
         internal ConfigGui configGui;
         bool loggedIn = false;
-        delegate ref int GetRefValue(int vkCode);
-        GetRefValue getRefValue;
+        //delegate ref int GetRefValue(int vkCode);
+        //GetRefValue getRefValue;
 
         public string Name => "TextAdvance";
 
@@ -68,10 +69,10 @@ namespace TextAdvance
                 ShowInHelp = true,
                 HelpMessage = "toggles TextAdvance plugin. "
             });
-            getRefValue = (GetRefValue)Delegate.CreateDelegate(typeof(GetRefValue), Svc.KeyState,
+            /*getRefValue = (GetRefValue)Delegate.CreateDelegate(typeof(GetRefValue), Svc.KeyState,
                         Svc.KeyState.GetType().GetMethod("GetRefValue",
                         System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
-                        null, new Type[] { typeof(int) }, null));
+                        null, new Type[] { typeof(int) }, null));*/
             if (Svc.ClientState.IsLoggedIn)
             {
                 loggedIn = true;
@@ -104,7 +105,7 @@ namespace TextAdvance
             {
                 try
                 {
-                    getRefValue((int)VirtualKey.ESCAPE) = 3;
+                    //getRefValue((int)VirtualKey.ESCAPE) = 3;
                 }
                 catch(Exception e)
                 {
@@ -163,9 +164,11 @@ namespace TextAdvance
                                 else
                                 {
                                     //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading not visible");
-                                    if (CanPressEsc)
+                                    if (CanPressEsc && TryFindGameWindow(out var hwnd))
                                     {
-                                        getRefValue((int)VirtualKey.ESCAPE) = 3;
+                                        //getRefValue((int)VirtualKey.ESCAPE) = 3;
+                                        Keypress.SendKeycode(hwnd, Keypress.Escape);
+                                        PluginLog.Debug("Pressing Esc");
                                         CanPressEsc = false;
                                     }
                                 }

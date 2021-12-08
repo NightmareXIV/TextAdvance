@@ -2,6 +2,5 @@
 	"Name": "TextAdvance",
 	"Author": "Eternita",
 	"Description": "Automatically skips subtitle boxes and confirms cutscene skipping",
-	"RepoUrl": "https://github.com/Eternita-S/TextAdvance",
-	"DalamudApiLevel": 4
+	"RepoUrl": "https://github.com/Eternita-S/TextAdvance"
 }

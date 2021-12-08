@@ -32,7 +32,10 @@ namespace TextAdvance
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         public static extern IntPtr GetForegroundWindow();
 
-        /*public class Keypress
+        [DllImport("user32.dll")]
+        static extern IntPtr FindWindowEx(IntPtr hWndParent, IntPtr hWndChildAfter, string lpszClass, string lpszWindow);
+
+        public class Keypress
         {
             public const int LControlKey = 162;
             public const int Space = 32;
@@ -50,6 +53,19 @@ namespace TextAdvance
                 SendMessage(hwnd, WM_KEYDOWN, (IntPtr)keycode, (IntPtr)0);
                 SendMessage(hwnd, WM_KEYUP, (IntPtr)keycode, (IntPtr)0);
             }
-        }*/
+        }
+
+        public static bool TryFindGameWindow(out IntPtr hwnd)
+        {
+            hwnd = IntPtr.Zero;
+            while (true)
+            {
+                hwnd = FindWindowEx(IntPtr.Zero, hwnd, "FFXIVGAME", null);
+                if (hwnd == IntPtr.Zero) break;
+                GetWindowThreadProcessId(hwnd, out var pid);
+                if (pid == Process.GetCurrentProcess().Id) break;
+            }
+            return hwnd != IntPtr.Zero;
+        }
     }
 }
