@@ -140,45 +140,51 @@ namespace TextAdvance
                 {
                     if (Enabled)
                     {
-                        var nLoading = Svc.GameGui.GetAddonByName("NowLoading", 1);
-                        var skip = true;
-                        var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
-                        if (addon == IntPtr.Zero)
+                        if (config.EnableCutsceneEsc)
                         {
-                            skip = false;
-                        }
-                        else
-                        {
-                            var selectStrAddon = (AtkUnitBase*)addon;
-                            if (!selectStrAddon->IsVisible) skip = false;
-                        }
-                        if (InCutscene && !skip)
-                        {
-                            if (nLoading != IntPtr.Zero)
+                            var nLoading = Svc.GameGui.GetAddonByName("NowLoading", 1);
+                            var skip = true;
+                            var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
+                            if (addon == IntPtr.Zero)
                             {
-                                var nowLoading = (AtkUnitBase*)nLoading;
-                                if (nowLoading->IsVisible)
+                                skip = false;
+                            }
+                            else
+                            {
+                                var selectStrAddon = (AtkUnitBase*)addon;
+                                if (!selectStrAddon->IsVisible) skip = false;
+                            }
+                            if (InCutscene)
+                            {
+                                if (!skip)
                                 {
-                                    //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading visible");
-                                }
-                                else
-                                {
-                                    //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading not visible");
-                                    if (CanPressEsc && TryFindGameWindow(out var hwnd))
+                                    if (nLoading != IntPtr.Zero)
                                     {
-                                        //getRefValue((int)VirtualKey.ESCAPE) = 3;
-                                        Keypress.SendKeycode(hwnd, Keypress.Escape);
-                                        PluginLog.Debug("Pressing Esc");
-                                        CanPressEsc = false;
+                                        var nowLoading = (AtkUnitBase*)nLoading;
+                                        if (nowLoading->IsVisible)
+                                        {
+                                            //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading visible");
+                                        }
+                                        else
+                                        {
+                                            //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading not visible");
+                                            if (CanPressEsc && TryFindGameWindow(out var hwnd))
+                                            {
+                                                //getRefValue((int)VirtualKey.ESCAPE) = 3;
+                                                Keypress.SendKeycode(hwnd, Keypress.Escape);
+                                                PluginLog.Debug("Pressing Esc");
+                                                CanPressEsc = false;
+                                            }
+                                        }
                                     }
                                 }
                             }
+                            else
+                            {
+                                CanPressEsc = true;
+                            }
                         }
-                        else
-                        {
-                            CanPressEsc = true;
-                        }
-                        if (InCutscene)
+                        if (config.EnableCutsceneSkipConfirm && InCutscene)
                         {
                             TickSelectSkip();
                         }
@@ -194,10 +200,10 @@ namespace TextAdvance
                         Svc.Condition[ConditionFlag.WatchingCutscene] ||
                         InCutscene))
                     {
-                        TickTalk();
-                        TickQuestComplete();
-                        TickQuestAccept();
-                        TickRequestComplete();
+                        if(config.EnableTalkSkip) TickTalk();
+                        if(config.EnableQuestComplete) TickQuestComplete();
+                        if(config.EnableQuestAccept) TickQuestAccept();
+                        if(config.EnableRequestHandin) TickRequestComplete();
                     }
                 }
                 WasInCutscene = InCutscene;

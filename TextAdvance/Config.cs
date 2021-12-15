@@ -14,6 +14,12 @@ namespace TextAdvance
         public HashSet<string> AutoEnableNames = new();
         public Button TempEnableButton = Button.NONE;
         public Button TempDisableButton = Button.NONE;
+        public bool EnableQuestAccept = true;
+        public bool EnableQuestComplete = true;
+        public bool EnableRequestHandin = true;
+        public bool EnableCutsceneEsc = true;
+        public bool EnableCutsceneSkipConfirm = true;
+        public bool EnableTalkSkip = true;
     }
 
     public enum Button

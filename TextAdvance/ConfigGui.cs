@@ -31,12 +31,22 @@ namespace TextAdvance
         public override void Draw()
         {
             ImGui.Checkbox("Enable plugin (non-persistent)", ref p.Enabled);
+            ImGui.Separator();
             ImGui.Text("Button to hold to temporarily disable plugin when active:");
             ImGui.SetNextItemWidth(200f);
             ImGuiEnumCombo("##HoldDisable", ref p.config.TempDisableButton);
             ImGui.Text("Button to hold to temporarily enable plugin when inactive:");
             ImGui.SetNextItemWidth(200f);
             ImGuiEnumCombo("##HoldEnable", ref p.config.TempEnableButton);
+            ImGui.Separator();
+            ImGui.Text("Functions: ");
+            ImGui.Checkbox("Automatic quest accept", ref p.config.EnableQuestAccept);
+            ImGui.Checkbox("Automatic quest complete", ref p.config.EnableQuestComplete);
+            ImGui.Checkbox("Automatic talk skip", ref p.config.EnableTalkSkip);
+            ImGui.Checkbox("Semi-automatic request handin", ref p.config.EnableRequestHandin);
+            ImGui.Checkbox("Automatic ESC press during cutscene", ref p.config.EnableCutsceneEsc);
+            ImGui.Checkbox("Automatic cutscene skip confirmation", ref p.config.EnableCutsceneSkipConfirm);
+            ImGui.Separator();
             ImGui.Text("Auto-enable plugin when you log in with characters:");
             string dele = null;
             foreach(var s in p.config.AutoEnableNames)
