@@ -94,9 +94,11 @@ namespace TextAdvance
 
         void PrintNotice()
         {
+            /*
             Svc.Chat.Print("[TextAdvance] Thank you for using TextAdvance! This plugin wasn't much tested" +
                 " in Endwalker and using it can possibly lead to game crashing. Should you be uncomfortable with it - " +
                 "please uninstall it for now (or simply don't enable) and wait some time until testing is complete.");
+            */
         }
 
         private void HandleCommand(string command, string arguments)
@@ -198,6 +200,8 @@ namespace TextAdvance
                         Svc.Condition[ConditionFlag.Occupied39] ||
                         Svc.Condition[ConditionFlag.OccupiedSummoningBell] ||
                         Svc.Condition[ConditionFlag.WatchingCutscene] ||
+                        Svc.Condition[ConditionFlag.Mounting71] ||
+                        Svc.Condition[ConditionFlag.CarryingObject] ||
                         InCutscene))
                     {
                         if(config.EnableTalkSkip) TickTalk();

@@ -53,7 +53,7 @@ namespace TextAdvance
             {
                 ImGui.Text(s);
                 ImGui.SameLine();
-                if (ImGui.SmallButton("Delete"))
+                if (ImGui.SmallButton("Delete##"+s))
                 {
                     dele = s;
                 }
