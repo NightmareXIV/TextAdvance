@@ -1,6 +1,11 @@
 ﻿{
-	"Name": "TextAdvance",
 	"Author": "Eternita",
+	"Name": "TextAdvance",
+	"InternalName": "TextAdvance",
+	"AssemblyVersion": "9.0.0.0",
 	"Description": "Automatically skips subtitle boxes and confirms cutscene skipping",
-	"RepoUrl": "https://github.com/Eternita-S/TextAdvance"
+	"ApplicableVersion": "any",
+	"RepoUrl": "https://github.com/Eternita-S/TextAdvance",
+	"DalamudApiLevel": 6,
+	"LoadPriority": 0
 }

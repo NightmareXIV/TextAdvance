@@ -22,22 +22,24 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<None Remove="res\icon.png" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Content Include="res\icon.png" Link="images\icon.png" CopyToOutputDirectory="PreserveNewest" Visible="false" />
-	</ItemGroup>
-
 	<PropertyGroup>
 		<DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<PostBuildEvent>
+			rmdir .\Release /s /q
+			ping localhost -n 2 &gt;nul
+			powershell "(Get-Content .\$(MSBuildProjectName).json) -Replace '9.0.0.0', '$(Version)' | Set-Content .\$(MSBuildProjectName).json"
+			powershell Compress-Archive .\* ..\$(MSBuildProjectName)-$(Version).zip
+			mkdir .\Release
+			move ..\$(MSBuildProjectName)-$(Version).zip .\release\latest.zip
+			copy .\$(MSBuildProjectName).json .\release\.\$(MSBuildProjectName).json
+		</PostBuildEvent>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\..\repos\ClickLib\ClickLib\ClickLib.csproj" />
-		<PackageReference Include="DalamudLinter" Version="1.0.3" />
-		<PackageReference Include="DalamudPackager" Version="2.1.6" />
 		<Reference Include="Newtonsoft.Json">
 			<HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>
@@ -66,5 +68,11 @@
 
 	<ItemGroup>
 		<Folder Include="res\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="TextAdvance.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>
