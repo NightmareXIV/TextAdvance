@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>Eternita</Authors>
-		<Version>2.1.0.5</Version>
+		<Version>3.0.0.0</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -39,7 +39,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\repos\ClickLib\ClickLib\ClickLib.csproj" />
+	  <ProjectReference Include="..\..\ClickLib\ClickLib\ClickLib.csproj" />
+	  <ProjectReference Include="..\..\ECommons\ECommons\ECommons.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Reference Include="Newtonsoft.Json">
 			<HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>
@@ -64,10 +68,6 @@
 			<HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="res\" />
 	</ItemGroup>
 
 	<ItemGroup>

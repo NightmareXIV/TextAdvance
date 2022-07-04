@@ -23,9 +23,9 @@ using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using TextAdvance.Gui;
 using static TextAdvance.Native;
 
-// some code has been copied from https://github.com/daemitus/ClickLib
 namespace TextAdvance
 {
     unsafe class TextAdvance : IDalamudPlugin
@@ -42,8 +42,7 @@ namespace TextAdvance
         internal Config config;
         internal ConfigGui configGui;
         bool loggedIn = false;
-        //delegate ref int GetRefValue(int vkCode);
-        //GetRefValue getRefValue;
+        internal static TextAdvance P;
 
         public string Name => "TextAdvance";
 
@@ -53,32 +52,44 @@ namespace TextAdvance
             Svc.ClientState.Logout -= Logout;
             Svc.ClientState.Login -= Login;
             Svc.Commands.RemoveHandler("/at");
+            ECommons.ECommons.Dispose();
         }
 
         public TextAdvance(DalamudPluginInterface pluginInterface)
         {
-            pluginInterface.Create<Svc>();
-            config = Svc.PluginInterface.GetPluginConfig() as Config ?? new Config();
-            Svc.Framework.Update += Tick;
-            Svc.ClientState.Logout += Logout;
-            Svc.ClientState.Login += Login;
-            configGui = new ConfigGui(this);
-            Svc.PluginInterface.UiBuilder.OpenConfigUi += delegate { configGui.IsOpen = true; };
-            Svc.Commands.AddHandler("/at", new CommandInfo(HandleCommand)
+            P = this;
+            ECommons.ECommons.Init(pluginInterface);
+            new TickScheduler(delegate
             {
-                ShowInHelp = true,
-                HelpMessage = "toggles TextAdvance plugin. "
+                config = Svc.PluginInterface.GetPluginConfig() as Config ?? new Config();
+                if(config.Version == 1)
+                {
+                    config.Version = 2;        
+                    config.MainConfig.EnableQuestAccept = config.EnableQuestAccept;
+                    config.MainConfig.EnableQuestComplete = config.EnableQuestComplete;
+                    config.MainConfig.EnableRequestHandin = config.EnableRequestHandin;
+                    config.MainConfig.EnableCutsceneEsc = config.EnableCutsceneEsc;
+                    config.MainConfig.EnableCutsceneSkipConfirm = config.EnableCutsceneSkipConfirm;
+                    config.MainConfig.EnableTalkSkip = config.EnableTalkSkip;
+                    Notify.Info("Configuration migrated to v2");
+                    Svc.PluginInterface.SavePluginConfig(config);
+                }
+                Svc.Framework.Update += Tick;
+                Svc.ClientState.Logout += Logout;
+                Svc.ClientState.Login += Login;
+                configGui = new ConfigGui(this);
+                Svc.PluginInterface.UiBuilder.OpenConfigUi += delegate { configGui.IsOpen = true; };
+                Svc.Commands.AddHandler("/at", new CommandInfo(HandleCommand)
+                {
+                    ShowInHelp = true,
+                    HelpMessage = "toggles TextAdvance plugin. "
+                });
+                if (Svc.ClientState.IsLoggedIn)
+                {
+                    loggedIn = true;
+                    PrintNotice();
+                }
             });
-            /*getRefValue = (GetRefValue)Delegate.CreateDelegate(typeof(GetRefValue), Svc.KeyState,
-                        Svc.KeyState.GetType().GetMethod("GetRefValue",
-                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
-                        null, new Type[] { typeof(int) }, null));*/
-            if (Svc.ClientState.IsLoggedIn)
-            {
-                loggedIn = true;
-                PrintNotice();
-            }
-            //Click.Initialize();
         }
 
         private void Logout(object sender, EventArgs e)
@@ -115,7 +126,7 @@ namespace TextAdvance
                 }
                 return;
             }
-            Enabled = !Enabled;
+            Enabled = arguments.EqualsIgnoreCaseAny("enable", "e", "yes", "y") || (!arguments.EqualsIgnoreCaseAny("disable", "d", "no", "n") && !Enabled);
             Svc.Toasts.ShowQuest("Auto advance " + (Enabled ? "Enabled" : "Disabled"),
                 new QuestToastOptions() { PlaySound = true, DisplayCheckmark = true });
         }
@@ -142,7 +153,7 @@ namespace TextAdvance
                 {
                     if (Enabled)
                     {
-                        if (config.EnableCutsceneEsc)
+                        if (config.MainConfig.EnableCutsceneEsc)
                         {
                             var nLoading = Svc.GameGui.GetAddonByName("NowLoading", 1);
                             var skip = true;
@@ -186,7 +197,7 @@ namespace TextAdvance
                                 CanPressEsc = true;
                             }
                         }
-                        if (config.EnableCutsceneSkipConfirm && InCutscene)
+                        if (config.MainConfig.EnableCutsceneSkipConfirm && InCutscene)
                         {
                             TickSelectSkip();
                         }
@@ -204,10 +215,10 @@ namespace TextAdvance
                         Svc.Condition[ConditionFlag.CarryingObject] ||
                         InCutscene))
                     {
-                        if(config.EnableTalkSkip) TickTalk();
-                        if(config.EnableQuestComplete) TickQuestComplete();
-                        if(config.EnableQuestAccept) TickQuestAccept();
-                        if(config.EnableRequestHandin) TickRequestComplete();
+                        if(config.MainConfig.EnableTalkSkip) TickTalk();
+                        if(config.MainConfig.EnableQuestComplete) TickQuestComplete();
+                        if(config.MainConfig.EnableQuestAccept) TickQuestAccept();
+                        if(config.MainConfig.EnableRequestHandin) TickRequestComplete();
                     }
                 }
                 WasInCutscene = InCutscene;
