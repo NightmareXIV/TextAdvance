@@ -26,26 +26,6 @@ namespace TextAdvance.Gui
             ImGui.Checkbox("Semi-automatic request handin", ref P.config.MainConfig.EnableRequestHandin);
             ImGui.Checkbox("Automatic ESC press during cutscene", ref P.config.MainConfig.EnableCutsceneEsc);
             ImGui.Checkbox("Automatic cutscene skip confirmation", ref P.config.MainConfig.EnableCutsceneSkipConfirm);
-            ImGui.Separator();
-            ImGui.Text("Auto-enable plugin when you log in with characters:");
-            string dele = null;
-            foreach (var s in P.config.AutoEnableNames)
-            {
-                ImGui.Text(s);
-                ImGui.SameLine();
-                if (ImGui.SmallButton("Delete##" + s))
-                {
-                    dele = s;
-                }
-            }
-            if (ImGui.Button("Add current character") && Svc.ClientState.LocalPlayer != null)
-            {
-                P.config.AutoEnableNames.Add(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.GameData.Name);
-            }
-            if (dele != null)
-            {
-                P.config.AutoEnableNames.Remove(dele);
-            }
         }
     }
 }

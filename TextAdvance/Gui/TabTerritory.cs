@@ -14,8 +14,8 @@ namespace TextAdvance.Gui
         internal static void Draw()
         {
             ImGui.Checkbox("Global enable overrides local settings", ref P.config.GlobalOverridesLocal);
-            ImGuiEx.TextWrapped("If this checkbox is checked, when enabling plugin with /at command per-territory settings will become irrelevant " +
-                "and global settings will be used.\nOtherwise per-territory settings will always be used, regardless of plugin's global state.");
+            ImGuiEx.TextWrapped("If this checkbox is checked, when enabling plugin with /at command per area settings will become irrelevant " +
+                "and global settings will be used.\nOtherwise per area settings will always be used, regardless of plugin's global state.");
             ImGuiEx.Text("Current plugin state: globally ");
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(P.Enabled ? ImGuiColors.ParsedGreen : ImGuiColors.DalamudRed, P.Enabled ? "enabled" : "disabled");
@@ -24,7 +24,7 @@ namespace TextAdvance.Gui
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(P.IsTerritoryEnabled() ? ImGuiColors.ParsedGreen : ImGuiColors.DalamudRed, P.IsTerritoryEnabled() ? "enabled" : "disabled");
             ImGuiEx.SetNextItemFullWidth();
-            if (ImGui.BeginCombo("##terrselect", P.TerritoryNames.TryGetValue(SelectedKey, out var selected) ? selected : "Select a territory..."))
+            if (ImGui.BeginCombo("##terrselect", P.TerritoryNames.TryGetValue(SelectedKey, out var selected) ? selected : "Select an area..."))
             {
                 ImGui.SetNextItemWidth(200f);
                 ImGui.InputTextWithHint("##selectflts", "Filter", ref Filter, 50);
@@ -50,7 +50,7 @@ namespace TextAdvance.Gui
                 }
                 ImGui.EndCombo();
             }
-            if(P.TerritoryNames.TryGetValue(SelectedKey, out var terr))
+            if(P.TerritoryNames.ContainsKey(SelectedKey))
             {
                 if(P.config.TerritoryConditions.TryGetValue(SelectedKey, out var settings))
                 {
