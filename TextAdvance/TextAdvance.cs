@@ -84,7 +84,8 @@ namespace TextAdvance
                 Svc.Commands.AddHandler("/at", new CommandInfo(HandleCommand)
                 {
                     ShowInHelp = true,
-                    HelpMessage = "toggles TextAdvance plugin. "
+                    HelpMessage = "toggles TextAdvance plugin.\n/at y|yes|e|enable - turns on TextAdvance.\n/at n|no|d|disable - turns off TextAdvance.\n" +
+                    "/at c|config|s|settings - opens TextAdvance settings."
                 });
                 if (Svc.ClientState.IsLoggedIn)
                 {
@@ -120,21 +121,28 @@ namespace TextAdvance
 
         private void HandleCommand(string command, string arguments)
         {
-            if(arguments == "test")
+            if (arguments == "test")
             {
                 try
                 {
                     //getRefValue((int)VirtualKey.ESCAPE) = 3;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     PluginLog.Error($"{e.Message}\n{e.StackTrace ?? ""}");
                 }
                 return;
             }
-            Enabled = arguments.EqualsIgnoreCaseAny("enable", "e", "yes", "y") || (!arguments.EqualsIgnoreCaseAny("disable", "d", "no", "n") && !Enabled);
-            Svc.Toasts.ShowQuest("Auto advance " + (Enabled ? "globally enabled" : "disabled (except custom territories)"),
-                new QuestToastOptions() { PlaySound = true, DisplayCheckmark = true });
+            else if (arguments.EqualsIgnoreCaseAny("s", "settings", "c", "config"))
+            {
+                configGui.IsOpen = true;
+            }
+            else
+            {
+                Enabled = arguments.EqualsIgnoreCaseAny("enable", "e", "yes", "y") || (!arguments.EqualsIgnoreCaseAny("disable", "d", "no", "n") && !Enabled);
+                Svc.Toasts.ShowQuest("Auto advance " + (Enabled ? "globally enabled" : "disabled (except custom territories)"),
+                    new QuestToastOptions() { PlaySound = true, DisplayCheckmark = true });
+            }
         }
 
         internal bool IsEnabled()
