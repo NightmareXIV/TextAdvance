@@ -165,11 +165,11 @@ namespace TextAdvance
                 }
                 InCutscene = Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
                     || Svc.Condition[ConditionFlag.WatchingCutscene78];
-                if (!IsDisableButtonHeld() || !Enabled)
+                if (!IsDisableButtonHeld() || !IsEnabled())
                 {
-                    if (Enabled)
+                    if (IsEnabled())
                     {
-                        if (config.MainConfig.EnableCutsceneEsc)
+                        if (config.GetEnableCutsceneEsc())
                         {
                             var nLoading = Svc.GameGui.GetAddonByName("NowLoading", 1);
                             var skip = true;
@@ -213,12 +213,12 @@ namespace TextAdvance
                                 CanPressEsc = true;
                             }
                         }
-                        if (config.MainConfig.EnableCutsceneSkipConfirm && InCutscene)
+                        if (config.GetEnableCutsceneSkipConfirm() && InCutscene)
                         {
                             TickSelectSkip();
                         }
                     }
-                    if ((Enabled || (IsEnableButtonHeld() && Native.ApplicationIsActivated())) &&
+                    if ((IsEnabled() || (IsEnableButtonHeld() && Native.ApplicationIsActivated())) &&
                         (Svc.Condition[ConditionFlag.OccupiedInQuestEvent] ||
                         Svc.Condition[ConditionFlag.Occupied33] ||
                         Svc.Condition[ConditionFlag.OccupiedInEvent] ||
@@ -231,10 +231,10 @@ namespace TextAdvance
                         Svc.Condition[ConditionFlag.CarryingObject] ||
                         InCutscene))
                     {
-                        if(config.MainConfig.EnableTalkSkip) TickTalk();
-                        if(config.MainConfig.EnableQuestComplete) TickQuestComplete();
-                        if(config.MainConfig.EnableQuestAccept) TickQuestAccept();
-                        if(config.MainConfig.EnableRequestHandin) TickRequestComplete();
+                        if(config.GetEnableTalkSkip()) TickTalk();
+                        if(config.GetEnableQuestComplete()) TickQuestComplete();
+                        if(config.GetEnableQuestAccept()) TickQuestAccept();
+                        if(config.GetEnableRequestHandin()) TickRequestComplete();
                     }
                 }
                 WasInCutscene = InCutscene;

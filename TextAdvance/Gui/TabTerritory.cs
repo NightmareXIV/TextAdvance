@@ -26,7 +26,7 @@ namespace TextAdvance.Gui
             ImGuiEx.SetNextItemFullWidth();
             if (ImGui.BeginCombo("##terrselect", P.TerritoryNames.TryGetValue(SelectedKey, out var selected) ? selected : "Select a territory..."))
             {
-                ImGui.SetNextItemWidth(100f);
+                ImGui.SetNextItemWidth(200f);
                 ImGui.InputTextWithHint("##selectflts", "Filter", ref Filter, 50);
                 ImGui.SameLine();
                 ImGui.Checkbox("Only modified", ref OnlyModded);
@@ -39,7 +39,7 @@ namespace TextAdvance.Gui
                 {
                     if (Filter != string.Empty && !x.Value.Contains(Filter, StringComparison.OrdinalIgnoreCase)) continue;
                     if (OnlyModded && !P.config.TerritoryConditions.ContainsKey(x.Key)) continue;
-                    if (ImGui.Selectable(x.Value))
+                    if (ImGui.Selectable(x.Value, P.config.TerritoryConditions.ContainsKey(x.Key)))
                     {
                         SelectedKey = x.Key;
                     }
@@ -48,6 +48,7 @@ namespace TextAdvance.Gui
                         ImGui.SetScrollHereY();
                     }
                 }
+                ImGui.EndCombo();
             }
             if(P.TerritoryNames.TryGetValue(SelectedKey, out var terr))
             {
