@@ -22,6 +22,56 @@ namespace TextAdvance
         public bool EnableTalkSkip = true;
         public TerritoryConfig MainConfig = new();
         public Dictionary<uint, TerritoryConfig> TerritoryConditions = new();
+        public bool GlobalOverridesLocal = false;
+
+        public bool GetEnableQuestAccept()
+        {
+            if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+            {
+                return val.EnableQuestAccept;
+            }
+            return EnableQuestAccept;
+        }
+        public bool GetEnableQuestComplete()
+        {
+            if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+            {
+                return val.EnableQuestComplete;
+            }
+            return EnableQuestComplete;
+        }
+        public bool GetEnableRequestHandin()
+        {
+            if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+            {
+                return val.EnableRequestHandin;
+            }
+            return EnableRequestHandin;
+        }
+        public bool GetEnableCutsceneEsc()
+        {
+            if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+            {
+                return val.EnableCutsceneEsc;
+            }
+            return EnableCutsceneEsc;
+        }
+        public bool GetEnableCutsceneSkipConfirm()
+        {
+            if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+            {
+                return val.EnableCutsceneSkipConfirm;
+            }
+            return EnableCutsceneSkipConfirm;
+        }
+        public bool GetEnableTalkSkip()
+        {
+            if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+            {
+                return val.EnableTalkSkip;
+            }
+            return EnableTalkSkip;
+        }
     }
 
     public enum Button
@@ -38,5 +88,10 @@ namespace TextAdvance
         public bool EnableCutsceneEsc = true;
         public bool EnableCutsceneSkipConfirm = true;
         public bool EnableTalkSkip = true;
+
+        public bool IsEnabled()
+        {
+            return EnableQuestAccept || EnableQuestComplete || EnableRequestHandin || EnableCutsceneEsc || EnableCutsceneSkipConfirm || EnableTalkSkip;
+        }
     }
 }

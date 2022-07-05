@@ -14,6 +14,7 @@ using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
+using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -43,6 +44,7 @@ namespace TextAdvance
         internal ConfigGui configGui;
         bool loggedIn = false;
         internal static TextAdvance P;
+        internal Dictionary<uint, string> TerritoryNames = new();
 
         public string Name => "TextAdvance";
 
@@ -89,6 +91,10 @@ namespace TextAdvance
                     loggedIn = true;
                     PrintNotice();
                 }
+                TerritoryNames = Svc.Data.GetExcelSheet<TerritoryType>().Where(x => x.PlaceName.Value.Name.ToString().Length > 0)
+                .ToDictionary(
+                    x => x.RowId, 
+                    x => $"{x.RowId} | {x.PlaceName.Value.Name}{(x.ContentFinderCondition.Value.Name.ToString().Length > 0 ? $" ({x.ContentFinderCondition.Value.Name})" : string.Empty)}");
             });
         }
 
@@ -127,8 +133,18 @@ namespace TextAdvance
                 return;
             }
             Enabled = arguments.EqualsIgnoreCaseAny("enable", "e", "yes", "y") || (!arguments.EqualsIgnoreCaseAny("disable", "d", "no", "n") && !Enabled);
-            Svc.Toasts.ShowQuest("Auto advance " + (Enabled ? "Enabled" : "Disabled"),
+            Svc.Toasts.ShowQuest("Auto advance " + (Enabled ? "globally enabled" : "disabled (except custom territories)"),
                 new QuestToastOptions() { PlaySound = true, DisplayCheckmark = true });
+        }
+
+        internal bool IsEnabled()
+        {
+            return Enabled || IsTerritoryEnabled();
+        }
+
+        internal bool IsTerritoryEnabled()
+        {
+            return P.config.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var cfg) && cfg.IsEnabled();
         }
 
 

@@ -31,8 +31,8 @@ namespace TextAdvance.Gui
         {
             ImGuiEx.EzTabBar("TextAdvanceTab",
                 ("General config", TabConfig.Draw, null, true),
-                ("Per-territory config", TabConfig.Draw, null, true),
-                ("Contribute", TabConfig.Draw, null, true)
+                ("Per-territory config", TabTerritory.Draw, null, true),
+                ("Contribute", TabContribute.Draw, ImGuiColors.DalamudYellow, true)
                 );
         }
 
