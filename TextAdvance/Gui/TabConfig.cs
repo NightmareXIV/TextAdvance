@@ -20,12 +20,19 @@ namespace TextAdvance.Gui
             ImGuiEx.EnumCombo("##HoldEnable", ref P.config.TempEnableButton);
             ImGui.Separator();
             ImGui.Text("Functions: ");
-            ImGui.Checkbox("Automatic quest accept", ref P.config.MainConfig.EnableQuestAccept);
-            ImGui.Checkbox("Automatic quest complete", ref P.config.MainConfig.EnableQuestComplete);
-            ImGui.Checkbox("Automatic talk skip", ref P.config.MainConfig.EnableTalkSkip);
-            ImGui.Checkbox("Semi-automatic request handin", ref P.config.MainConfig.EnableRequestHandin);
-            ImGui.Checkbox("Automatic ESC press during cutscene", ref P.config.MainConfig.EnableCutsceneEsc);
-            ImGui.Checkbox("Automatic cutscene skip confirmation", ref P.config.MainConfig.EnableCutsceneSkipConfirm);
+            ImGui.Checkbox("Automatic quest accept (QA)", ref P.config.MainConfig.EnableQuestAccept);
+            ImGui.Checkbox("Automatic quest complete (QC)", ref P.config.MainConfig.EnableQuestComplete);
+            ImGui.Checkbox("Automatic talk skip (TS)", ref P.config.MainConfig.EnableTalkSkip);
+            ImGui.Checkbox("Semi-automatic request handin (RH)", ref P.config.MainConfig.EnableRequestHandin);
+            ImGui.Checkbox("Automatic ESC press during cutscene (CS)", ref P.config.MainConfig.EnableCutsceneEsc);
+            ImGui.Checkbox("Automatic cutscene skip confirmation (CC)", ref P.config.MainConfig.EnableCutsceneSkipConfirm);
+            ImGui.Separator();
+            ImGui.Checkbox("Enable overlay when plugin is enabled", ref P.config.EnableOverlay);
+            if (P.config.EnableOverlay)
+            {
+                ImGui.SetNextItemWidth(100f);
+                ImGui.DragFloat2("Overlay offset", ref P.config.OverlayOffset);
+            }
         }
     }
 }

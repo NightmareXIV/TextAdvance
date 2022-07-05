@@ -23,6 +23,8 @@ namespace TextAdvance
         public TerritoryConfig MainConfig = new();
         public Dictionary<uint, TerritoryConfig> TerritoryConditions = new();
         public bool GlobalOverridesLocal = false;
+        public bool EnableOverlay = true;
+        public Vector2 OverlayOffset = new(0, -10);
 
         public bool GetEnableQuestAccept()
         {

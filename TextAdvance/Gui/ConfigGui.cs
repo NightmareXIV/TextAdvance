@@ -14,7 +14,7 @@ namespace TextAdvance.Gui
     internal class ConfigGui : Window, IDisposable
     {
         TextAdvance p;
-        WindowSystem ws = new();
+        internal WindowSystem ws = new();
         public ConfigGui(TextAdvance plugin) : base("TextAdvance config")
         {
             p = plugin;

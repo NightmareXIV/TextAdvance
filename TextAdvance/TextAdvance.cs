@@ -45,6 +45,7 @@ namespace TextAdvance
         bool loggedIn = false;
         internal static TextAdvance P;
         internal Dictionary<uint, string> TerritoryNames = new();
+        Overlay overlay;
 
         public string Name => "TextAdvance";
 
@@ -80,6 +81,8 @@ namespace TextAdvance
                 Svc.ClientState.Logout += Logout;
                 Svc.ClientState.Login += Login;
                 configGui = new ConfigGui(this);
+                overlay = new();
+                
                 Svc.PluginInterface.UiBuilder.OpenConfigUi += delegate { configGui.IsOpen = true; };
                 Svc.Commands.AddHandler("/at", new CommandInfo(HandleCommand)
                 {
@@ -92,6 +95,8 @@ namespace TextAdvance
                     loggedIn = true;
                     PrintNotice();
                 }
+                overlay = new();
+                configGui.ws.AddWindow(overlay);
                 TerritoryNames = Svc.Data.GetExcelSheet<TerritoryType>().Where(x => x.PlaceName.Value.Name.ToString().Length > 0)
                 .ToDictionary(
                     x => x.RowId, 
