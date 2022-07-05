@@ -33,7 +33,7 @@ namespace TextAdvance.Gui
                 ("General config", TabConfig.Draw, null, true),
                 ("Auto-enable", TabChars.Draw, null, true),
                 ("Per area config", TabTerritory.Draw, null, true),
-                ("Contribute", TabContribute.Draw, ImGuiColors.DalamudYellow, true)
+                ("Contribute", Donation.DonationTabDraw, ImGuiColors.DalamudYellow, true)
                 );
         }
 
