@@ -65,18 +65,6 @@ namespace TextAdvance
             new TickScheduler(delegate
             {
                 config = Svc.PluginInterface.GetPluginConfig() as Config ?? new Config();
-                if(config.Version == 1)
-                {
-                    config.Version = 2;        
-                    config.MainConfig.EnableQuestAccept = config.EnableQuestAccept;
-                    config.MainConfig.EnableQuestComplete = config.EnableQuestComplete;
-                    config.MainConfig.EnableRequestHandin = config.EnableRequestHandin;
-                    config.MainConfig.EnableCutsceneEsc = config.EnableCutsceneEsc;
-                    config.MainConfig.EnableCutsceneSkipConfirm = config.EnableCutsceneSkipConfirm;
-                    config.MainConfig.EnableTalkSkip = config.EnableTalkSkip;
-                    Notify.Info("Configuration migrated to v2");
-                    Svc.PluginInterface.SavePluginConfig(config);
-                }
                 Svc.Framework.Update += Tick;
                 Svc.ClientState.Logout += Logout;
                 Svc.ClientState.Login += Login;

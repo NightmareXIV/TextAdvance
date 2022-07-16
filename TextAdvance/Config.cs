@@ -14,12 +14,6 @@ namespace TextAdvance
         public HashSet<string> AutoEnableNames = new();
         public Button TempEnableButton = Button.NONE;
         public Button TempDisableButton = Button.NONE;
-        public bool EnableQuestAccept = true;
-        public bool EnableQuestComplete = true;
-        public bool EnableRequestHandin = true;
-        public bool EnableCutsceneEsc = true;
-        public bool EnableCutsceneSkipConfirm = true;
-        public bool EnableTalkSkip = true;
         public TerritoryConfig MainConfig = new();
         public Dictionary<uint, TerritoryConfig> TerritoryConditions = new();
         public bool GlobalOverridesLocal = false;
@@ -32,7 +26,7 @@ namespace TextAdvance
             {
                 return val.EnableQuestAccept;
             }
-            return EnableQuestAccept;
+            return MainConfig.EnableQuestAccept;
         }
         public bool GetEnableQuestComplete()
         {
@@ -40,7 +34,7 @@ namespace TextAdvance
             {
                 return val.EnableQuestComplete;
             }
-            return EnableQuestComplete;
+            return MainConfig.EnableQuestComplete;
         }
         public bool GetEnableRequestHandin()
         {
@@ -48,7 +42,7 @@ namespace TextAdvance
             {
                 return val.EnableRequestHandin;
             }
-            return EnableRequestHandin;
+            return MainConfig.EnableRequestHandin;
         }
         public bool GetEnableCutsceneEsc()
         {
@@ -56,7 +50,7 @@ namespace TextAdvance
             {
                 return val.EnableCutsceneEsc;
             }
-            return EnableCutsceneEsc;
+            return MainConfig.EnableCutsceneEsc;
         }
         public bool GetEnableCutsceneSkipConfirm()
         {
@@ -64,7 +58,7 @@ namespace TextAdvance
             {
                 return val.EnableCutsceneSkipConfirm;
             }
-            return EnableCutsceneSkipConfirm;
+            return MainConfig.EnableCutsceneSkipConfirm;
         }
         public bool GetEnableTalkSkip()
         {
@@ -72,7 +66,7 @@ namespace TextAdvance
             {
                 return val.EnableTalkSkip;
             }
-            return EnableTalkSkip;
+            return MainConfig.EnableTalkSkip;
         }
     }
 
