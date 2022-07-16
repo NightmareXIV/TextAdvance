@@ -1,4 +1,5 @@
-# TextAdvance [beta]
+# TextAdvance
+# [⚠ For installation instructions please click here. ⚠](https://github.com/Eternita-S/MyDalamudPlugins#installation)
 A tool to assist with questing. 
 
 <p align="center"><img src="https://raw.githubusercontent.com/Eternita-S/TextAdvance/master/TextAdvance/res/icon.png"></p>
