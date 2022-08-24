@@ -56,6 +56,7 @@ namespace TextAdvance
             Svc.ClientState.Login -= Login;
             Svc.Commands.RemoveHandler("/at");
             ECommons.ECommons.Dispose();
+            P = null;
         }
 
         public TextAdvance(DalamudPluginInterface pluginInterface)
@@ -148,8 +149,6 @@ namespace TextAdvance
             return P.config.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var cfg) && cfg.IsEnabled();
         }
 
-
-        [HandleProcessCorruptedStateExceptions]
         private void Tick(Framework framework)
         {
             try
@@ -182,7 +181,7 @@ namespace TextAdvance
                             else
                             {
                                 var selectStrAddon = (AtkUnitBase*)addon;
-                                if (!selectStrAddon->IsVisible) skip = false;
+                                if (!IsAddonReady(selectStrAddon)) skip = false;
                             }
                             if (InCutscene)
                             {
@@ -267,7 +266,7 @@ namespace TextAdvance
             if (Environment.TickCount64 < requestAllow) return;
             var request = (AddonRequest*)addon;
             var questAddon = (AtkUnitBase*)addon;
-            if (!questAddon->IsVisible) return;
+            if (!IsAddonReady(questAddon)) return;
             if (questAddon->UldManager.NodeListCount <= 16) return;
             var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[4];
             if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
@@ -289,19 +288,15 @@ namespace TextAdvance
             }
         }
 
-        uint ticksQuestCompleteVisible = 0;
         void TickQuestComplete()
         {
             var addon = Svc.GameGui.GetAddonByName("JournalResult", 1);
             if (addon == IntPtr.Zero)
             {
-                ticksQuestCompleteVisible = 0;
                 return;
             }
-            ticksQuestCompleteVisible++;
-            if (ticksQuestCompleteVisible < 5) return;
             var questAddon = (AtkUnitBase*)addon;
-            if (!questAddon->IsVisible) return;
+            if (!IsAddonReady(questAddon)) return;
             if (questAddon->UldManager.NodeListCount <= 4) return;
             var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[4];
             if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
@@ -317,19 +312,15 @@ namespace TextAdvance
             }, 500);
         }
 
-        uint ticksQuestAcceptVisible = 0;
         void TickQuestAccept()
         {
             var addon = Svc.GameGui.GetAddonByName("JournalAccept", 1);
             if (addon == IntPtr.Zero)
             {
-                ticksQuestAcceptVisible = 0;
                 return;
             }
-            ticksQuestAcceptVisible++;
-            if (ticksQuestAcceptVisible < 5) return;
             var questAddon = (AtkUnitBase*)addon;
-            if (!questAddon->IsVisible) return;
+            if (!IsAddonReady(questAddon)) return;
             if (questAddon->UldManager.NodeListCount <= 6) return;
             var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[6];
             if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
@@ -349,9 +340,7 @@ namespace TextAdvance
             var addon = Svc.GameGui.GetAddonByName("Talk", 1);
             if (addon == IntPtr.Zero) return;
             var talkAddon = (AtkUnitBase*)addon;
-            if (!talkAddon->IsVisible/* || !talkAddon->UldManager.NodeList[14]->IsVisible*/) return;
-            //var imageNode = (AtkImageNode*)talkAddon->UldManager.NodeList[14];
-            //if (imageNode->PartsList->Parts[imageNode->PartId].U != 288) return;
+            if (!IsAddonReady(talkAddon)) return;
             ClickTalk.Using(addon).Click();
         }
 
@@ -360,9 +349,8 @@ namespace TextAdvance
             var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
             if (addon == IntPtr.Zero) return;
             var selectStrAddon = (AtkUnitBase*)addon;
-            if (!selectStrAddon->IsVisible)
+            if (!IsAddonReady(selectStrAddon))
             {
-                //NextClick = Environment.TickCount + 500;
                 return;
             }
             if (selectStrAddon->UldManager.NodeListCount <= 3) return;

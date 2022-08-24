@@ -6,6 +6,6 @@
 	"Description": "Quest speedrunning assistance tool. Automatically skips subtitle boxes and confirms cutscene skipping",
 	"ApplicableVersion": "any",
 	"RepoUrl": "https://github.com/Eternita-S/TextAdvance",
-	"DalamudApiLevel": 6,
+	"DalamudApiLevel": 7,
 	"LoadPriority": 0
 }
