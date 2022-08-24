@@ -2,7 +2,7 @@
 # [⚠ For installation instructions please click here. ⚠](https://github.com/Eternita-S/MyDalamudPlugins#installation)
 A tool to assist with questing. 
 
-<p align="center"><img src="https://raw.githubusercontent.com/Eternita-S/TextAdvance/master/TextAdvance/res/icon.png"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Eternita-S/MyDalamudPlugins/main/TextAdvance/icon.png"></p>
 
 **Note: only works with english, deutch and chinese clients currently. If you want support for other language, please proceed into Issues and provide me some information, and I will add the support.**
 

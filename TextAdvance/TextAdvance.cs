@@ -37,7 +37,7 @@ namespace TextAdvance
         internal bool Enabled = false;
         bool CanPressEsc = false;
         static string[] AcceptStr = { "Accept", "接受", "Annehmen", "Accepter", "受注" };
-        static string[] SkipCutsceneStr = { "Skip cutscene?", "要跳过这段过场动画吗？", "Videosequenz überspringen?", "Passer la scène cinématique ?", "このカットシーンをスキップしますか？" };
+        static string[] SkipCutsceneStr = { "Skip cutscene?", "要跳过这段过场动画吗？", "要跳過這段過場動畫嗎？", "Videosequenz überspringen?", "Passer la scène cinématique ?", "このカットシーンをスキップしますか？" };
         static string[] YesStr = { "Yes.", "是", "Ja", "Oui", "はい" };
         static string[] CompleteStr = { "Complete", "完成", "Abschließen", "Accepter", "コンプリート" };
         //static string[] HandOverStr = { "Hand Over" };
