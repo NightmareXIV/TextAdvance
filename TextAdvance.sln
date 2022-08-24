@@ -9,10 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommons", "..\ECommons\ECo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClickLib", "ClickLib\ClickLib\ClickLib.csproj", "{3B140223-A29E-435F-885E-503C01A33477}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FFXIVClientStructs", "FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj", "{D0614CD1-F2DE-443E-866F-0E8AC0FE7E79}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FFXIVClientStructs.Generators", "FFXIVClientStructs\FFXIVClientStructs.Generators\FFXIVClientStructs.Generators.csproj", "{DAE5C093-28F8-4378-9609-A44E6F8E4A76}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,22 +41,6 @@ Global
 		{3B140223-A29E-435F-885E-503C01A33477}.Release|Any CPU.Build.0 = Release|x64
 		{3B140223-A29E-435F-885E-503C01A33477}.Release|x64.ActiveCfg = Release|x64
 		{3B140223-A29E-435F-885E-503C01A33477}.Release|x64.Build.0 = Release|x64
-		{D0614CD1-F2DE-443E-866F-0E8AC0FE7E79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0614CD1-F2DE-443E-866F-0E8AC0FE7E79}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0614CD1-F2DE-443E-866F-0E8AC0FE7E79}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D0614CD1-F2DE-443E-866F-0E8AC0FE7E79}.Debug|x64.Build.0 = Debug|Any CPU
-		{D0614CD1-F2DE-443E-866F-0E8AC0FE7E79}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0614CD1-F2DE-443E-866F-0E8AC0FE7E79}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0614CD1-F2DE-443E-866F-0E8AC0FE7E79}.Release|x64.ActiveCfg = Release|Any CPU
-		{D0614CD1-F2DE-443E-866F-0E8AC0FE7E79}.Release|x64.Build.0 = Release|Any CPU
-		{DAE5C093-28F8-4378-9609-A44E6F8E4A76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DAE5C093-28F8-4378-9609-A44E6F8E4A76}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DAE5C093-28F8-4378-9609-A44E6F8E4A76}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{DAE5C093-28F8-4378-9609-A44E6F8E4A76}.Debug|x64.Build.0 = Debug|Any CPU
-		{DAE5C093-28F8-4378-9609-A44E6F8E4A76}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DAE5C093-28F8-4378-9609-A44E6F8E4A76}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DAE5C093-28F8-4378-9609-A44E6F8E4A76}.Release|x64.ActiveCfg = Release|Any CPU
-		{DAE5C093-28F8-4378-9609-A44E6F8E4A76}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

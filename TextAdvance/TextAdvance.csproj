@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>Eternita</Authors>
-		<Version>3.0.0.3</Version>
+		<Version>3.0.0.4</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -41,7 +41,6 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\ECommons\ECommons\ECommons.csproj" />
 	  <ProjectReference Include="..\ClickLib\ClickLib\ClickLib.csproj" />
-	  <ProjectReference Include="..\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -65,10 +64,10 @@
 			<HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-		<!--<Reference Include="FFXIVClientStructs">
+		<Reference Include="FFXIVClientStructs">
 			<HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
 			<Private>False</Private>
-		</Reference>-->
+		</Reference>
 	</ItemGroup>
 
 	<ItemGroup>
