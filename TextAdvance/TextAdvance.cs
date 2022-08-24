@@ -10,6 +10,7 @@ using Dalamud.Game.Internal;
 using Dalamud.Interface.Internal.Notifications;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
+using Dalamud.Memory;
 using Dalamud.Plugin;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -65,6 +66,7 @@ namespace TextAdvance
             ECommons.ECommons.Init(pluginInterface);
             new TickScheduler(delegate
             {
+                FFXIVClientStructs.Resolver.Initialize();
                 config = Svc.PluginInterface.GetPluginConfig() as Config ?? new Config();
                 Svc.Framework.Update += Tick;
                 Svc.ClientState.Logout += Logout;
@@ -348,20 +350,13 @@ namespace TextAdvance
         {
             var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
             if (addon == IntPtr.Zero) return;
-            var selectStrAddon = (AtkUnitBase*)addon;
-            if (!IsAddonReady(selectStrAddon))
+            var selectStrAddon = (AddonSelectString*)addon;
+            if (!IsAddonReady(&selectStrAddon->AtkUnitBase))
             {
                 return;
             }
-            if (selectStrAddon->UldManager.NodeListCount <= 3) return;
-            var a = (AtkComponentNode*)selectStrAddon->UldManager.NodeList[2];
-            var txt = (AtkTextNode*)selectStrAddon->UldManager.NodeList[3];
-            if (!SkipCutsceneStr.Contains(Marshal.PtrToStringUTF8((IntPtr)txt->NodeText.StringPtr))) return;
-            if (a->Component->UldManager.NodeListCount <= 2) return;
-            var b = (AtkComponentNode*)a->Component->UldManager.NodeList[1];
-            if (b->Component->UldManager.NodeListCount <= 3) return;
-            var c = (AtkTextNode*)b->Component->UldManager.NodeList[3];
-            if (!YesStr.Contains(Marshal.PtrToStringUTF8((IntPtr)c->NodeText.StringPtr))) return;
+            PluginLog.Debug($"1: {selectStrAddon->AtkUnitBase.UldManager.NodeList[3]->GetAsAtkTextNode()->NodeText.ToString()}");
+            if (!SkipCutsceneStr.Contains(selectStrAddon->AtkUnitBase.UldManager.NodeList[3]->GetAsAtkTextNode()->NodeText.ToString())) return;
             ThrottleManager.Throttle(delegate
             {
                 PluginLog.Debug("Selecting cutscene skipping");

@@ -6,7 +6,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>net5.0-windows</TargetFramework>
+		<TargetFramework>net6.0-windows</TargetFramework>
 		<Platforms>x64</Platforms>
 		<LangVersion>latest</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -39,8 +39,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\ClickLib\ClickLib\ClickLib.csproj" />
 	  <ProjectReference Include="..\..\ECommons\ECommons\ECommons.csproj" />
+	  <ProjectReference Include="..\ClickLib\ClickLib\ClickLib.csproj" />
+	  <ProjectReference Include="..\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -64,10 +65,10 @@
 			<HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
-		<Reference Include="FFXIVClientStructs">
+		<!--<Reference Include="FFXIVClientStructs">
 			<HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
 			<Private>False</Private>
-		</Reference>
+		</Reference>-->
 	</ItemGroup>
 
 	<ItemGroup>

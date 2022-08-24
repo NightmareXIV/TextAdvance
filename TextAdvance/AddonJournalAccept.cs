@@ -1,4 +1,5 @@
 ﻿using ClickLib;
+using ClickLib.Bases;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
@@ -8,14 +9,12 @@ using System.Threading.Tasks;
 
 namespace TextAdvance
 {
-    public sealed unsafe class ClickJournalAccept : ClickAddonBase<AtkUnitBase>
+    public sealed unsafe class ClickJournalAccept : ClickBase<ClickJournalAccept, AtkUnitBase>
     {
         public ClickJournalAccept(IntPtr addon = default)
-            : base(addon)
+            : base("JournalAccept", addon)
         {
         }
-
-        protected override string AddonName => "JournalAccept";
 
         public static implicit operator ClickJournalAccept(IntPtr addon) => new(addon);
 
@@ -23,7 +22,7 @@ namespace TextAdvance
 
         public void Accept(AtkComponentButton* acceptButton)
         {
-            ClickAddonButton(this.Addon, acceptButton, 1);
+            ClickAddonButton(acceptButton, 1);
         }
     }
 }
