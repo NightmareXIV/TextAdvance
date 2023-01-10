@@ -56,17 +56,16 @@ namespace TextAdvance
             Svc.ClientState.Logout -= Logout;
             Svc.ClientState.Login -= Login;
             Svc.Commands.RemoveHandler("/at");
-            ECommons.ECommons.Dispose();
+            ECommonsMain.Dispose();
             P = null;
         }
 
         public TextAdvance(DalamudPluginInterface pluginInterface)
         {
             P = this;
-            ECommons.ECommons.Init(pluginInterface);
+            ECommonsMain.Init(pluginInterface, this);
             new TickScheduler(delegate
             {
-                FFXIVClientStructs.Resolver.Initialize();
                 config = Svc.PluginInterface.GetPluginConfig() as Config ?? new Config();
                 Svc.Framework.Update += Tick;
                 Svc.ClientState.Logout += Logout;
