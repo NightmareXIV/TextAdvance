@@ -1,11 +1,11 @@
 ﻿{
-	"Author": "Eternita",
+	"Author": "NightmareXIV",
 	"Name": "TextAdvance",
 	"InternalName": "TextAdvance",
 	"AssemblyVersion": "9.0.0.0",
 	"Description": "Quest speedrunning assistance tool. Automatically skips subtitle boxes and confirms cutscene skipping",
 	"ApplicableVersion": "any",
-	"RepoUrl": "https://github.com/Eternita-S/TextAdvance",
+	"RepoUrl": "https://github.com/NightmareXIV/TextAdvance",
 	"DalamudApiLevel": 8,
 	"LoadPriority": 0
 }
