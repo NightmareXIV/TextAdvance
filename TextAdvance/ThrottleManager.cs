@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace TextAdvance;
 
-namespace TextAdvance
+internal static class ThrottleManager
 {
-    internal static class ThrottleManager
+    private static long LastTime = 0;
+    public static bool Throttle(Action a, long delay = 500)
     {
-        private static long LastTime = 0;
-        public static bool Throttle(Action a, long delay = 500)
+        if(Environment.TickCount64 > LastTime + delay)
         {
-            if(Environment.TickCount64 > LastTime + delay)
-            {
-                LastTime = Environment.TickCount64;
-                a();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            LastTime = Environment.TickCount64;
+            a();
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 }

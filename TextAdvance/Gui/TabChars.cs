@@ -1,45 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace TextAdvance.Gui;
 
-namespace TextAdvance.Gui
+internal static class TabChars
 {
-    internal static class TabChars
+    static string Name = "";
+    internal static void Draw()
     {
-        static string Name = "";
-        internal static void Draw()
-        {
 
-            ImGui.Text("Auto-enable plugin when you log in with characters:");
-            string dele = null;
-            foreach (var s in P.config.AutoEnableNames)
-            {
-                ImGui.Text(s);
-                ImGui.SameLine();
-                if (ImGui.SmallButton("Delete##" + s))
-                {
-                    dele = s;
-                }
-            }
-            if (ImGui.Button("Add current character") && Svc.ClientState.LocalPlayer != null)
-            {
-                P.config.AutoEnableNames.Add(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.GameData.Name);
-            }
+        ImGui.Text("Auto-enable plugin when you log in with characters:");
+        string dele = null;
+        foreach (var s in P.config.AutoEnableNames)
+        {
+            ImGui.Text(s);
             ImGui.SameLine();
-            ImGui.SetNextItemWidth(200f);
-            ImGui.InputTextWithHint("##charname", "Character name", ref Name, 50);
-            ImGui.SameLine();
-            if (ImGui.Button("Add"))
+            if (ImGui.SmallButton("Delete##" + s))
             {
-                P.config.AutoEnableNames.Add(Name);
-                Name = "";
+                dele = s;
             }
-            if (dele != null)
-            {
-                P.config.AutoEnableNames.Remove(dele);
-            }
+        }
+        if (ImGui.Button("Add current character") && Svc.ClientState.LocalPlayer != null)
+        {
+            P.config.AutoEnableNames.Add(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.GameData.Name);
+        }
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(200f);
+        ImGui.InputTextWithHint("##charname", "Character name", ref Name, 50);
+        ImGui.SameLine();
+        if (ImGui.Button("Add"))
+        {
+            P.config.AutoEnableNames.Add(Name);
+            Name = "";
+        }
+        if (dele != null)
+        {
+            P.config.AutoEnableNames.Remove(dele);
         }
     }
 }
