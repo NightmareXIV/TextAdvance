@@ -87,10 +87,10 @@ namespace TextAdvance
                 }
                 overlay = new();
                 configGui.ws.AddWindow(overlay);
-                TerritoryNames = Svc.Data.GetExcelSheet<TerritoryType>().Where(x => x.PlaceName.Value.Name.ToString().Length > 0)
+                TerritoryNames = Svc.Data.GetExcelSheet<TerritoryType>().Where(x => x.PlaceName?.Value?.Name?.ToString().Length > 0)
                 .ToDictionary(
                     x => x.RowId, 
-                    x => $"{x.RowId} | {x.PlaceName.Value.Name}{(x.ContentFinderCondition.Value.Name.ToString().Length > 0 ? $" ({x.ContentFinderCondition.Value.Name})" : string.Empty)}");
+                    x => $"{x.RowId} | {x.PlaceName?.Value?.Name}{(x.ContentFinderCondition?.Value?.Name?.ToString().Length > 0 ? $" ({x.ContentFinderCondition?.Value?.Name})" : string.Empty)}");
             });
         }
 
