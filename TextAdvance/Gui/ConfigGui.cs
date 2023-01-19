@@ -20,11 +20,11 @@ internal class ConfigGui : Window, IDisposable
 
     public override void Draw()
     {
+        KoFiButton.DrawRight();
         ImGuiEx.EzTabBar("TextAdvanceTab",
             ("General config", TabConfig.Draw, null, true),
             ("Auto-enable", TabChars.Draw, null, true),
-            ("Per area config", TabTerritory.Draw, null, true),
-            ("Contribute", Donation.DonationTabDraw, ImGuiColors.DalamudYellow, true)
+            ("Per area config", TabTerritory.Draw, null, true)
             );
     }
 

@@ -27,5 +27,10 @@ internal static class TabConfig
             ImGui.SetNextItemWidth(100f);
             ImGui.DragFloat2("Overlay offset", ref P.config.OverlayOffset);
         }
+
+        ImGui.Separator();
+        ImGuiEx.Text($"Notifications: ");
+        ImGui.Checkbox($"Disable manual plugin state change notification", ref P.config.NotifyDisableManualState);
+        ImGui.Checkbox($"Disable notification upon login if character has auto-enable on", ref P.config.NotifyDisableOnLogin);
     }
 }

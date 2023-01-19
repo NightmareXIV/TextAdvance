@@ -116,8 +116,11 @@ unsafe class TextAdvance : IDalamudPlugin
         else
         {
             Enabled = arguments.EqualsIgnoreCaseAny("enable", "e", "yes", "y") || (!arguments.EqualsIgnoreCaseAny("disable", "d", "no", "n") && !Enabled);
-            Svc.Toasts.ShowQuest("Auto advance " + (Enabled ? "globally enabled" : "disabled (except custom territories)"),
-                new QuestToastOptions() { PlaySound = true, DisplayCheckmark = true });
+            if (!P.config.NotifyDisableManualState)
+            {
+                Svc.Toasts.ShowQuest("Auto advance " + (Enabled ? "globally enabled" : "disabled (except custom territories)"),
+                    new QuestToastOptions() { PlaySound = true, DisplayCheckmark = true });
+            }
         }
     }
 
@@ -141,8 +144,11 @@ unsafe class TextAdvance : IDalamudPlugin
                 if(config.AutoEnableNames.Contains(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.GameData.Name))
                 {
                     Enabled = true;
-                    Svc.PluginInterface.UiBuilder.AddNotification("Auto text advance has been automatically enabled on this character",
-                        "TextAdvance", NotificationType.Info, 10000);
+                    if (!P.config.NotifyDisableOnLogin)
+                    {
+                        Svc.PluginInterface.UiBuilder.AddNotification("Auto text advance has been automatically enabled on this character",
+                            "TextAdvance", NotificationType.Info, 10000);
+                    }
                 }
             }
             InCutscene = Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]

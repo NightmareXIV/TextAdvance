@@ -14,6 +14,8 @@ public class Config : IPluginConfiguration
     public bool GlobalOverridesLocal = false;
     public bool EnableOverlay = true;
     public Vector2 OverlayOffset = new(0, -10);
+    public bool NotifyDisableManualState = false;
+    public bool NotifyDisableOnLogin = false;
 
     public bool GetEnableQuestAccept()
     {
