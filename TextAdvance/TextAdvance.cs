@@ -217,6 +217,7 @@ unsafe class TextAdvance : IDalamudPlugin
                     Svc.Condition[ConditionFlag.WatchingCutscene] ||
                     Svc.Condition[ConditionFlag.Mounting71] ||
                     Svc.Condition[ConditionFlag.CarryingObject] ||
+                    Svc.Condition[ConditionFlag.CarryingItem] ||
                     InCutscene))
                 {
                     if(config.GetEnableTalkSkip()) TickTalk();
