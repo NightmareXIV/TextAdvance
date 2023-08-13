@@ -29,6 +29,9 @@ unsafe class TextAdvance : IDalamudPlugin
     internal Dictionary<uint, string> TerritoryNames = new();
     Overlay overlay;
 
+    internal const string BlockListNamespace = "TextAdvance.StopRequests";
+    internal HashSet<string> BlockList;
+
     public string Name => "TextAdvance";
 
     public void Dispose()
@@ -72,6 +75,8 @@ unsafe class TextAdvance : IDalamudPlugin
             .ToDictionary(
                 x => x.RowId, 
                 x => $"{x.RowId} | {x.PlaceName?.Value?.Name}{(x.ContentFinderCondition?.Value?.Name?.ToString().Length > 0 ? $" ({x.ContentFinderCondition?.Value?.Name})" : string.Empty)}");
+            BlockList = Svc.PluginInterface.GetOrCreateData<HashSet<string>>(BlockListNamespace, () => new());
+            BlockList.Clear();
         });
     }
 
@@ -124,9 +129,9 @@ unsafe class TextAdvance : IDalamudPlugin
         }
     }
 
-    internal bool IsEnabled()
+    internal bool IsEnabled(bool pure = false)
     {
-        return Enabled || IsTerritoryEnabled();
+        return (Enabled || IsTerritoryEnabled()) && (BlockList.Count == 0 || pure);
     }
 
     internal bool IsTerritoryEnabled()

@@ -1,9 +1,19 @@
-﻿namespace TextAdvance.Gui;
+﻿using System.Drawing;
+
+namespace TextAdvance.Gui;
 
 internal static class TabConfig
 {
     internal static void Draw()
     {
+        if (P.BlockList.Count > 0)
+        {
+            ImGuiEx.TextWrapped(EColor.RedBright, $"TextAdvance is stopped by these plugins: {string.Join(",", P.BlockList)}");
+            if (ImGui.SmallButton("Remove all locks"))
+            {
+                P.BlockList.Clear();
+            }
+        }
         ImGui.Checkbox("Enable plugin (non-persistent)", ref P.Enabled);
         ImGui.Separator();
         ImGui.Text("Button to hold to temporarily disable plugin when active:");
