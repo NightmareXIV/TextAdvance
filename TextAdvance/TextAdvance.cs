@@ -80,12 +80,12 @@ unsafe class TextAdvance : IDalamudPlugin
         });
     }
 
-    private void Logout(object sender, EventArgs e)
+    private void Logout()
     {
         Enabled = false;
     }
 
-    private void Login(object sender, EventArgs e)
+    private void Login()
     {
         loggedIn = true;
         PrintNotice();
@@ -129,9 +129,11 @@ unsafe class TextAdvance : IDalamudPlugin
         }
     }
 
+    internal bool Locked => BlockList.Count != 0;
+
     internal bool IsEnabled(bool pure = false)
     {
-        return (Enabled || IsTerritoryEnabled()) && (BlockList.Count == 0 || pure);
+        return (Enabled || IsTerritoryEnabled()) && (!Locked || pure);
     }
 
     internal bool IsTerritoryEnabled()
@@ -139,7 +141,7 @@ unsafe class TextAdvance : IDalamudPlugin
         return P.config.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var cfg) && cfg.IsEnabled();
     }
 
-    private void Tick(Framework framework)
+    private void Tick(object framework)
     {
         try
         {
@@ -158,77 +160,80 @@ unsafe class TextAdvance : IDalamudPlugin
             }
             InCutscene = Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
                 || Svc.Condition[ConditionFlag.WatchingCutscene78];
-            if (!IsDisableButtonHeld() || !IsEnabled())
+            if (!Locked)
             {
-                if (IsEnabled())
+                if (!IsDisableButtonHeld() || !IsEnabled())
                 {
-                    if (config.GetEnableCutsceneEsc())
+                    if (IsEnabled())
                     {
-                        var nLoading = Svc.GameGui.GetAddonByName("NowLoading", 1);
-                        var skip = true;
-                        var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
-                        if (addon == IntPtr.Zero)
+                        if (config.GetEnableCutsceneEsc())
                         {
-                            skip = false;
-                        }
-                        else
-                        {
-                            var selectStrAddon = (AtkUnitBase*)addon;
-                            if (!IsAddonReady(selectStrAddon)) skip = false;
-                        }
-                        if (InCutscene)
-                        {
-                            if (!skip)
+                            var nLoading = Svc.GameGui.GetAddonByName("NowLoading", 1);
+                            var skip = true;
+                            var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
+                            if (addon == IntPtr.Zero)
                             {
-                                if (nLoading != IntPtr.Zero)
+                                skip = false;
+                            }
+                            else
+                            {
+                                var selectStrAddon = (AtkUnitBase*)addon;
+                                if (!IsAddonReady(selectStrAddon)) skip = false;
+                            }
+                            if (InCutscene)
+                            {
+                                if (!skip)
                                 {
-                                    var nowLoading = (AtkUnitBase*)nLoading;
-                                    if (nowLoading->IsVisible)
+                                    if (nLoading != IntPtr.Zero)
                                     {
-                                        //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading visible");
-                                    }
-                                    else
-                                    {
-                                        //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading not visible");
-                                        if (CanPressEsc && TryFindGameWindow(out var hwnd))
+                                        var nowLoading = (AtkUnitBase*)nLoading;
+                                        if (nowLoading->IsVisible)
                                         {
-                                            //getRefValue((int)VirtualKey.ESCAPE) = 3;
-                                            Keypress.SendKeycode(hwnd, Keypress.Escape);
-                                            PluginLog.Debug("Pressing Esc");
-                                            CanPressEsc = false;
+                                            //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading visible");
+                                        }
+                                        else
+                                        {
+                                            //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading not visible");
+                                            if (CanPressEsc && TryFindGameWindow(out var hwnd))
+                                            {
+                                                //getRefValue((int)VirtualKey.ESCAPE) = 3;
+                                                Keypress.SendKeycode(hwnd, Keypress.Escape);
+                                                PluginLog.Debug("Pressing Esc");
+                                                CanPressEsc = false;
+                                            }
                                         }
                                     }
                                 }
                             }
+                            else
+                            {
+                                CanPressEsc = true;
+                            }
                         }
-                        else
+                        if (config.GetEnableCutsceneSkipConfirm() && InCutscene)
                         {
-                            CanPressEsc = true;
+                            TickSelectSkip();
                         }
                     }
-                    if (config.GetEnableCutsceneSkipConfirm() && InCutscene)
+                    if ((IsEnabled() || (IsEnableButtonHeld() && Native.ApplicationIsActivated())) &&
+                        (Svc.Condition[ConditionFlag.OccupiedInQuestEvent] ||
+                        Svc.Condition[ConditionFlag.Occupied33] ||
+                        Svc.Condition[ConditionFlag.OccupiedInEvent] ||
+                        Svc.Condition[ConditionFlag.Occupied30] ||
+                        Svc.Condition[ConditionFlag.Occupied38] ||
+                        Svc.Condition[ConditionFlag.Occupied39] ||
+                        Svc.Condition[ConditionFlag.OccupiedSummoningBell] ||
+                        Svc.Condition[ConditionFlag.WatchingCutscene] ||
+                        Svc.Condition[ConditionFlag.Mounting71] ||
+                        Svc.Condition[ConditionFlag.CarryingObject] ||
+                        Svc.Condition[ConditionFlag.CarryingItem] ||
+                        InCutscene))
                     {
-                        TickSelectSkip();
+                        if (config.GetEnableTalkSkip()) TickTalk();
+                        if (config.GetEnableQuestComplete()) TickQuestComplete();
+                        if (config.GetEnableQuestAccept()) TickQuestAccept();
+                        if (config.GetEnableRequestHandin()) TickRequestComplete();
                     }
-                }
-                if ((IsEnabled() || (IsEnableButtonHeld() && Native.ApplicationIsActivated())) &&
-                    (Svc.Condition[ConditionFlag.OccupiedInQuestEvent] ||
-                    Svc.Condition[ConditionFlag.Occupied33] ||
-                    Svc.Condition[ConditionFlag.OccupiedInEvent] ||
-                    Svc.Condition[ConditionFlag.Occupied30] ||
-                    Svc.Condition[ConditionFlag.Occupied38] ||
-                    Svc.Condition[ConditionFlag.Occupied39] ||
-                    Svc.Condition[ConditionFlag.OccupiedSummoningBell] ||
-                    Svc.Condition[ConditionFlag.WatchingCutscene] ||
-                    Svc.Condition[ConditionFlag.Mounting71] ||
-                    Svc.Condition[ConditionFlag.CarryingObject] ||
-                    Svc.Condition[ConditionFlag.CarryingItem] ||
-                    InCutscene))
-                {
-                    if(config.GetEnableTalkSkip()) TickTalk();
-                    if(config.GetEnableQuestComplete()) TickQuestComplete();
-                    if(config.GetEnableQuestAccept()) TickQuestAccept();
-                    if(config.GetEnableRequestHandin()) TickRequestComplete();
                 }
             }
             WasInCutscene = InCutscene;

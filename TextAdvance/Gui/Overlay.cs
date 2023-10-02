@@ -1,4 +1,6 @@
-﻿namespace TextAdvance.Gui;
+﻿using Dalamud.Interface.Utility;
+
+namespace TextAdvance.Gui;
 
 internal class Overlay : Window
 {
