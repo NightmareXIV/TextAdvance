@@ -10,7 +10,7 @@ global using ECommons.DalamudServices;
 global using Dalamud.Interface;
 global using Dalamud.Interface.Colors;
 global using Dalamud.Interface.Windowing;
-global using Dalamud.Logging;
+global using ECommons.Logging;
 global using ECommons;
 global using static ECommons.GenericHelpers;
 global using System.Numerics;
