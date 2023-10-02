@@ -6,6 +6,5 @@
 		"Description": "",
 		"ApplicableVersion": "any",
 		"RepoUrl": "https://github.com/NightmareXIV/TextAdvance",
-		"DalamudApiLevel": 8,
 		"LoadPriority": 0
 }
