@@ -3,6 +3,7 @@ using Dalamud.Game;
 using Dalamud.Game.Command;
 using Dalamud.Game.Gui.Toast;
 using Dalamud.Interface.Internal.Notifications;
+using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets;
@@ -32,6 +33,8 @@ unsafe class TextAdvance : IDalamudPlugin
     internal const string BlockListNamespace = "TextAdvance.StopRequests";
     internal HashSet<string> BlockList;
 
+    internal CutsceneSkipper CutsceneSkipper;
+
     public string Name => "TextAdvance";
 
     public void Dispose()
@@ -40,6 +43,7 @@ unsafe class TextAdvance : IDalamudPlugin
         Svc.ClientState.Logout -= Logout;
         Svc.ClientState.Login -= Login;
         Svc.Commands.RemoveHandler("/at");
+        CutsceneSkipper.Dispose();
         ECommonsMain.Dispose();
         P = null;
     }
@@ -67,7 +71,6 @@ unsafe class TextAdvance : IDalamudPlugin
             if (Svc.ClientState.IsLoggedIn)
             {
                 loggedIn = true;
-                PrintNotice();
             }
             overlay = new();
             configGui.ws.AddWindow(overlay);
@@ -77,6 +80,7 @@ unsafe class TextAdvance : IDalamudPlugin
                 x => $"{x.RowId} | {x.PlaceName?.Value?.Name}{(x.ContentFinderCondition?.Value?.Name?.ToString().Length > 0 ? $" ({x.ContentFinderCondition?.Value?.Name})" : string.Empty)}");
             BlockList = Svc.PluginInterface.GetOrCreateData<HashSet<string>>(BlockListNamespace, () => new());
             BlockList.Clear();
+            CutsceneSkipper = new();
         });
     }
 
@@ -88,16 +92,6 @@ unsafe class TextAdvance : IDalamudPlugin
     private void Login()
     {
         loggedIn = true;
-        PrintNotice();
-    }
-
-    void PrintNotice()
-    {
-        /*
-        Svc.Chat.Print("[TextAdvance] Thank you for using TextAdvance! This plugin wasn't much tested" +
-            " in Endwalker and using it can possibly lead to game crashing. Should you be uncomfortable with it - " +
-            "please uninstall it for now (or simply don't enable) and wait some time until testing is complete.");
-        */
     }
 
     private void HandleCommand(string command, string arguments)
@@ -166,50 +160,6 @@ unsafe class TextAdvance : IDalamudPlugin
                 {
                     if (IsEnabled())
                     {
-                        if (config.GetEnableCutsceneEsc())
-                        {
-                            var nLoading = Svc.GameGui.GetAddonByName("NowLoading", 1);
-                            var skip = true;
-                            var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
-                            if (addon == IntPtr.Zero)
-                            {
-                                skip = false;
-                            }
-                            else
-                            {
-                                var selectStrAddon = (AtkUnitBase*)addon;
-                                if (!IsAddonReady(selectStrAddon)) skip = false;
-                            }
-                            if (InCutscene)
-                            {
-                                if (!skip)
-                                {
-                                    if (nLoading != IntPtr.Zero)
-                                    {
-                                        var nowLoading = (AtkUnitBase*)nLoading;
-                                        if (nowLoading->IsVisible)
-                                        {
-                                            //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading visible");
-                                        }
-                                        else
-                                        {
-                                            //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Now loading not visible");
-                                            if (CanPressEsc && TryFindGameWindow(out var hwnd))
-                                            {
-                                                //getRefValue((int)VirtualKey.ESCAPE) = 3;
-                                                Keypress.SendKeycode(hwnd, Keypress.Escape);
-                                                PluginLog.Debug("Pressing Esc");
-                                                CanPressEsc = false;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                CanPressEsc = true;
-                            }
-                        }
                         if (config.GetEnableCutsceneSkipConfirm() && InCutscene)
                         {
                             TickSelectSkip();
@@ -279,11 +229,11 @@ unsafe class TextAdvance : IDalamudPlugin
         }
         if (request->HandOverButton != null && request->HandOverButton->IsEnabled)
         {
-            ThrottleManager.Throttle(delegate
+            if(EzThrottler.Throttle("Handin"))
             {
                 PluginLog.Debug("Handing over request");
                 ClickRequest.Using(addon).HandOver();
-            }, 500);
+            }
         }
     }
 
@@ -304,11 +254,11 @@ unsafe class TextAdvance : IDalamudPlugin
         if (textComponent->AtkResNode.Color.A != 255) return;
         //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Pass");
         if(!((AddonJournalResult*)addon)->CompleteButton->IsEnabled) return;
-        ThrottleManager.Throttle(delegate
+        if(EzThrottler.Throttle("Complete"))
         {
             PluginLog.Debug("Completing quest");
             ClickJournalResult.Using(addon).Complete();
-        }, 500);
+        }
     }
 
     void TickQuestAccept()
@@ -326,12 +276,11 @@ unsafe class TextAdvance : IDalamudPlugin
         var textComponent = (AtkTextNode*)buttonNode->Component->UldManager.NodeList[2];
         if (!AcceptStr.Contains(Marshal.PtrToStringUTF8((IntPtr)textComponent->NodeText.StringPtr))) return;
         if (textComponent->AtkResNode.Color.A != 255) return;
-        //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Pass");
-        ThrottleManager.Throttle(delegate
+        if(EzThrottler.Throttle("Accept"))
         {
             PluginLog.Debug("Accepting quest");
             ClickJournalAccept.Using(addon).Accept((AtkComponentButton*)buttonNode);
-        }, 500);
+        }
     }
 
     void TickTalk()
@@ -354,14 +303,14 @@ unsafe class TextAdvance : IDalamudPlugin
         }
         PluginLog.Debug($"1: {selectStrAddon->AtkUnitBase.UldManager.NodeList[3]->GetAsAtkTextNode()->NodeText.ToString()}");
         if (!SkipCutsceneStr.Contains(selectStrAddon->AtkUnitBase.UldManager.NodeList[3]->GetAsAtkTextNode()->NodeText.ToString())) return;
-        ThrottleManager.Throttle(delegate
+        if (EzThrottler.Throttle("SkipCutsceneConfirm"))
         {
             PluginLog.Debug("Selecting cutscene skipping");
             ClickSelectString.Using(addon).SelectItem(0);
-        }, 500);
+        }
     }
 
-    bool IsDisableButtonHeld()
+    internal bool IsDisableButtonHeld()
     {
         if (config.TempDisableButton == Button.ALT && ImGui.GetIO().KeyAlt) return true;
         if (config.TempDisableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return true;
