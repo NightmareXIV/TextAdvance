@@ -8,7 +8,7 @@ A tool to assist with questing.
 
 Current functions:
 - Automatically skip quest subtitles
-- Automatically skip cutscenes (if several cutscenes are played sequentially, only first will be skipped automatically)
+- Automatically skip cutscenes
 - Automatically confirm cutscene skipping
 - Automatically accept quest 
 - Automatically confirm quest completion
