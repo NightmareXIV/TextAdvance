@@ -1,4 +1,5 @@
 ﻿using ECommons.Automation;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets;
@@ -18,7 +19,7 @@ namespace TextAdvance
         static TaskManager TaskManager => P.TaskManager;
         internal static void Tick()
         {
-            if (TryGetAddonByName<AddonRequest>("Request", out var addon))
+            if (TryGetAddonByName<AddonRequest>("Request", out var addon) && IsAddonReady((AtkUnitBase*)addon))
             {
                 for (var i = 1; i <= addon->EntryCount; i++)
                 {
@@ -65,6 +66,14 @@ namespace TextAdvance
             }
         }
 
-
+        internal static List<uint> GetRequestedItemList()
+        {
+            var ret = new List<uint>();
+            if (TryGetAddonByName<AddonRequest>("Request", out var addon) && IsAddonReady((AtkUnitBase*)addon))
+            {
+                var invman = InventoryManager.Instance();
+            }
+            return ret;
+        }
     }
 }
