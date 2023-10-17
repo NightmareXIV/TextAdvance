@@ -33,6 +33,8 @@ unsafe class TextAdvance : IDalamudPlugin
 
     internal const string BlockListNamespace = "TextAdvance.StopRequests";
     internal HashSet<string> BlockList;
+    internal TaskManager TaskManager;
+    internal WaitOverlay WaitOverlay;
 
     public string Name => "TextAdvance";
 
@@ -72,14 +74,23 @@ unsafe class TextAdvance : IDalamudPlugin
             }
             overlay = new();
             configGui.ws.AddWindow(overlay);
+            WaitOverlay = new();
+            configGui.ws.AddWindow(WaitOverlay);
+            
             TerritoryNames = Svc.Data.GetExcelSheet<TerritoryType>().Where(x => x.PlaceName?.Value?.Name?.ToString().Length > 0)
             .ToDictionary(
                 x => x.RowId, 
                 x => $"{x.RowId} | {x.PlaceName?.Value?.Name}{(x.ContentFinderCondition?.Value?.Name?.ToString().Length > 0 ? $" ({x.ContentFinderCondition?.Value?.Name})" : string.Empty)}");
             BlockList = Svc.PluginInterface.GetOrCreateData<HashSet<string>>(BlockListNamespace, () => new());
             BlockList.Clear(); 
-            AutoCutsceneSkipper.Init(() => !P.Locked && (!P.IsDisableButtonHeld() || !P.IsEnabled()) && P.IsEnabled() && P.config.GetEnableCutsceneEsc());
+            AutoCutsceneSkipper.Init(CutsceneSkipHandler);
+            TaskManager = new();
         });
+    }
+
+    bool CutsceneSkipHandler(nint ptr)
+    {
+        return !P.Locked && (!P.IsDisableButtonHeld() || !P.IsEnabled()) && P.IsEnabled() && P.config.GetEnableCutsceneEsc();
     }
 
     private void Logout()
@@ -181,6 +192,7 @@ unsafe class TextAdvance : IDalamudPlugin
                         if (config.GetEnableQuestComplete()) TickQuestComplete();
                         if (config.GetEnableQuestAccept()) TickQuestAccept();
                         if (config.GetEnableRequestHandin()) TickRequestComplete();
+                        if (config.GetEnableRequestFill()) RequestFill.Tick();
                     }
                 }
             }

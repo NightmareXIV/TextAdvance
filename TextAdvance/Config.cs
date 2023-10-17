@@ -65,6 +65,14 @@ public class Config : IPluginConfiguration
         }
         return MainConfig.EnableTalkSkip;
     }
+    public bool GetEnableRequestFill()
+    {
+        if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+        {
+            return val.EnableRequestFill;
+        }
+        return MainConfig.EnableRequestFill;
+    }
 }
 
 public enum Button
@@ -81,9 +89,10 @@ public class TerritoryConfig
     public bool EnableCutsceneEsc = true;
     public bool EnableCutsceneSkipConfirm = true;
     public bool EnableTalkSkip = true;
+    public bool EnableRequestFill = false;
 
     public bool IsEnabled()
     {
-        return EnableQuestAccept || EnableQuestComplete || EnableRequestHandin || EnableCutsceneEsc || EnableCutsceneSkipConfirm || EnableTalkSkip;
+        return EnableQuestAccept || EnableQuestComplete || EnableRequestHandin || EnableCutsceneEsc || EnableCutsceneSkipConfirm || EnableTalkSkip || EnableRequestFill;
     }
 }

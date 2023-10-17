@@ -25,7 +25,7 @@ internal class Overlay : Window
     public override void Draw()
     {
         var blocked = P.BlockList.Count != 0;
-        List<string> l = new();
+        List<string> l = [];
         var col = blocked ? ImGuiColors.DalamudRed : ImGuiColors.DalamudOrange;
         ImGuiEx.Text(col, "TextAdvance: ");
         ImGui.SameLine(0, 0);
@@ -48,6 +48,10 @@ internal class Overlay : Window
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(P.config.GetEnableRequestHandin() ? col : ImGuiColors.DalamudGrey2, "RH");
+            ImGui.SameLine(0, 0);
+            ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
+            ImGui.SameLine(0, 0);
+            ImGuiEx.Text(P.config.GetEnableRequestFill() ? col : ImGuiColors.DalamudGrey2, "RF");
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
