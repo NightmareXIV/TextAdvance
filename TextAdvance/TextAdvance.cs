@@ -3,6 +3,7 @@ using Dalamud.Game;
 using Dalamud.Game.Command;
 using Dalamud.Game.Gui.Toast;
 using Dalamud.Interface.Internal.Notifications;
+using ECommons.Automation;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -33,8 +34,6 @@ unsafe class TextAdvance : IDalamudPlugin
     internal const string BlockListNamespace = "TextAdvance.StopRequests";
     internal HashSet<string> BlockList;
 
-    internal CutsceneSkipper CutsceneSkipper;
-
     public string Name => "TextAdvance";
 
     public void Dispose()
@@ -43,7 +42,6 @@ unsafe class TextAdvance : IDalamudPlugin
         Svc.ClientState.Logout -= Logout;
         Svc.ClientState.Login -= Login;
         Svc.Commands.RemoveHandler("/at");
-        CutsceneSkipper.Dispose();
         ECommonsMain.Dispose();
         P = null;
     }
@@ -79,8 +77,8 @@ unsafe class TextAdvance : IDalamudPlugin
                 x => x.RowId, 
                 x => $"{x.RowId} | {x.PlaceName?.Value?.Name}{(x.ContentFinderCondition?.Value?.Name?.ToString().Length > 0 ? $" ({x.ContentFinderCondition?.Value?.Name})" : string.Empty)}");
             BlockList = Svc.PluginInterface.GetOrCreateData<HashSet<string>>(BlockListNamespace, () => new());
-            BlockList.Clear();
-            CutsceneSkipper = new();
+            BlockList.Clear(); 
+            AutoCutsceneSkipper.Init(() => !P.Locked && (!P.IsDisableButtonHeld() || !P.IsEnabled()) && P.IsEnabled() && P.config.GetEnableCutsceneEsc());
         });
     }
 
