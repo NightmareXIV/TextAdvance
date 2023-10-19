@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace TextAdvance.Gui;
+﻿namespace TextAdvance.Gui;
 
 internal static class TabConfig
 {

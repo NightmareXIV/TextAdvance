@@ -1,16 +1,10 @@
-﻿using ClickLib.Clicks;
-using Dalamud.Game;
-using Dalamud.Game.Command;
+﻿using Dalamud.Game.Command;
 using Dalamud.Game.Gui.Toast;
 using Dalamud.Interface.Internal.Notifications;
 using ECommons.Automation;
-using ECommons.Throttlers;
-using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets;
 using TextAdvance.Executors;
 using TextAdvance.Gui;
-using static TextAdvance.Native;
 
 namespace TextAdvance;
 
@@ -25,7 +19,7 @@ unsafe class TextAdvance : IDalamudPlugin
     internal ConfigGui configGui;
     bool loggedIn = false;
     internal static TextAdvance P;
-    internal Dictionary<uint, string> TerritoryNames = new();
+    internal Dictionary<uint, string> TerritoryNames = [];
     Overlay overlay;
 
     internal const string BlockListNamespace = "TextAdvance.StopRequests";

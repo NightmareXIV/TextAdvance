@@ -6,11 +6,11 @@ namespace TextAdvance;
 public class Config : IPluginConfiguration
 {
     public int Version { get; set; } = 2;
-    public HashSet<string> AutoEnableNames = new();
+    public HashSet<string> AutoEnableNames = [];
     public Button TempEnableButton = Button.NONE;
     public Button TempDisableButton = Button.NONE;
     public TerritoryConfig MainConfig = new();
-    public Dictionary<uint, TerritoryConfig> TerritoryConditions = new();
+    public Dictionary<uint, TerritoryConfig> TerritoryConditions = [];
     public bool GlobalOverridesLocal = false;
     public bool EnableOverlay = true;
     public Vector2 OverlayOffset = new(0, -10);
