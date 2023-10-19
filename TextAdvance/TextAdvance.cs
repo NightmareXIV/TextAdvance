@@ -8,6 +8,7 @@ using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets;
+using TextAdvance.Executors;
 using TextAdvance.Gui;
 using static TextAdvance.Native;
 
@@ -19,10 +20,6 @@ unsafe class TextAdvance : IDalamudPlugin
     internal bool WasInCutscene = false;
     internal bool Enabled = false;
     bool CanPressEsc = false;
-    static string[] AcceptStr = { "Accept", "接受", "Annehmen", "Accepter", "受注" };
-    static string[] SkipCutsceneStr = { "Skip cutscene?", "要跳过这段过场动画吗？", "要跳過這段過場動畫嗎？", "Videosequenz überspringen?", "Passer la scène cinématique ?", "このカットシーンをスキップしますか？" };
-    static string[] YesStr = { "Yes.", "是", "Ja", "Oui", "はい" };
-    static string[] CompleteStr = { "Complete", "完成", "Abschließen", "Accepter", "コンプリート" };
     //static string[] HandOverStr = { "Hand Over" };
     internal Config config;
     internal ConfigGui configGui;
@@ -171,7 +168,7 @@ unsafe class TextAdvance : IDalamudPlugin
                     {
                         if (config.GetEnableCutsceneSkipConfirm() && InCutscene)
                         {
-                            TickSelectSkip();
+                            ExecConfirmCutsceneSkip.Tick();
                         }
                     }
                     if ((IsEnabled() || (IsEnableButtonHeld() && Native.ApplicationIsActivated())) &&
@@ -188,11 +185,11 @@ unsafe class TextAdvance : IDalamudPlugin
                         Svc.Condition[ConditionFlag.CarryingItem] ||
                         InCutscene))
                     {
-                        if (config.GetEnableTalkSkip()) TickTalk();
-                        if (config.GetEnableQuestComplete()) TickQuestComplete();
-                        if (config.GetEnableQuestAccept()) TickQuestAccept();
-                        if (config.GetEnableRequestHandin()) TickRequestComplete();
-                        if (config.GetEnableRequestFill()) RequestFill.Tick();
+                        if (config.GetEnableTalkSkip()) ExecSkipTalk.Tick();
+                        if (config.GetEnableQuestComplete()) ExecQuestComplete.Tick();
+                        if (config.GetEnableQuestAccept()) ExecQuestAccept.Tick();
+                        if (config.GetEnableRequestHandin()) ExecRequestComplete.Tick();
+                        if (config.GetEnableRequestFill()) ExecRequestFill.Tick();
                     }
                 }
             }
@@ -206,117 +203,6 @@ unsafe class TextAdvance : IDalamudPlugin
         catch (Exception e)
         {
             Svc.Chat.Print(e.Message + "" + e.StackTrace);
-        }
-    }
-
-    long requestAllow = 0;
-    void TickRequestComplete()
-    {
-        var addon = Svc.GameGui.GetAddonByName("Request", 1);
-        if (addon == IntPtr.Zero)
-        {
-            requestAllow = 0;
-            return;
-        }
-        if(requestAllow == 0)
-        {
-            requestAllow = Environment.TickCount64 + 500;
-        }
-        if (Environment.TickCount64 < requestAllow) return;
-        var request = (AddonRequest*)addon;
-        var questAddon = (AtkUnitBase*)addon;
-        if (!IsAddonReady(questAddon)) return;
-        if (questAddon->UldManager.NodeListCount <= 16) return;
-        var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[4];
-        if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
-        var textComponent = (AtkTextNode*)buttonNode->Component->UldManager.NodeList[2];
-        //if (!HandOverStr.Contains(Marshal.PtrToStringUTF8((IntPtr)textComponent->NodeText.StringPtr))) return;
-        if (textComponent->AtkResNode.Color.A != 255) return;
-        for(var i = 16; i <= 12; i--)
-        {
-            if (((AtkComponentNode*)questAddon->UldManager.NodeList[i])->AtkResNode.IsVisible
-                && ((AtkComponentNode*)questAddon->UldManager.NodeList[i - 6])->AtkResNode.IsVisible) return;
-        }
-        if (request->HandOverButton != null && request->HandOverButton->IsEnabled)
-        {
-            if(EzThrottler.Throttle("Handin"))
-            {
-                PluginLog.Debug("Handing over request");
-                ClickRequest.Using(addon).HandOver();
-            }
-        }
-    }
-
-    void TickQuestComplete()
-    {
-        var addon = Svc.GameGui.GetAddonByName("JournalResult", 1);
-        if (addon == IntPtr.Zero)
-        {
-            return;
-        }
-        var questAddon = (AtkUnitBase*)addon;
-        if (!IsAddonReady(questAddon)) return;
-        if (questAddon->UldManager.NodeListCount <= 4) return;
-        var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[4];
-        if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
-        var textComponent = (AtkTextNode*)buttonNode->Component->UldManager.NodeList[2];
-        if (!CompleteStr.Contains(Marshal.PtrToStringUTF8((IntPtr)textComponent->NodeText.StringPtr))) return;
-        if (textComponent->AtkResNode.Color.A != 255) return;
-        //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Pass");
-        if(!((AddonJournalResult*)addon)->CompleteButton->IsEnabled) return;
-        if(EzThrottler.Throttle("Complete"))
-        {
-            PluginLog.Debug("Completing quest");
-            ClickJournalResult.Using(addon).Complete();
-        }
-    }
-
-    void TickQuestAccept()
-    {
-        var addon = Svc.GameGui.GetAddonByName("JournalAccept", 1);
-        if (addon == IntPtr.Zero)
-        {
-            return;
-        }
-        var questAddon = (AtkUnitBase*)addon;
-        if (!IsAddonReady(questAddon)) return;
-        if (questAddon->UldManager.NodeListCount <= 6) return;
-        var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[6];
-        if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
-        var textComponent = (AtkTextNode*)buttonNode->Component->UldManager.NodeList[2];
-        if (!AcceptStr.Contains(Marshal.PtrToStringUTF8((IntPtr)textComponent->NodeText.StringPtr))) return;
-        if (textComponent->AtkResNode.Color.A != 255) return;
-        if(EzThrottler.Throttle("Accept"))
-        {
-            PluginLog.Debug("Accepting quest");
-            ClickJournalAccept.Using(addon).Accept((AtkComponentButton*)buttonNode);
-        }
-    }
-
-    void TickTalk()
-    {
-        var addon = Svc.GameGui.GetAddonByName("Talk", 1);
-        if (addon == IntPtr.Zero) return;
-        var talkAddon = (AtkUnitBase*)addon;
-        if (!IsAddonReady(talkAddon)) return;
-        ClickTalk.Using(addon).Click();
-    }
-
-    void TickSelectSkip()
-    {
-        var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
-        if (addon == IntPtr.Zero) return;
-        var selectStrAddon = (AddonSelectString*)addon;
-        if (!IsAddonReady(&selectStrAddon->AtkUnitBase))
-        {
-            return;
-        }
-        PluginLog.Debug($"1: {selectStrAddon->AtkUnitBase.UldManager.NodeList[3]->GetAsAtkTextNode()->NodeText.ToString()}");
-        if (!SkipCutsceneStr.Contains(selectStrAddon->AtkUnitBase.UldManager.NodeList[3]->GetAsAtkTextNode()->NodeText.ToString())) return;
-        if (EzThrottler.Throttle("SkipCutsceneConfirm"))
-        {
-            PluginLog.Debug("Selecting cutscene skipping");
-            ClickSelectString.Using(addon).SelectItem(0);
         }
     }
 

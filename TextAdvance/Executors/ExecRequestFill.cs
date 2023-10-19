@@ -9,10 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TextAdvance
+namespace TextAdvance.Executors
 {
     //by Taurenkay https://github.com/PunishXIV/PandorasBox/blob/24a4352f5b01751767c7ca7f1d4b48369be98711/PandorasBox/Features/UI/AutoSelectTurnin.cs
-    internal unsafe static class RequestFill
+    internal unsafe static class ExecRequestFill
     {
         static bool active = false;
         static List<int> SlotsFilled { get; set; } = new();
@@ -51,7 +51,7 @@ namespace TextAdvance
             if (contextMenu is null || !contextMenu->IsVisible)
             {
                 var slot = i - 1;
-                var unk = (44 * i) + (i - 1);
+                var unk = 44 * i + (i - 1);
 
                 Callback.Fire(&addon->AtkUnitBase, false, 2, slot, 0, 0);
 
