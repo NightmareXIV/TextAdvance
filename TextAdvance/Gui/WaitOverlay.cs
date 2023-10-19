@@ -22,7 +22,7 @@ internal class WaitOverlay : Window
     public override void PreDraw()
     {
         ImGui.SetNextWindowSize(ImGuiHelpers.MainViewport.Size);
-        ImGui.PushStyleColor(ImGuiCol.WindowBg, 0x00000088u.Vector4FromRGBA());
+        ImGui.PushStyleColor(ImGuiCol.WindowBg, 0x00000055u.Vector4FromRGBA());
     }
 
     public override void PostDraw()

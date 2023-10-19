@@ -62,7 +62,7 @@ internal class Overlay : Window
             ImGuiEx.Text(ImGuiColors.DalamudRed, $"paused externally");
         }
 
-        this.Position = new Vector2(ImGuiHelpers.MainViewport.Size.X / 2 - ImGui.GetWindowSize().X / 2, 0) - P.config.OverlayOffset;
+        this.Position = ImGuiHelpers.MainViewport.Pos + new Vector2(ImGuiHelpers.MainViewport.Size.X / 2 - ImGui.GetWindowSize().X / 2, 0) - P.config.OverlayOffset;
     }
 
     public override void PostDraw()
