@@ -89,7 +89,7 @@ public class TerritoryConfig
     public bool EnableCutsceneEsc = true;
     public bool EnableCutsceneSkipConfirm = true;
     public bool EnableTalkSkip = true;
-    public bool EnableRequestFill = false;
+    public bool EnableRequestFill = true;
 
     public bool IsEnabled()
     {

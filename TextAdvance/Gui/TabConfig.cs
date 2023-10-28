@@ -26,7 +26,7 @@ internal static class TabConfig
         ImGui.Checkbox("Automatic quest complete (QC)", ref P.config.MainConfig.EnableQuestComplete);
         ImGui.Checkbox("Automatic talk skip (TS)", ref P.config.MainConfig.EnableTalkSkip);
         ImGui.Checkbox("Semi-automatic request handin (RH)", ref P.config.MainConfig.EnableRequestHandin);
-        ImGui.Checkbox("Automatic request fill (RF) (beta) (NEW!)", ref P.config.MainConfig.EnableRequestFill);
+        ImGui.Checkbox("Automatic request fill (RF) (NEW!)", ref P.config.MainConfig.EnableRequestFill);
         ImGui.Checkbox("Automatic ESC press during cutscene (CS)", ref P.config.MainConfig.EnableCutsceneEsc);
         ImGui.Checkbox("Automatic cutscene skip confirmation (CC)", ref P.config.MainConfig.EnableCutsceneSkipConfirm);
         ImGui.Separator();
