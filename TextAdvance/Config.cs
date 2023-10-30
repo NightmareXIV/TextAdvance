@@ -16,6 +16,7 @@ public class Config : IPluginConfiguration
     public Vector2 OverlayOffset = new(0, -10);
     public bool NotifyDisableManualState = false;
     public bool NotifyDisableOnLogin = false;
+    public bool QTIEnabled = false;
 
     public bool GetEnableQuestAccept()
     {
@@ -73,6 +74,56 @@ public class Config : IPluginConfiguration
         }
         return MainConfig.EnableRequestFill;
     }
+
+
+    public Vector4 GetQTAQuestColor()
+    {
+        if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+        {
+            return val.QTIQuestColor;
+        }
+        return MainConfig.QTIQuestColor;
+    }
+    public bool GetQTAQuestTether()
+    {
+        if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+        {
+            return val.QTIQuestTether;
+        }
+        return MainConfig.QTIQuestTether;
+    }
+    public float GetQTAQuestThickness()
+    {
+        if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+        {
+            return val.QTIQuestThickness;
+        }
+        return MainConfig.QTIQuestThickness;
+    }
+    public bool GetQTAQuestHideWhenTargeted()
+    {
+        if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+        {
+            return val.QTIQuestHideWhenTargeted;
+        }
+        return MainConfig.QTIQuestHideWhenTargeted;
+    }
+    public bool GetQTAQuestEnabled()
+    {
+        if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+        {
+            return val.QTIQuestEnabled;
+        }
+        return MainConfig.QTIQuestEnabled;
+    }
+    public bool GetQTAlwaysEnabled()
+    {
+        if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+        {
+            return val.QTIAlwaysEnabled;
+        }
+        return MainConfig.QTIAlwaysEnabled;
+    }
 }
 
 public enum Button
@@ -90,6 +141,13 @@ public class TerritoryConfig
     public bool EnableCutsceneSkipConfirm = true;
     public bool EnableTalkSkip = true;
     public bool EnableRequestFill = true;
+
+    public bool QTIQuestEnabled = true;
+    public Vector4 QTIQuestColor = EColor.PurpleBright;
+    public bool QTIQuestTether = true;
+    public float QTIQuestThickness = 2f;
+    public bool QTIQuestHideWhenTargeted = false;
+    public bool QTIAlwaysEnabled = false;
 
     public bool IsEnabled()
     {

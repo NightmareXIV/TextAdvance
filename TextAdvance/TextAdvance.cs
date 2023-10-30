@@ -26,6 +26,7 @@ unsafe class TextAdvance : IDalamudPlugin
     internal HashSet<string> BlockList;
     internal TaskManager TaskManager;
     internal WaitOverlay WaitOverlay;
+    internal SplatoonHandler SplatoonHandler;
 
     public string Name => "TextAdvance";
 
@@ -35,6 +36,7 @@ unsafe class TextAdvance : IDalamudPlugin
         Svc.ClientState.Logout -= Logout;
         Svc.ClientState.Login -= Login;
         Svc.Commands.RemoveHandler("/at");
+        Svc.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
         ECommonsMain.Dispose();
         P = null;
     }
@@ -42,7 +44,7 @@ unsafe class TextAdvance : IDalamudPlugin
     public TextAdvance(DalamudPluginInterface pluginInterface)
     {
         P = this;
-        ECommonsMain.Init(pluginInterface, this);
+        ECommonsMain.Init(pluginInterface, this, Module.SplatoonAPI);
         new TickScheduler(delegate
         {
             config = Svc.PluginInterface.GetPluginConfig() as Config ?? new Config();
@@ -51,13 +53,13 @@ unsafe class TextAdvance : IDalamudPlugin
             Svc.ClientState.Login += Login;
             configGui = new ConfigGui(this);
             overlay = new();
-            
+            SplatoonHandler = new();
             Svc.PluginInterface.UiBuilder.OpenConfigUi += delegate { configGui.IsOpen = true; };
             Svc.Commands.AddHandler("/at", new CommandInfo(HandleCommand)
             {
                 ShowInHelp = true,
                 HelpMessage = "toggles TextAdvance plugin.\n/at y|yes|e|enable - turns on TextAdvance.\n/at n|no|d|disable - turns off TextAdvance.\n" +
-                "/at c|config|s|settings - opens TextAdvance settings."
+                "/at c|config|s|settings - opens TextAdvance settings.\n/at g - toggles visual quest target markers"
             });
             if (Svc.ClientState.IsLoggedIn)
             {
@@ -76,7 +78,13 @@ unsafe class TextAdvance : IDalamudPlugin
             BlockList.Clear(); 
             AutoCutsceneSkipper.Init(CutsceneSkipHandler);
             TaskManager = new();
+            Svc.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
         });
+    }
+
+    private void ClientState_TerritoryChanged(ushort obj)
+    {
+        SplatoonHandler.Reset();
     }
 
     bool CutsceneSkipHandler(nint ptr)
@@ -86,11 +94,13 @@ unsafe class TextAdvance : IDalamudPlugin
 
     private void Logout()
     {
+        SplatoonHandler.Reset();
         Enabled = false;
     }
 
     private void Login()
     {
+        SplatoonHandler.Reset();
         loggedIn = true;
     }
 
@@ -111,6 +121,18 @@ unsafe class TextAdvance : IDalamudPlugin
         else if (arguments.EqualsIgnoreCaseAny("s", "settings", "c", "config"))
         {
             configGui.IsOpen = true;
+        }
+        else if (arguments.EqualsIgnoreCaseAny("g", "gui"))
+        {
+            config.QTIEnabled = !config.QTIEnabled;
+            if (config.QTIEnabled)
+            {
+                Notify.Info($"Quest target indicators enabled");
+            }
+            else
+            {
+                Notify.Info($"Quest target indicators disabled");
+            }
         }
         else
         {
@@ -154,6 +176,10 @@ unsafe class TextAdvance : IDalamudPlugin
             }
             InCutscene = Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
                 || Svc.Condition[ConditionFlag.WatchingCutscene78];
+            if(config.QTIEnabled && IsEnabled() && !InCutscene)
+            {
+                SplatoonHandler.Tick();
+            }
             if (!Locked)
             {
                 if (!IsDisableButtonHeld() || !IsEnabled())

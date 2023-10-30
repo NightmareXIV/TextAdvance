@@ -59,6 +59,12 @@ internal static class TabTerritory
                 ImGui.Checkbox("Automatic request fill (RF) (NEW!)", ref settings.EnableRequestFill);
                 ImGui.Checkbox("Automatic ESC press during cutscene", ref settings.EnableCutsceneEsc);
                 ImGui.Checkbox("Automatic cutscene skip confirmation", ref settings.EnableCutsceneSkipConfirm);
+                ImGui.Separator();
+                ImGui.Checkbox($"Display quest target indicators", ref settings.QTIQuestEnabled);
+                ImGui.ColorEdit4($"Quest target indicator color", ref settings.QTIQuestColor, ImGuiColorEditFlags.NoInputs);
+                ImGui.Checkbox($"Quest target indicator tether", ref settings.QTIQuestTether);
+                ImGui.SetNextItemWidth(60f);
+                ImGui.DragFloat($"Quest target indicator thickness", ref settings.QTIQuestThickness, 0.02f, 1f, 10f);
             }
             else
             {

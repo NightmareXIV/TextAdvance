@@ -1,4 +1,6 @@
-﻿namespace TextAdvance.Gui;
+﻿using ECommons.SplatoonAPI;
+
+namespace TextAdvance.Gui;
 
 internal static class TabConfig
 {
@@ -13,6 +15,14 @@ internal static class TabConfig
             }
         }
         ImGui.Checkbox("Enable plugin (non-persistent)", ref P.Enabled);
+        ImGui.Checkbox($"Enable quest target indicators (global, persistent)", ref P.config.QTIEnabled);
+        if(P.config.QTIEnabled)
+        {
+            if (!Splatoon.IsConnected())
+            {
+                ImGuiEx.TextWrapped(EColor.PurpleBright, "You need to have Splatoon plugin installed and enabled for quest target indicators to work");
+            }
+        }
         ImGui.Separator();
         ImGui.Text("Button to hold to temporarily disable plugin when active:");
         ImGui.SetNextItemWidth(200f);
@@ -29,6 +39,12 @@ internal static class TabConfig
         ImGui.Checkbox("Automatic request fill (RF) (NEW!)", ref P.config.MainConfig.EnableRequestFill);
         ImGui.Checkbox("Automatic ESC press during cutscene (CS)", ref P.config.MainConfig.EnableCutsceneEsc);
         ImGui.Checkbox("Automatic cutscene skip confirmation (CC)", ref P.config.MainConfig.EnableCutsceneSkipConfirm);
+        ImGui.Separator();
+        ImGui.Checkbox($"Display quest target indicators", ref P.config.MainConfig.QTIQuestEnabled);
+        ImGui.ColorEdit4($"Quest target indicator color", ref P.config.MainConfig.QTIQuestColor, ImGuiColorEditFlags.NoInputs);
+        ImGui.Checkbox($"Quest target indicator tether", ref P.config.MainConfig.QTIQuestTether);
+        ImGui.SetNextItemWidth(60f);
+        ImGui.DragFloat($"Quest target indicator thickness", ref P.config.MainConfig.QTIQuestThickness, 0.02f, 1f, 10f);
         ImGui.Separator();
         ImGui.Checkbox("Enable overlay when plugin is enabled", ref P.config.EnableOverlay);
         if (P.config.EnableOverlay)
