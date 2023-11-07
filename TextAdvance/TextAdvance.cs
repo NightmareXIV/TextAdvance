@@ -2,6 +2,7 @@
 using Dalamud.Game.Gui.Toast;
 using Dalamud.Interface.Internal.Notifications;
 using ECommons.Automation;
+using ECommons.Configuration;
 using Lumina.Excel.GeneratedSheets;
 using TextAdvance.Executors;
 using TextAdvance.Gui;
@@ -27,6 +28,7 @@ unsafe class TextAdvance : IDalamudPlugin
     internal TaskManager TaskManager;
     internal WaitOverlay WaitOverlay;
     internal SplatoonHandler SplatoonHandler;
+    internal Memory Memory;
 
     public string Name => "TextAdvance";
 
@@ -37,6 +39,9 @@ unsafe class TextAdvance : IDalamudPlugin
         Svc.ClientState.Login -= Login;
         Svc.Commands.RemoveHandler("/at");
         Svc.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
+        Safe(ExecSkipTalk.Shutdown);
+        Safe(ExecPickReward.Shutdown);
+        Safe(() => Memory.Dispose());
         ECommonsMain.Dispose();
         P = null;
     }
@@ -47,7 +52,8 @@ unsafe class TextAdvance : IDalamudPlugin
         ECommonsMain.Init(pluginInterface, this, Module.SplatoonAPI);
         new TickScheduler(delegate
         {
-            config = Svc.PluginInterface.GetPluginConfig() as Config ?? new Config();
+            EzConfig.Migrate<Config>();
+            config = EzConfig.Init<Config>();
             Svc.Framework.Update += Tick;
             Svc.ClientState.Logout += Logout;
             Svc.ClientState.Login += Login;
@@ -79,6 +85,9 @@ unsafe class TextAdvance : IDalamudPlugin
             AutoCutsceneSkipper.Init(CutsceneSkipHandler);
             TaskManager = new();
             Svc.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
+            ExecSkipTalk.Init();
+            ExecPickReward.Init();
+            Memory = new();
         });
     }
 
@@ -161,7 +170,9 @@ unsafe class TextAdvance : IDalamudPlugin
     {
         try
         {
-            if(loggedIn && Svc.ClientState.LocalPlayer != null)
+            ExecSkipTalk.IsEnabled = false;
+            ExecPickReward.IsEnabled = false;
+            if (loggedIn && Svc.ClientState.LocalPlayer != null)
             {
                 loggedIn = false;
                 if(config.AutoEnableNames.Contains(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.GameData.Name))
@@ -205,11 +216,12 @@ unsafe class TextAdvance : IDalamudPlugin
                         Svc.Condition[ConditionFlag.CarryingItem] ||
                         InCutscene))
                     {
-                        if (config.GetEnableTalkSkip()) ExecSkipTalk.Tick();
+                        if (config.GetEnableTalkSkip()) ExecSkipTalk.IsEnabled = true;
                         if (config.GetEnableQuestComplete()) ExecQuestComplete.Tick();
                         if (config.GetEnableQuestAccept()) ExecQuestAccept.Tick();
                         if (config.GetEnableRequestHandin()) ExecRequestComplete.Tick();
                         if (config.GetEnableRequestFill()) ExecRequestFill.Tick();
+                        if (config.GetEnableRewardPick()) ExecPickReward.IsEnabled = true;
                     }
                 }
             }

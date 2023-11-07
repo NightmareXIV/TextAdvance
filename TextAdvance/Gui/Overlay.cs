@@ -39,6 +39,10 @@ internal class Overlay : Window
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
+            ImGuiEx.Text(P.config.GetEnableRewardPick() ? col : ImGuiColors.DalamudGrey2, "RP");
+            ImGui.SameLine(0, 0);
+            ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
+            ImGui.SameLine(0, 0);
             ImGuiEx.Text(P.config.GetEnableCutsceneEsc() ? col : ImGuiColors.DalamudGrey2, "CS");
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");

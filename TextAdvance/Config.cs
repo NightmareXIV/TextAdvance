@@ -1,9 +1,10 @@
 ﻿using Dalamud.Configuration;
+using ECommons.Configuration;
 
 namespace TextAdvance;
 
 [Serializable]
-public class Config : IPluginConfiguration
+public class Config : IEzConfig
 {
     public int Version { get; set; } = 2;
     public HashSet<string> AutoEnableNames = [];
@@ -17,6 +18,7 @@ public class Config : IPluginConfiguration
     public bool NotifyDisableManualState = false;
     public bool NotifyDisableOnLogin = false;
     public bool QTIEnabled = false;
+    public List<PickRewardMethod> PickRewardOrder = [PickRewardMethod.Gear_coffer, PickRewardMethod.Highest_vendor_value, PickRewardMethod.Gil_sacks, PickRewardMethod.Suitable_item_for_current_job];
 
     public bool GetEnableQuestAccept()
     {
@@ -124,6 +126,14 @@ public class Config : IPluginConfiguration
         }
         return MainConfig.QTIAlwaysEnabled;
     }
+    public bool GetEnableRewardPick()
+    {
+        if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+        {
+            return val.EnableRewardPick;
+        }
+        return MainConfig.EnableRewardPick;
+    }
 }
 
 public enum Button
@@ -136,6 +146,7 @@ public class TerritoryConfig
 {
     public bool EnableQuestAccept = true;
     public bool EnableQuestComplete = true;
+    public bool EnableRewardPick = false;
     public bool EnableRequestHandin = true;
     public bool EnableCutsceneEsc = true;
     public bool EnableCutsceneSkipConfirm = true;
@@ -151,6 +162,6 @@ public class TerritoryConfig
 
     public bool IsEnabled()
     {
-        return EnableQuestAccept || EnableQuestComplete || EnableRequestHandin || EnableCutsceneEsc || EnableCutsceneSkipConfirm || EnableTalkSkip || EnableRequestFill;
+        return EnableQuestAccept || EnableQuestComplete || EnableRequestHandin || EnableCutsceneEsc || EnableCutsceneSkipConfirm || EnableTalkSkip || EnableRequestFill || EnableRewardPick;
     }
 }

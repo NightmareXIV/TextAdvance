@@ -34,6 +34,7 @@ internal static class TabConfig
         ImGui.Text("Functions: ");
         ImGui.Checkbox("Automatic quest accept (QA)", ref P.config.MainConfig.EnableQuestAccept);
         ImGui.Checkbox("Automatic quest complete (QC)", ref P.config.MainConfig.EnableQuestComplete);
+        ImGui.Checkbox("Automatic reward pick (RP) (BETA)", ref P.config.MainConfig.EnableRewardPick);
         ImGui.Checkbox("Automatic talk skip (TS)", ref P.config.MainConfig.EnableTalkSkip);
         ImGui.Checkbox("Semi-automatic request handin (RH)", ref P.config.MainConfig.EnableRequestHandin);
         ImGui.Checkbox("Automatic request fill (RF) (NEW!)", ref P.config.MainConfig.EnableRequestFill);
@@ -57,5 +58,8 @@ internal static class TabConfig
         ImGuiEx.Text($"Notifications: ");
         ImGui.Checkbox($"Disable manual plugin state change notification", ref P.config.NotifyDisableManualState);
         ImGui.Checkbox($"Disable notification upon login if character has auto-enable on", ref P.config.NotifyDisableOnLogin);
+        ImGui.Separator();
+        ImGuiEx.TextWrapped($"Reward pick item prioritization order. Please note: precision is not guaranteed. ");
+        ImGuiEx.EnumOrderer("", P.config.PickRewardOrder);
     }
 }

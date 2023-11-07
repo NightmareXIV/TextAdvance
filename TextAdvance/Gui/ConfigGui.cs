@@ -1,4 +1,5 @@
 ﻿using Dalamud.Interface.Internal.Notifications;
+using ECommons.Configuration;
 
 namespace TextAdvance.Gui;
 
@@ -36,7 +37,7 @@ internal class ConfigGui : Window, IDisposable
 
     public override void OnClose()
     {
-        Svc.PluginInterface.SavePluginConfig(p.config);
+        EzConfig.Save();
         Svc.PluginInterface.UiBuilder.AddNotification("Configuration saved", "TextAdvance", NotificationType.Success);
         base.OnClose();
     }

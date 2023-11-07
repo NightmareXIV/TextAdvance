@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Dalamud.Interface.Utility.Raii.ImRaii;
 
 namespace TextAdvance
 {
@@ -16,10 +17,10 @@ namespace TextAdvance
             public static readonly uint[] MSQ = [71201, 71202, 71203, 71204, 71205, 70983];
             public static readonly uint[] ImportantSideProgress = [71343, 71344, 71345];
             public static readonly uint[] ImportantSideInitiate = [71341, 71342];
-            public static readonly uint[] SideProgress = [71223, 71225];
+            public static readonly uint[] SideProgress = [71223, 71225, 71224];
             public static readonly uint[] SideInitiate = [];
             public static readonly string[] EventObjNameWhitelist = ["Destination", "指定地点", "Zielort"];
-            public static readonly uint[] EventObjWhitelist = [2010816];
+            public static readonly uint[] EventObjWhitelist = [2010816, 2011073, 2011072, 2011071];
         }
 
         internal List<Element> Elements = [];
