@@ -1,5 +1,7 @@
 ﻿using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using ECommons.Automation;
+using ECommons.ChatMethods;
 using ECommons.ExcelServices;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -37,7 +39,7 @@ namespace TextAdvance.Executors
                     {
                         if(Svc.Data.GetExcelSheet<Item>().GetRow(x.ItemID) == null)
                         {
-                            DuoLog.Warning($"Encountered unknown item id: {x.ItemID}. Selecting cancelled. Please report this error with logs.");
+                            DuoLog.Warning($"Encountered unknown item id: {x.ItemID}. Selecting cancelled. Please report this error with logs and screenshot.");
                             return;
                         }
                     }
@@ -47,6 +49,7 @@ namespace TextAdvance.Executors
                             if (x == PickRewardMethod.Gil_sacks && TrySelectGil(r.OptionalRewards, out var index))
                             {
                                 PluginLog.Debug($"Selecting {index} = {r.OptionalRewards[index].Name} because it's gil sack");
+                                if (!P.config.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (gil)");
                                 P.Memory.PickRewardItemUnsafe(canvas, index);
                                 return;
                             }
@@ -55,6 +58,7 @@ namespace TextAdvance.Executors
                             if (x == PickRewardMethod.Highest_vendor_value && TrySelectHighestVendorValue(r.OptionalRewards, out var index))
                             {
                                 PluginLog.Debug($"Selecting {index} = {r.OptionalRewards[index].Name} because it's highest vendor value");
+                                if (!P.config.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (highest value)");
                                 P.Memory.PickRewardItemUnsafe(canvas, index);
                                 return;
                             }
@@ -63,21 +67,33 @@ namespace TextAdvance.Executors
                             if (x == PickRewardMethod.Gear_coffer && TrySelectCoffer(r.OptionalRewards, out var index))
                             {
                                 PluginLog.Debug($"Selecting {index} = {r.OptionalRewards[index].Name} because it's coffer");
+                                if (!P.config.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (coffer)");
                                 P.Memory.PickRewardItemUnsafe(canvas, index);
                                 return;
                             }
                         }
                         {
-                            if (x == PickRewardMethod.Suitable_item_for_current_job && TrySelectCurrentJobItem(r.OptionalRewards, out var index))
+                            if (x == PickRewardMethod.Equipable_item_for_current_job && TrySelectCurrentJobItem(r.OptionalRewards, out var index))
                             {
                                 PluginLog.Debug($"Selecting {index} = {r.OptionalRewards[index].Name} because it's current job item");
+                                if (!P.config.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (equipable)");
+                                P.Memory.PickRewardItemUnsafe(canvas, index);
+                                return;
+                            }
+                        }
+                        {
+                            if (x == PickRewardMethod.High_quality_gear && TrySelectHighQualityGear(r.OptionalRewards, out var index))
+                            {
+                                PluginLog.Debug($"Selecting {index} = {r.OptionalRewards[index].Name} because it's high quality gear item");
+                                if (!P.config.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (HQ gear item)");
                                 P.Memory.PickRewardItemUnsafe(canvas, index);
                                 return;
                             }
                         }
                     }
-                    var rand = Random.Next(0, r.OptionalRewards.Count);
-                    PluginLog.Debug($"Selecting random reward: {rand}");
+                    var rand = Random.Next(r.OptionalRewards.Count);
+                    PluginLog.Debug($"Selecting random reward: {rand} - {r.OptionalRewards[rand].Name}");
+                    if(!P.config.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {rand + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[rand].Name} (random)");
                     P.Memory.PickRewardItemUnsafe(canvas, rand);
                     return;
                 }
@@ -92,14 +108,19 @@ namespace TextAdvance.Executors
 
         internal static bool TrySelectCoffer(List<ReaderJournalResult.OptionalReward> data, out int index)
         {
+            List<int> possible = [];
             for (var i = 0; i < data.Count; i++)
             {
                 var d = data[i];
                 if (CofferIcons.Contains(d.IconID))
                 {
-                    index = i;
-                    return true;
+                    possible.Add(i);
                 }
+            }
+            if (possible.Count > 0)
+            {
+                index = possible[Random.Next(possible.Count)];
+                return true;
             }
             index = default;
             return false;
@@ -139,6 +160,7 @@ namespace TextAdvance.Executors
 
         internal static bool TrySelectCurrentJobItem(List<ReaderJournalResult.OptionalReward> data, out int index)
         {
+            List<int> possible = [];
             if (Player.Available)
             {
                 for (var i = 0; i < data.Count; i++)
@@ -147,10 +169,36 @@ namespace TextAdvance.Executors
                     var item = Svc.Data.GetExcelSheet<Item>().GetRow(d.ItemID);
                     if (item != null && item.ClassJobCategory.Value != null && item.ClassJobCategory.Value.IsJobInCategory((Job)Player.Object.ClassJob.Id))
                     {
-                        index = i;
-                        return true;
+                        possible.Add(i);
                     }
                 }
+            }
+            if (possible.Count > 0)
+            {
+                index = possible[Random.Next(possible.Count)];
+                return true;
+            }
+            index = default;
+            return false;
+        }
+
+        internal static readonly uint[] GearCats = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 41, 42, 43, 84, 87, 88, 89, 96, 97, 98, 99, 105, 106, 107, 108, 109];
+        internal static bool TrySelectHighQualityGear(List<ReaderJournalResult.OptionalReward> data, out int index)
+        {
+            List<int> possible = [];
+            for (var i = 0; i < data.Count; i++)
+            {
+                var d = data[i];
+                var item = Svc.Data.GetExcelSheet<Item>().GetRow(d.ItemID);
+                if (d.IsHQ && item != null && item.ItemUICategory?.Value.RowId.EqualsAny(GearCats) == true)
+                {
+                    possible.Add(i);
+                }
+            }
+            if(possible.Count > 0 )
+            {
+                index = possible[Random.Next(possible.Count)];
+                return true;
             }
             index = default;
             return false;

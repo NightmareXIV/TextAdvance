@@ -14,7 +14,8 @@ namespace TextAdvance
 
         internal unsafe class OptionalReward(nint UnitBasePtr, int BeginOffset = 0) : AtkReader(UnitBasePtr, BeginOffset)
         {
-            internal uint ItemID => ReadUInt(0) ?? 0;
+            internal uint ItemID => (ReadUInt(0) ?? 0) % 1000000;
+            internal bool IsHQ => (ReadUInt(0) ?? 0) > 1000000;
             internal uint IconID => ReadUInt(5) ?? 0;
             internal uint Amount => ReadUInt(10) ?? 0;
             internal string Name => ReadSeString(15)?.ExtractText();

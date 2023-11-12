@@ -18,7 +18,8 @@ public class Config : IEzConfig
     public bool NotifyDisableManualState = false;
     public bool NotifyDisableOnLogin = false;
     public bool QTIEnabled = false;
-    public List<PickRewardMethod> PickRewardOrder = [PickRewardMethod.Gear_coffer, PickRewardMethod.Highest_vendor_value, PickRewardMethod.Gil_sacks, PickRewardMethod.Suitable_item_for_current_job];
+    public List<PickRewardMethod> PickRewardOrder = [PickRewardMethod.Gear_coffer, PickRewardMethod.High_quality_gear, PickRewardMethod.Highest_vendor_value, PickRewardMethod.Gil_sacks, PickRewardMethod.Equipable_item_for_current_job];
+    public bool PickRewardSilent = false;
 
     public bool GetEnableQuestAccept()
     {
@@ -146,7 +147,7 @@ public class TerritoryConfig
 {
     public bool EnableQuestAccept = true;
     public bool EnableQuestComplete = true;
-    public bool EnableRewardPick = false;
+    public bool EnableRewardPick = true;
     public bool EnableRequestHandin = true;
     public bool EnableCutsceneEsc = true;
     public bool EnableCutsceneSkipConfirm = true;
