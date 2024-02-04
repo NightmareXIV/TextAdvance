@@ -11,10 +11,12 @@ internal unsafe static class ExecRequestFill
     static bool active = false;
     static List<int> SlotsFilled { get; set; } = [];
     static TaskManager TaskManager => P.TaskManager;
+    public static bool DontFillThisWindow = false;
     internal static void Tick()
     {
         if (TryGetAddonByName<AddonRequest>("Request", out var addon) && IsAddonReady((AtkUnitBase*)addon))
         {
+            if (DontFillThisWindow) return;
             for (var i = 1; i <= addon->EntryCount; i++)
             {
                 active = true;
@@ -30,6 +32,7 @@ internal unsafe static class ExecRequestFill
         }
         else
         {
+            DontFillThisWindow = false;
             active = false;
             SlotsFilled.Clear();
             TaskManager.Abort();

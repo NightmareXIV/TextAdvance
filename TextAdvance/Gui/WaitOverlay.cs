@@ -1,4 +1,5 @@
 ﻿using Dalamud.Interface.Utility;
+using TextAdvance.Executors;
 
 namespace TextAdvance.Gui;
 
@@ -49,6 +50,7 @@ internal class WaitOverlay : Window
             if (ImGui.Button("Cancel"))
             {
                 P.TaskManager.Abort();
+                ExecRequestFill.DontFillThisWindow = true;
             }
         });
     }

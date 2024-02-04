@@ -3,6 +3,7 @@ using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using ECommons.DalamudServices.Legacy;
+using ECommons.EzHookManager;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Collections.Generic;
@@ -12,21 +13,14 @@ using System.Threading.Tasks;
 
 namespace TextAdvance
 {
-    internal unsafe class Memory : IDisposable
+    internal unsafe class Memory
     {
         delegate nint AtkComponentJournalCanvas_ReceiveEventDelegate(nint a1, ushort a2, int a3, JournalCanvasInputData* a4, void* a5);
-        [Signature("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 48 89 7C 24 ?? 41 56 48 83 EC 50 48 8B F1 0F B7 C2", DetourName =nameof(AtkComponentJournalCanvas_ReceiveEventDetour))]
-        Hook<AtkComponentJournalCanvas_ReceiveEventDelegate> AtkComponentJournalCanvas_ReceiveEventHook;
+        EzHook<AtkComponentJournalCanvas_ReceiveEventDelegate> AtkComponentJournalCanvas_ReceiveEventHook;
 
         internal Memory()
         {
-            SignatureHelper.Initialise(this);
-            //AtkComponentJournalCanvas_ReceiveEventHook?.Enable();
-        }
-
-        public void Dispose()
-        {
-            AtkComponentJournalCanvas_ReceiveEventHook?.Dispose();
+            AtkComponentJournalCanvas_ReceiveEventHook = new("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 48 89 7C 24 ?? 41 56 48 83 EC 50 48 8B F1 0F B7 C2", AtkComponentJournalCanvas_ReceiveEventDetour);
         }
 
         internal void PickRewardItemUnsafe(nint canvas, int index)

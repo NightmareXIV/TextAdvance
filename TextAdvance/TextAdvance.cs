@@ -1,8 +1,13 @@
 ﻿using Dalamud.Game.Command;
 using Dalamud.Game.Gui.Toast;
 using Dalamud.Interface.Internal.Notifications;
+using ECommons;
 using ECommons.Automation;
 using ECommons.Configuration;
+using ECommons.Events;
+using ECommons.EzEventManager;
+using ECommons.Throttlers;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets;
 using TextAdvance.Executors;
 using TextAdvance.Gui;
@@ -34,14 +39,9 @@ unsafe class TextAdvance : IDalamudPlugin
 
     public void Dispose()
     {
-        Svc.Framework.Update -= Tick;
-        Svc.ClientState.Logout -= Logout;
-        Svc.ClientState.Login -= Login;
         Svc.Commands.RemoveHandler("/at");
-        Svc.ClientState.TerritoryChanged -= ClientState_TerritoryChanged;
         Safe(ExecSkipTalk.Shutdown);
         Safe(ExecPickReward.Shutdown);
-        Safe(() => Memory.Dispose());
         ECommonsMain.Dispose();
         P = null;
     }
@@ -54,9 +54,9 @@ unsafe class TextAdvance : IDalamudPlugin
         {
             EzConfig.Migrate<Config>();
             config = EzConfig.Init<Config>();
-            Svc.Framework.Update += Tick;
-            Svc.ClientState.Logout += Logout;
-            Svc.ClientState.Login += Login;
+            new EzFrameworkUpdate(Tick);
+            new EzLogout(Logout);
+            ProperOnLogin.Register(Login);
             configGui = new ConfigGui(this);
             overlay = new();
             SplatoonHandler = new();
@@ -84,7 +84,7 @@ unsafe class TextAdvance : IDalamudPlugin
             BlockList.Clear(); 
             AutoCutsceneSkipper.Init(CutsceneSkipHandler);
             TaskManager = new();
-            Svc.ClientState.TerritoryChanged += ClientState_TerritoryChanged;
+            new EzTerritoryChanged(ClientState_TerritoryChanged);
             ExecSkipTalk.Init();
             ExecPickReward.Init();
             Memory = new();
@@ -98,6 +98,10 @@ unsafe class TextAdvance : IDalamudPlugin
 
     bool CutsceneSkipHandler(nint ptr)
     {
+        if (Svc.ClientState.TerritoryType.EqualsAny<ushort>(670))
+        {
+            if (TryGetAddonByName<AtkUnitBase>("FadeMiddle", out var addon) && addon->IsVisible) return false;
+        }
         return !P.Locked && (!P.IsDisableButtonHeld() || !P.IsEnabled()) && P.IsEnabled() && P.config.GetEnableCutsceneEsc();
     }
 
@@ -166,7 +170,7 @@ unsafe class TextAdvance : IDalamudPlugin
         return P.config.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var cfg) && cfg.IsEnabled();
     }
 
-    private void Tick(object framework)
+    private void Tick()
     {
         try
         {
