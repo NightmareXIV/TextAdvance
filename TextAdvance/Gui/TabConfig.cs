@@ -1,4 +1,5 @@
-﻿using ECommons.SplatoonAPI;
+﻿using Dalamud.Interface.Components;
+using ECommons.SplatoonAPI;
 
 namespace TextAdvance.Gui;
 
@@ -33,19 +34,21 @@ internal static class TabConfig
         ImGui.Separator();
         ImGui.Text("Functions: ");
         ImGui.Checkbox("Automatic quest accept (QA)", ref P.config.MainConfig.EnableQuestAccept);
+        ImGuiComponents.HelpMarker("Automatically accepts new quests when talking to quest initiating NPC");
         ImGui.Checkbox("Automatic quest complete (QC)", ref P.config.MainConfig.EnableQuestComplete);
-        ImGui.Checkbox("Automatic reward pick (RP) (BETA)", ref P.config.MainConfig.EnableRewardPick);
+        ImGuiComponents.HelpMarker("Automatically completes quests when talking to NPC that completes quest");
+        ImGui.Checkbox("Automatic reward pick (RP)", ref P.config.MainConfig.EnableRewardPick);
+        ImGuiComponents.HelpMarker("Automatically picks quest completion reward based on simple rules that are configured below");
         ImGui.Checkbox("Automatic talk skip (TS)", ref P.config.MainConfig.EnableTalkSkip);
-        ImGui.Checkbox("Semi-automatic request handin (RH)", ref P.config.MainConfig.EnableRequestHandin);
-        ImGui.Checkbox("Automatic request fill (RF) (NEW!)", ref P.config.MainConfig.EnableRequestFill);
+        ImGuiComponents.HelpMarker("Automatically advances most of the subtitles. Some subtitles may only be advanced manually still.");
+        ImGui.Checkbox("Auto-confirm request handins (RH)", ref P.config.MainConfig.EnableRequestHandin);
+        ImGuiComponents.HelpMarker("Automatically confirms most of item requests once filled. Some requests may not be automatically confirmed.");
+        ImGui.Checkbox("Automatic request fill (RF)", ref P.config.MainConfig.EnableRequestFill);
+        ImGuiComponents.HelpMarker("Automatically fills item request window. Some requests may not be automatically filled.");
         ImGui.Checkbox("Automatic ESC press during cutscene (CS)", ref P.config.MainConfig.EnableCutsceneEsc);
+        ImGuiComponents.HelpMarker("Automatically presses ESC key during cutscene when cutscene is skippable. Does not skips normally unskippable cutscenes.");
         ImGui.Checkbox("Automatic cutscene skip confirmation (CC)", ref P.config.MainConfig.EnableCutsceneSkipConfirm);
-        ImGui.Separator();
-        ImGui.Checkbox($"Display quest target indicators", ref P.config.MainConfig.QTIQuestEnabled);
-        ImGui.ColorEdit4($"Quest target indicator color", ref P.config.MainConfig.QTIQuestColor, ImGuiColorEditFlags.NoInputs);
-        ImGui.Checkbox($"Quest target indicator tether", ref P.config.MainConfig.QTIQuestTether);
-        ImGui.SetNextItemWidth(60f);
-        ImGui.DragFloat($"Quest target indicator thickness", ref P.config.MainConfig.QTIQuestThickness, 0.02f, 1f, 10f);
+        ImGuiComponents.HelpMarker("Automatically confirms cutscene skips upon pressing ESC.");
         ImGui.Separator();
         ImGui.Checkbox("Enable overlay when plugin is enabled", ref P.config.EnableOverlay);
         if (P.config.EnableOverlay)

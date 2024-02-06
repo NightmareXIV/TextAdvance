@@ -1,5 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Objects.Enums;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using ECommons.GameFunctions;
+using ECommons.Interop;
 using ECommons.SplatoonAPI;
 using System;
 using System.Collections.Generic;
@@ -47,6 +49,23 @@ namespace TextAdvance
                     {
                         var e = GetFreeElement(x.Position);
                         Splatoon.DisplayOnce(e);
+                    }
+                    else if(x.IsTargetable)
+                    {
+                        var display = false;
+                        if (x.ObjectKind == ObjectKind.EventObj && P.config.EObjFinder)
+                        {
+                            display = P.config.FinderKey == LimitedKeys.None || IsKeyPressed(P.config.FinderKey);
+                        }
+                        if (x.ObjectKind == ObjectKind.EventNpc && P.config.ENpcFinder)
+                        {
+                            display = P.config.FinderKey == LimitedKeys.None || IsKeyPressed(P.config.FinderKey);
+                        }
+                        if (display)
+                        {
+                            var e = GetFreeElement(x.Position);
+                            Splatoon.DisplayOnce(e);
+                        }
                     }
                 }
             }

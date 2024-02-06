@@ -1,5 +1,7 @@
 ﻿using Dalamud.Configuration;
+using Dalamud.Plugin.Ipc.Exceptions;
 using ECommons.Configuration;
+using ECommons.Interop;
 
 namespace TextAdvance;
 
@@ -20,6 +22,9 @@ public class Config : IEzConfig
     public bool QTIEnabled = false;
     public List<PickRewardMethod> PickRewardOrder = [PickRewardMethod.Gear_coffer, PickRewardMethod.High_quality_gear, PickRewardMethod.Highest_vendor_value, PickRewardMethod.Gil_sacks, PickRewardMethod.Equipable_item_for_current_job];
     public bool PickRewardSilent = false;
+    public bool ENpcFinder = false;
+    public bool EObjFinder = true;
+    public LimitedKeys FinderKey = LimitedKeys.LeftControlKey;
 
     public bool GetEnableQuestAccept()
     {
