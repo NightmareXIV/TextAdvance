@@ -25,6 +25,7 @@ public class Config : IEzConfig
     public bool ENpcFinder = false;
     public bool EObjFinder = true;
     public LimitedKeys FinderKey = LimitedKeys.LeftControlKey;
+    public bool DontAutoDisable = false;
 
     public bool GetEnableQuestAccept()
     {
@@ -140,6 +141,14 @@ public class Config : IEzConfig
         }
         return MainConfig.EnableRewardPick;
     }
+    public bool GetEnableAutoInteract()
+    {
+        if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+        {
+            return val.EnableAutoInteract;
+        }
+        return MainConfig.EnableAutoInteract;
+    }
 }
 
 public enum Button
@@ -158,6 +167,7 @@ public class TerritoryConfig
     public bool EnableCutsceneSkipConfirm = true;
     public bool EnableTalkSkip = true;
     public bool EnableRequestFill = true;
+    public bool EnableAutoInteract = false;
 
     public bool QTIQuestEnabled = true;
     public Vector4 QTIQuestColor = EColor.PurpleBright;
@@ -168,6 +178,6 @@ public class TerritoryConfig
 
     public bool IsEnabled()
     {
-        return EnableQuestAccept || EnableQuestComplete || EnableRequestHandin || EnableCutsceneEsc || EnableCutsceneSkipConfirm || EnableTalkSkip || EnableRequestFill || EnableRewardPick;
+        return EnableQuestAccept || EnableQuestComplete || EnableRequestHandin || EnableCutsceneEsc || EnableCutsceneSkipConfirm || EnableTalkSkip || EnableRequestFill || EnableRewardPick || EnableAutoInteract;
     }
 }

@@ -16,6 +16,7 @@ internal static class TabConfig
             }
         }
         ImGui.Checkbox("Enable plugin (non-persistent)", ref P.Enabled);
+        ImGui.Checkbox($"Don't auto-disable plugin on logout", ref P.config.DontAutoDisable);
         ImGui.Checkbox($"Enable quest target indicators (global, persistent)", ref P.config.QTIEnabled);
         if(P.config.QTIEnabled)
         {

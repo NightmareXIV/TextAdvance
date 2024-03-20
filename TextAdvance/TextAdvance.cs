@@ -56,7 +56,7 @@ unsafe class TextAdvance : IDalamudPlugin
             config = EzConfig.Init<Config>();
             new EzFrameworkUpdate(Tick);
             new EzLogout(Logout);
-            ProperOnLogin.Register(Login);
+            ProperOnLogin.RegisterAvailable(Login);
             configGui = new ConfigGui(this);
             overlay = new();
             SplatoonHandler = new();
@@ -108,7 +108,10 @@ unsafe class TextAdvance : IDalamudPlugin
     private void Logout()
     {
         SplatoonHandler.Reset();
-        Enabled = false;
+        if (!config.DontAutoDisable)
+        {
+            Enabled = false;
+        }
     }
 
     private void Login()
@@ -227,6 +230,7 @@ unsafe class TextAdvance : IDalamudPlugin
                         if (config.GetEnableRequestFill()) ExecRequestFill.Tick();
                         if (config.GetEnableRewardPick()) ExecPickReward.IsEnabled = true;
                     }
+                    if (config.GetEnableAutoInteract()) ExecAutoInteract.Tick();
                 }
             }
             WasInCutscene = InCutscene;
