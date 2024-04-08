@@ -1,4 +1,12 @@
-﻿using FFXIVClientStructs.FFXIV.Component.GUI;
+﻿using Dalamud.Memory;
+using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Component.GUI;
+using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.GeneratedSheets2;
+using System.Diagnostics;
+using Level = Lumina.Excel.GeneratedSheets.Level;
+using QuestLinkMarker = FFXIVClientStructs.FFXIV.Client.UI.Agent.QuestLinkMarker;
 
 namespace TextAdvance.Gui;
 
@@ -6,6 +14,19 @@ internal static unsafe class TabDebug
 {
     internal static void Draw()
     {
+        if (ImGui.CollapsingHeader("Map"))
+        {
+            ImGuiEx.Text($"Flight addr: {P.Memory.FlightAddr:X16} / {(P.Memory.FlightAddr - Process.GetCurrentProcess().MainModule.BaseAddress):X}");
+            ImGuiEx.Text($"CanFly: {P.Memory.IsFlightProhibited(P.Memory.FlightAddr)}");
+            var questLinkSpan = new ReadOnlySpan<QuestLinkMarker>(AgentMap.Instance()->MiniMapQuestLinkContainer.Markers, AgentMap.Instance()->MiniMapQuestLinkContainer.MarkerCount);
+
+            foreach(var q in questLinkSpan)
+            {
+                ImGuiEx.Text($"{q.TooltipText.ToString()}");
+                if (Svc.Data.GetExcelSheet<Level>().GetRow(q.LevelId) is not { X: var x, Y: var y, Z: var z }) continue;
+                ImGuiEx.Text($"   {x}, {y} {z}");
+            }
+        }
         if(TryGetAddonByName<AtkUnitBase>("JournalResult", out var addon) && IsAddonReady(addon))
         {
             var canvas = addon->UldManager.NodeList[7];

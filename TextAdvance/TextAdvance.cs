@@ -7,15 +7,19 @@ using ECommons.Configuration;
 using ECommons.Events;
 using ECommons.EzEventManager;
 using ECommons.Throttlers;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets;
 using TextAdvance.Executors;
 using TextAdvance.Gui;
+using TextAdvance.Navmesh;
 
 namespace TextAdvance;
 
-unsafe class TextAdvance : IDalamudPlugin
+public unsafe class TextAdvance : IDalamudPlugin
 {
+    public static Config C => P.config;
+
     internal bool InCutscene = false;
     internal bool WasInCutscene = false;
     internal bool Enabled = false;
@@ -34,6 +38,9 @@ unsafe class TextAdvance : IDalamudPlugin
     internal WaitOverlay WaitOverlay;
     internal SplatoonHandler SplatoonHandler;
     internal Memory Memory;
+    public EntityOverlay EntityOverlay;
+    public ProgressOverlay ProgressOverlay;
+    public NavmeshManager NavmeshManager;
 
     public string Name => "TextAdvance";
 
@@ -42,6 +49,7 @@ unsafe class TextAdvance : IDalamudPlugin
         Svc.Commands.RemoveHandler("/at");
         Safe(ExecSkipTalk.Shutdown);
         Safe(ExecPickReward.Shutdown);
+        Safe(() => EntityOverlay?.Dispose());
         ECommonsMain.Dispose();
         P = null;
     }
@@ -65,7 +73,8 @@ unsafe class TextAdvance : IDalamudPlugin
             {
                 ShowInHelp = true,
                 HelpMessage = "toggles TextAdvance plugin.\n/at y|yes|e|enable - turns on TextAdvance.\n/at n|no|d|disable - turns off TextAdvance.\n" +
-                "/at c|config|s|settings - opens TextAdvance settings.\n/at g - toggles visual quest target markers"
+                "/at c|config|s|settings - opens TextAdvance settings.\n/at g - toggles visual quest target markers\n" +
+                "/at mtq - move to the first available quest location, if present (requires navmesh integration to be enabled)"
             });
             if (Svc.ClientState.IsLoggedIn)
             {
@@ -83,11 +92,17 @@ unsafe class TextAdvance : IDalamudPlugin
             BlockList = Svc.PluginInterface.GetOrCreateData<HashSet<string>>(BlockListNamespace, () => new());
             BlockList.Clear(); 
             AutoCutsceneSkipper.Init(CutsceneSkipHandler);
-            TaskManager = new();
+            TaskManager = new()
+            {
+                AbortOnTimeout = true,
+            };
             new EzTerritoryChanged(ClientState_TerritoryChanged);
             ExecSkipTalk.Init();
             ExecPickReward.Init();
             Memory = new();
+            EntityOverlay = new();
+            ProgressOverlay = new();
+            NavmeshManager = new();
         });
     }
 
@@ -149,6 +164,10 @@ unsafe class TextAdvance : IDalamudPlugin
             {
                 Notify.Info($"Quest target indicators disabled");
             }
+        }
+        else if (arguments.EqualsIgnoreCaseAny("mtq"))
+        {
+            P.EntityOverlay.AutoFrame = CSFramework.Instance()->FrameCounter + 1;
         }
         else
         {

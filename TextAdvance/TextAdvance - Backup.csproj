@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>NightmareXIV</Authors>
-		<Version>3.2.0.8</Version>
+		<Version>3.2.0.4</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -69,10 +69,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EditorConfigFiles Remove="C:\VS\TextAdvance\TextAdvance\.editorconfig" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Include="C:\VS\TextAdvance\TextAdvance\.editorconfig" />
+	  <Folder Include="NewFolder\" />
 	</ItemGroup>
 </Project>

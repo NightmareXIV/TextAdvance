@@ -26,6 +26,10 @@ public class Config : IEzConfig
     public bool EObjFinder = true;
     public LimitedKeys FinderKey = LimitedKeys.LeftControlKey;
     public bool DontAutoDisable = false;
+    public bool Navmesh = false;
+    public bool NavmeshAutoInteract = false;
+    public int Mount = 0;
+    public bool EnableFlight = false;
 
     public bool GetEnableQuestAccept()
     {

@@ -12,9 +12,9 @@ using static Dalamud.Interface.Utility.Raii.ImRaii;
 
 namespace TextAdvance
 {
-    internal unsafe class SplatoonHandler
+    public unsafe class SplatoonHandler
     {
-        static class Markers
+        public static class Markers
         {
             public static readonly uint[] MSQ = [71201, 71202, 71203, 71204, 71205, 70983];
             public static readonly uint[] ImportantSideProgress = [71343, 71344, 71345];
@@ -28,16 +28,16 @@ namespace TextAdvance
         internal List<Element> Elements = [];
         int CurrentCnt = 0;
 
-        internal SplatoonHandler() 
+        internal SplatoonHandler()
         {
             Splatoon.SetOnConnect(OnConnect);
         }
 
         internal void Tick()
         {
-            if(P.config.GetQTAQuestEnabled() && Splatoon.IsConnected())
+            if (P.config.GetQTAQuestEnabled() && Splatoon.IsConnected())
             {
-                foreach(var x in Svc.Objects)
+                foreach (var x in Svc.Objects)
                 {
                     var id = x.Struct()->NamePlateIconId;
                     if (Markers.MSQ.Contains(id) || Markers.ImportantSideProgress.Contains(id) || Markers.SideProgress.Contains(id))
@@ -45,12 +45,12 @@ namespace TextAdvance
                         var e = GetFreeElement(x.Position);
                         Splatoon.DisplayOnce(e);
                     }
-                    else if (x.ObjectKind == ObjectKind.EventObj && x.IsTargetable && (Markers.EventObjWhitelist.Contains(x.DataId) || Markers.EventObjNameWhitelist.ContainsIgnoreCase(x.Name.ToString()) ) )
+                    else if (x.ObjectKind == ObjectKind.EventObj && x.IsTargetable && (Markers.EventObjWhitelist.Contains(x.DataId) || Markers.EventObjNameWhitelist.ContainsIgnoreCase(x.Name.ToString())))
                     {
                         var e = GetFreeElement(x.Position);
                         Splatoon.DisplayOnce(e);
                     }
-                    else if(x.IsTargetable)
+                    else if (x.IsTargetable)
                     {
                         var display = false;
                         if (x.ObjectKind == ObjectKind.EventObj && P.config.EObjFinder)
