@@ -14,7 +14,7 @@ public static class TabNavmesh
     {
         ImGui.Checkbox("Enabled", ref C.Navmesh);
         ImGui.Checkbox($"Auto-interact upon arrival", ref C.NavmeshAutoInteract);
-        ImGui.Checkbox($"Allow flight", ref C.EnableFlight);
+        //ImGui.Checkbox($"Allow flight", ref C.EnableFlight);
         ImGui.SetNextItemWidth(200f);
         var current = C.Mount == -1 ? "Use no mount" : (C.Mount == 0 ? "Mount roulette" : $"{Utils.GetMountName(C.Mount)}");
         if(ImGui.BeginCombo($"##mount", current))

@@ -14,6 +14,10 @@ internal static unsafe class TabDebug
 {
     internal static void Draw()
     {
+        if (ImGui.CollapsingHeader("Quests"))
+        {
+            ImGuiEx.Text($"{Utils.GetQuestArray().Print("\n")}");
+        }
         if (ImGui.CollapsingHeader("Map"))
         {
             ImGuiEx.Text($"Flight addr: {P.Memory.FlightAddr:X16} / {(P.Memory.FlightAddr - Process.GetCurrentProcess().MainModule.BaseAddress):X}");

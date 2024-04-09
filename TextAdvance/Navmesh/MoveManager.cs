@@ -17,6 +17,11 @@ public unsafe static class MoveManager
 {
     public static void EnqueueMoveAndInteract(GameObject obj, float distance)
     {
+        if (Svc.Condition[ConditionFlag.InFlight])
+        {
+            Svc.Toasts.ShowError("[TextAdvance] Flying pathfinding is not supported");
+            return;
+        }
         if (Vector3.Distance(obj.Position, Player.Object.Position) > 20f)
         {
             P.EntityOverlay.TaskManager.Enqueue(MountIfCan);
@@ -114,7 +119,7 @@ public unsafe static class MoveManager
         if (Svc.Targets.Target != null)
         {
             var t = Svc.Targets.Target;
-            if (t.IsTargetable && t.DataId == dataID && Vector3.Distance(Player.Object.Position, t.Position) < 10f && !IsOccupied() && EzThrottler.Throttle("Interact"))
+            if (t.IsTargetable && t.DataId == dataID && Vector3.Distance(Player.Object.Position, t.Position) < 10f && !IsOccupied() && Utils.ThrottleAutoInteract())
             {
                 TargetSystem.Instance()->InteractWithObject(Svc.Targets.Target.Struct(), false);
                 return true;
