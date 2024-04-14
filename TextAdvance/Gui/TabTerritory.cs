@@ -1,4 +1,6 @@
-﻿namespace TextAdvance.Gui;
+﻿using Dalamud.Interface.Components;
+
+namespace TextAdvance.Gui;
 
 internal static class TabTerritory
 {
@@ -60,6 +62,8 @@ internal static class TabTerritory
                 ImGui.Checkbox("Automatic request fill (RF) (NEW!)", ref settings.EnableRequestFill);
                 ImGui.Checkbox("Automatic ESC press during cutscene", ref settings.EnableCutsceneEsc);
                 ImGui.Checkbox("Automatic cutscene skip confirmation", ref settings.EnableCutsceneSkipConfirm);
+                ImGui.Checkbox("Automatic interaction with quest-related object (IN)", ref settings.EnableAutoInteract);
+                ImGuiComponents.HelpMarker("Automatically interacts with nearby quest-related NPCs and objects.");
                 ImGui.Separator();
                 ImGui.Checkbox($"Display quest target indicators", ref settings.QTIQuestEnabled);
                 ImGui.ColorEdit4($"Quest target indicator color", ref settings.QTIQuestColor, ImGuiColorEditFlags.NoInputs);

@@ -50,6 +50,8 @@ internal static class TabConfig
         ImGuiComponents.HelpMarker("Automatically presses ESC key during cutscene when cutscene is skippable. Does not skips normally unskippable cutscenes.");
         ImGui.Checkbox("Automatic cutscene skip confirmation (CC)", ref P.config.MainConfig.EnableCutsceneSkipConfirm);
         ImGuiComponents.HelpMarker("Automatically confirms cutscene skips upon pressing ESC.");
+        ImGui.Checkbox("Automatic interaction with quest-related object (IN)", ref P.config.MainConfig.EnableAutoInteract);
+        ImGuiComponents.HelpMarker("Automatically interacts with nearby quest-related NPCs and objects.");
         ImGui.Separator();
         ImGui.Checkbox("Enable overlay when plugin is enabled", ref P.config.EnableOverlay);
         if (P.config.EnableOverlay)

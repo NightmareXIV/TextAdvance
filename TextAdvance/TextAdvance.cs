@@ -109,6 +109,7 @@ public unsafe class TextAdvance : IDalamudPlugin
     private void ClientState_TerritoryChanged(ushort obj)
     {
         SplatoonHandler.Reset();
+        ExecAutoInteract.InteractedObjects.Clear();
     }
 
     bool CutsceneSkipHandler(nint ptr)
@@ -227,6 +228,7 @@ public unsafe class TextAdvance : IDalamudPlugin
                         {
                             ExecConfirmCutsceneSkip.Tick();
                         }
+                        if (config.GetEnableAutoInteract()) ExecAutoInteract.Tick();
                     }
                     if ((IsEnabled() || (IsEnableButtonHeld() && Native.ApplicationIsActivated())) &&
                         (Svc.Condition[ConditionFlag.OccupiedInQuestEvent] ||
@@ -249,7 +251,6 @@ public unsafe class TextAdvance : IDalamudPlugin
                         if (config.GetEnableRequestFill()) ExecRequestFill.Tick();
                         if (config.GetEnableRewardPick()) ExecPickReward.IsEnabled = true;
                     }
-                    if (config.GetEnableAutoInteract()) ExecAutoInteract.Tick();
                 }
             }
             WasInCutscene = InCutscene;

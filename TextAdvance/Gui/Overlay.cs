@@ -60,6 +60,10 @@ internal class Overlay : Window
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(P.config.GetEnableTalkSkip() ? col : ImGuiColors.DalamudGrey2, "TS");
+            ImGui.SameLine(0, 0);
+            ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
+            ImGui.SameLine(0, 0);
+            ImGuiEx.Text(P.config.GetEnableAutoInteract() ? col : ImGuiColors.DalamudGrey2, "IN");
         }
         else
         {

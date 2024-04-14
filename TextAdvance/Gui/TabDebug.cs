@@ -5,6 +5,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets;
 using Lumina.Excel.GeneratedSheets2;
 using System.Diagnostics;
+using TextAdvance.Executors;
 using Level = Lumina.Excel.GeneratedSheets.Level;
 using QuestLinkMarker = FFXIVClientStructs.FFXIV.Client.UI.Agent.QuestLinkMarker;
 
@@ -14,6 +15,11 @@ internal static unsafe class TabDebug
 {
     internal static void Draw()
     {
+        if(ImGui.CollapsingHeader("Auto interact"))
+        {
+            ImGuiEx.Text($"Target: {ExecAutoInteract.WasInteracted(Svc.Targets.Target)}");
+            ImGuiEx.Text($"Auto interacted objects: {ExecAutoInteract.InteractedObjects.Print("\n")}");
+        }
         if (ImGui.CollapsingHeader("Quests"))
         {
             ImGuiEx.Text($"{Utils.GetQuestArray().Print("\n")}");
