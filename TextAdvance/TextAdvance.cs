@@ -170,6 +170,10 @@ public unsafe class TextAdvance : IDalamudPlugin
         {
             P.EntityOverlay.AutoFrame = CSFramework.Instance()->FrameCounter + 1;
         }
+        else if (arguments.EqualsIgnoreCase("d"))
+        {
+            if (Svc.Targets.Target != null) Copy(new ObjectDescriptor(Svc.Targets.Target, true).AsCtorString());
+        }
         else
         {
             Enabled = arguments.EqualsIgnoreCaseAny("enable", "e", "yes", "y") || (!arguments.EqualsIgnoreCaseAny("disable", "d", "no", "n") && !Enabled);

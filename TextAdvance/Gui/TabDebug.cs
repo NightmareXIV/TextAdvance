@@ -15,6 +15,10 @@ internal static unsafe class TabDebug
 {
     internal static void Draw()
     {
+        if(ImGui.Button("copy target descriptor"))
+        {
+            if (Svc.Targets.Target != null) Copy(new ObjectDescriptor(Svc.Targets.Target, true).AsCtorString());
+        }
         if(ImGui.CollapsingHeader("Auto interact"))
         {
             ImGuiEx.Text($"Target: {ExecAutoInteract.WasInteracted(Svc.Targets.Target)}");
