@@ -12,10 +12,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TextAdvance.Navmesh;
-public unsafe static class MoveManager
+namespace TextAdvance.Services;
+public unsafe class MoveManager
 {
-    public static void EnqueueMoveAndInteract(GameObject obj, float distance)
+    private MoveManager() { }
+
+    public void EnqueueMoveAndInteract(GameObject obj, float distance)
     {
         if (Svc.Condition[ConditionFlag.InFlight])
         {
@@ -36,7 +38,7 @@ public unsafe static class MoveManager
         }
     }
 
-    public static bool? FlyIfCan()
+    public bool? FlyIfCan()
     {
         if (Utils.CanFly())
         {
@@ -60,7 +62,7 @@ public unsafe static class MoveManager
         return false;
     }
 
-    public static bool? MountIfCan()
+    public bool? MountIfCan()
     {
         if (Svc.Condition[ConditionFlag.Mounted])
         {
@@ -72,7 +74,7 @@ public unsafe static class MoveManager
             EzThrottler.Throttle("CheckMount", 2000, true);
         }
         if (!EzThrottler.Check("CheckMount")) return false;
-        if(ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, 9) == 0)
+        if (ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, 9) == 0)
         {
             if (EzThrottler.Throttle("SummonMount"))
             {
@@ -93,7 +95,7 @@ public unsafe static class MoveManager
         return false;
     }
 
-    public static void MoveToPosition(Vector3 pos, float distance)
+    public void MoveToPosition(Vector3 pos, float distance)
     {
         if (Vector3.Distance(Player.Object.Position, pos) > distance)
         {
@@ -101,9 +103,9 @@ public unsafe static class MoveManager
         }
     }
 
-    public static bool? WaitUntilArrival(Vector3 pos, float distance)
+    public bool? WaitUntilArrival(Vector3 pos, float distance)
     {
-        if(EzThrottler.Throttle("RequeueMoveTo", 5000))
+        if (EzThrottler.Throttle("RequeueMoveTo", 5000))
         {
             MoveToPosition(pos, distance);
         }
@@ -114,7 +116,7 @@ public unsafe static class MoveManager
         return Vector3.Distance(Player.Object.Position, pos) < distance;
     }
 
-    public static bool? InteractWithDataID(uint dataID)
+    public bool? InteractWithDataID(uint dataID)
     {
         if (Svc.Targets.Target != null)
         {

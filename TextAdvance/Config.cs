@@ -33,6 +33,7 @@ public class Config : IEzConfig
 
     public bool GetEnableQuestAccept()
     {
+        if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.Config.EnableQuestAccept;
         if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
             return val.EnableQuestAccept;
@@ -41,6 +42,7 @@ public class Config : IEzConfig
     }
     public bool GetEnableQuestComplete()
     {
+        if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.Config.EnableQuestComplete;
         if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
             return val.EnableQuestComplete;
@@ -49,6 +51,7 @@ public class Config : IEzConfig
     }
     public bool GetEnableRequestHandin()
     {
+        if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.Config.EnableRequestHandin;
         if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
             return val.EnableRequestHandin;
@@ -57,6 +60,7 @@ public class Config : IEzConfig
     }
     public bool GetEnableCutsceneEsc()
     {
+        if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.Config.EnableCutsceneEsc;
         if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
             return val.EnableCutsceneEsc;
@@ -65,6 +69,7 @@ public class Config : IEzConfig
     }
     public bool GetEnableCutsceneSkipConfirm()
     {
+        if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.Config.EnableCutsceneSkipConfirm;
         if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
             return val.EnableCutsceneSkipConfirm;
@@ -73,6 +78,7 @@ public class Config : IEzConfig
     }
     public bool GetEnableTalkSkip()
     {
+        if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.Config.EnableTalkSkip;
         if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
             return val.EnableTalkSkip;
@@ -81,6 +87,7 @@ public class Config : IEzConfig
     }
     public bool GetEnableRequestFill()
     {
+        if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.Config.EnableRequestFill;
         if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
             return val.EnableRequestFill;
@@ -139,6 +146,7 @@ public class Config : IEzConfig
     }
     public bool GetEnableRewardPick()
     {
+        if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.Config.EnableRewardPick;
         if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
             return val.EnableRewardPick;
@@ -147,6 +155,7 @@ public class Config : IEzConfig
     }
     public bool GetEnableAutoInteract()
     {
+        if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.Config.EnableAutoInteract;
         if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
         {
             return val.EnableAutoInteract;

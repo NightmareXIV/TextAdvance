@@ -3,9 +3,11 @@ using Dalamud.Game.Gui.Toast;
 using Dalamud.Interface.Internal.Notifications;
 using ECommons;
 using ECommons.Automation;
+using ECommons.Automation.LegacyTaskManager;
 using ECommons.Configuration;
 using ECommons.Events;
 using ECommons.EzEventManager;
+using ECommons.Singletons;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -13,6 +15,7 @@ using Lumina.Excel.GeneratedSheets;
 using TextAdvance.Executors;
 using TextAdvance.Gui;
 using TextAdvance.Navmesh;
+using TextAdvance.Services;
 
 namespace TextAdvance;
 
@@ -103,6 +106,7 @@ public unsafe class TextAdvance : IDalamudPlugin
             EntityOverlay = new();
             ProgressOverlay = new();
             NavmeshManager = new();
+            SingletonServiceManager.Initialize(typeof(ServiceManager));
         });
     }
 
@@ -194,6 +198,10 @@ public unsafe class TextAdvance : IDalamudPlugin
 
     internal bool IsTerritoryEnabled()
     {
+        if (S.IPCProvider.IsInExternalControl())
+        {
+            return S.IPCProvider.Config.IsEnabled();
+        }
         return P.config.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var cfg) && cfg.IsEnabled();
     }
 

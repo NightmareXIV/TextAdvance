@@ -3,6 +3,7 @@ using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Interface.Utility;
 using ECommons.Automation;
+using ECommons.Automation.LegacyTaskManager;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.Interop;
@@ -14,7 +15,7 @@ using System.Linq;
 using System.Runtime.Remoting;
 using System.Text;
 using System.Threading.Tasks;
-using TextAdvance.Navmesh;
+using TextAdvance.Services;
 using static TextAdvance.SplatoonHandler;
 
 namespace TextAdvance.Gui;

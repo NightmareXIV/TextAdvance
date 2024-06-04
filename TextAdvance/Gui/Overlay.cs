@@ -27,6 +27,10 @@ internal class Overlay : Window
         var blocked = P.BlockList.Count != 0;
         List<string> l = [];
         var col = blocked ? ImGuiColors.DalamudRed : ImGuiColors.DalamudOrange;
+        if(S.IPCProvider.IsInExternalControl() && !blocked)
+        {
+            col = EColor.GreenBright;
+        }
         ImGuiEx.Text(col, "TextAdvance: ");
         ImGui.SameLine(0, 0);
         if (!blocked || Environment.TickCount64 % 2000 > 1000)

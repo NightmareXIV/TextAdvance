@@ -19,3 +19,4 @@ global using ECommons.Schedulers;
 global using static TextAdvance.TextAdvance;
 global using Dalamud.Game.ClientState.Conditions;
 global using CSFramework = FFXIVClientStructs.FFXIV.Client.System.Framework.Framework;
+global using S = TextAdvance.Services.ServiceManager;
