@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>NightmareXIV</Authors>
-		<Version>3.2.1.4</Version>
+		<Version>3.2.1.5</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -33,6 +33,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\ClickLib\ClickLib\ClickLib.csproj" />
 	  <ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
+	  <ProjectReference Include="..\NightmareUI\NightmareUI\NightmareUI.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

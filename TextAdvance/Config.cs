@@ -29,7 +29,8 @@ public class Config : IEzConfig
     public bool Navmesh = false;
     public bool NavmeshAutoInteract = false;
     public int Mount = 0;
-    public bool VerboseChat = false;
+    public bool NavStatusChat = false;
+    public bool DisplayFunding = true;
     internal bool EnableFlight = false;
 
     public bool GetEnableQuestAccept()

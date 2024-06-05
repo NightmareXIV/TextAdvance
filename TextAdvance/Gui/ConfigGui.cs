@@ -1,5 +1,6 @@
 ﻿using Dalamud.Interface.Internal.Notifications;
 using ECommons.Configuration;
+using NightmareUI;
 
 namespace TextAdvance.Gui;
 
@@ -21,15 +22,18 @@ internal class ConfigGui : Window, IDisposable
 
     public override void Draw()
     {
-        KoFiButton.DrawRight();
-        ImGuiEx.EzTabBar("TextAdvanceTab",
-            ("General config", TabConfig.Draw, null, true),
-            ("Target indicators", TabSplatoon.Draw, null, true),
-            ("Auto-enable", TabChars.Draw, null, true),
-            ("Per area config", TabTerritory.Draw, null, true),
-            ("Navigation", TabNavmesh.Draw, null, true),
-            ("Debug", TabDebug.Draw, ImGuiColors.DalamudGrey3, true)
-            );
+        if (ImGui.BeginChild("Child", new(ImGui.GetContentRegionAvail().X, ImGui.GetContentRegionAvail().Y - ImGui.GetFrameHeightWithSpacing())))
+        {
+            ImGuiEx.EzTabBar("TextAdvanceTab",
+                ("General config", TabConfig.Draw, null, true),
+                ("Target indicators", TabSplatoon.Draw, null, true),
+                ("Auto-enable", TabChars.Draw, null, true),
+                ("Per area config", TabTerritory.Draw, null, true),
+                ("Debug", TabDebug.Draw, ImGuiColors.DalamudGrey3, true)
+                );
+        }
+        ImGui.EndChild();
+        FundingBanner.Draw(ref P.config.DisplayFunding);
     }
 
     public override void PreDraw()

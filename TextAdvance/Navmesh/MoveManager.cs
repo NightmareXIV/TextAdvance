@@ -23,7 +23,7 @@ public unsafe class MoveManager
     private void Log(string message)
     {
         PluginLog.Debug($"[MoveManager] {message}");
-        if (P.config.VerboseChat)
+        if (P.config.NavStatusChat)
         {
             ChatPrinter.PrintColored(UIColor.Pink, $"[TextAdvance] {message}");
         }
