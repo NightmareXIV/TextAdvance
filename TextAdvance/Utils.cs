@@ -1,5 +1,6 @@
 ﻿using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
+using ECommons.ExcelServices;
 using ECommons.GameFunctions;
 using ECommons.Reflection;
 using ECommons.Throttlers;
@@ -17,6 +18,23 @@ using static TextAdvance.SplatoonHandler;
 namespace TextAdvance;
 public unsafe static class Utils
 {
+    public static bool ShouldHideUI()
+    {
+        return Svc.Condition[ConditionFlag.Occupied]
+       || Svc.Condition[ConditionFlag.Occupied30]
+       || Svc.Condition[ConditionFlag.Occupied33]
+       || Svc.Condition[ConditionFlag.Occupied38]
+       || Svc.Condition[ConditionFlag.Occupied39]
+       || Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
+       || Svc.Condition[ConditionFlag.OccupiedInEvent]
+       || Svc.Condition[ConditionFlag.OccupiedInQuestEvent]
+       || Svc.Condition[ConditionFlag.OccupiedSummoningBell]
+       || Svc.Condition[ConditionFlag.WatchingCutscene]
+       || Svc.Condition[ConditionFlag.WatchingCutscene78]
+       || Svc.Condition[ConditionFlag.BetweenAreas]
+       || Svc.Condition[ConditionFlag.BetweenAreas51];
+    }
+
     public static List<Vector3> GetEligibleMapMarkerLocations()
     {
         var ret = new List<Vector3>();

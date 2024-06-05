@@ -41,7 +41,7 @@ namespace TextAdvance
 
         internal void Tick()
         {
-            if (P.config.GetQTAQuestEnabled() && Splatoon.IsConnected())
+            if (P.config.GetQTAQuestEnabled() && Splatoon.IsConnected() && !Utils.ShouldHideUI())
             {
                 foreach (var x in Svc.Objects)
                 {

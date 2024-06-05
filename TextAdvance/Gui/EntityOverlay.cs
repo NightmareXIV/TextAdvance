@@ -40,6 +40,7 @@ public unsafe sealed class EntityOverlay : IDisposable
     public void Draw()
     {
         if (!(C.Navmesh && P.NavmeshManager.IsReady())) return;
+        if (Utils.ShouldHideUI()) return;
         foreach (var x in Svc.Objects)
         {
             var id = x.Struct()->NamePlateIconId;
