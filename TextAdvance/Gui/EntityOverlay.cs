@@ -15,7 +15,7 @@ using System.Linq;
 using System.Runtime.Remoting;
 using System.Text;
 using System.Threading.Tasks;
-using TextAdvance.Services;
+using TextAdvance.Navmesh;
 using static TextAdvance.SplatoonHandler;
 
 namespace TextAdvance.Gui;
@@ -101,7 +101,7 @@ public unsafe sealed class EntityOverlay : IDisposable
         void Move()
         {
             P.EntityOverlay.TaskManager.Abort();
-            MoveManager.EnqueueMoveAndInteract(obj, 3f);
+            S.MoveManager.EnqueueMoveAndInteract(new(obj.Position, obj.DataId));
         }
     }
 }

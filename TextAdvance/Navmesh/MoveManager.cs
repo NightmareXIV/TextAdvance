@@ -3,6 +3,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Automation;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
+using ECommons.Interop;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
@@ -11,30 +12,72 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static TextAdvance.SplatoonHandler;
 
-namespace TextAdvance.Services;
+namespace TextAdvance.Navmesh;
 public unsafe class MoveManager
 {
     private MoveManager() { }
 
-    public void EnqueueMoveAndInteract(GameObject obj, float distance)
+    public void MoveToQuest()
     {
+        if (!Player.Available) return;
+        //P.EntityOverlay.AutoFrame = CSFramework.Instance()->FrameCounter + 1;
+        var obj = GetNearestMTQObject();
+        if(obj != null)
+        {
+            EnqueueMoveAndInteract(new(obj.Position, obj.DataId));
+        }
+        else
+        {
+            var markers = Utils.GetEligibleMapMarkerLocations();
+            if(markers.Count > 0)
+            {
+                var marker = markers.OrderBy(x => Vector3.Distance(x, Player.Object.Position)).First();
+                EnqueueMoveAndInteract(new(marker, 0));
+            }
+        }
+    }
+
+    private GameObject GetNearestMTQObject(Vector3? reference = null, float? maxDistance = null)
+    {
+        if (!Player.Available) return null;
+        if (!(C.Navmesh && P.NavmeshManager.IsReady())) return null;
+        reference ??= Player.Object.Position;
+        foreach (var x in Svc.Objects.OrderBy(z => Vector3.Distance(reference.Value, z.Position)))
+        {
+            if (maxDistance != null && Vector3.Distance(reference.Value, x.Position) > maxDistance) continue;
+            if (x.IsMTQ()) return x;
+        }
+        return null;
+    }
+
+    public void EnqueueMoveAndInteract(MoveData data)
+    {
+        P.EntityOverlay.TaskManager.Abort();
         if (Svc.Condition[ConditionFlag.InFlight])
         {
             Svc.Toasts.ShowError("[TextAdvance] Flying pathfinding is not supported");
             return;
         }
-        if (Vector3.Distance(obj.Position, Player.Object.Position) > 20f)
+        if (Vector3.Distance(data.Position, Player.Object.Position) > 20f)
         {
             P.EntityOverlay.TaskManager.Enqueue(MountIfCan);
         }
         P.EntityOverlay.TaskManager.Enqueue(FlyIfCan);
-        P.EntityOverlay.TaskManager.Enqueue(() => MoveToPosition(obj.Position, distance));
-        P.EntityOverlay.TaskManager.Enqueue(() => WaitUntilArrival(obj.Position, distance), 10 * 60 * 1000);
+        P.EntityOverlay.TaskManager.Enqueue(() => MoveToPosition(data.Position, 3f));
+        P.EntityOverlay.TaskManager.Enqueue(() => WaitUntilArrival(data.Position, 3f), 10 * 60 * 1000);
         P.EntityOverlay.TaskManager.Enqueue(P.NavmeshManager.Stop);
-        if (C.NavmeshAutoInteract && obj.ObjectKind.EqualsAny(ObjectKind.EventNpc, ObjectKind.EventObj))
+        if (C.NavmeshAutoInteract)
         {
-            P.EntityOverlay.TaskManager.Enqueue(() => InteractWithDataID(obj.DataId));
+            P.EntityOverlay.TaskManager.Enqueue(() =>
+            {
+                var obj = data.GetGameObject();
+                if(obj != null)
+                {
+                    P.EntityOverlay.TaskManager.Insert(() => InteractWithDataID(obj.DataId));
+                }
+            });
         }
     }
 
@@ -118,6 +161,7 @@ public unsafe class MoveManager
 
     public bool? InteractWithDataID(uint dataID)
     {
+        if (!Player.Interactable) return false;
         if (Svc.Targets.Target != null)
         {
             var t = Svc.Targets.Target;

@@ -172,7 +172,7 @@ public unsafe class TextAdvance : IDalamudPlugin
         }
         else if (arguments.EqualsIgnoreCaseAny("mtq"))
         {
-            P.EntityOverlay.AutoFrame = CSFramework.Instance()->FrameCounter + 1;
+            S.MoveManager.MoveToQuest();
         }
         else if (arguments.EqualsIgnoreCase("d"))
         {

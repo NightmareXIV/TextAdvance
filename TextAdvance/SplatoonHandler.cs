@@ -23,6 +23,12 @@ namespace TextAdvance
             public static readonly uint[] SideInitiate = [];
             public static readonly string[] EventObjNameWhitelist = ["Destination", "指定地点", "Zielort"];
             public static readonly uint[] EventObjWhitelist = [2010816, 2011073, 2011072, 2011071];
+
+            public static class Map
+            {
+                public static readonly uint[] MSQ = [71001, 71002, 71003, 71005, 70961, 70963,];
+                public static readonly uint[] ImportantSideProgress = [70995, 71025, ];
+            }
         }
 
         internal List<Element> Elements = [];

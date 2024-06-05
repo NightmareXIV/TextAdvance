@@ -15,6 +15,26 @@ internal static unsafe class TabDebug
 {
     internal static void Draw()
     {
+        if (ImGui.CollapsingHeader("EQM"))
+        {
+            foreach(var x in Utils.GetEligibleMapMarkerLocations())
+            {
+                ImGuiEx.Text($"{x}");
+            }
+        }
+        if(ImGui.CollapsingHeader("Quest markers"))
+        {
+            var markers = AgentHUD.Instance()->MapMarkers.Span;
+            for (int i = 0; i < markers.Length; i++)
+            {
+                var marker = markers[i];
+                if(ThreadLoadImageHandler.TryGetIconTextureWrap(marker.IconId, false, out var tex))
+                {
+                    ImGui.Image(tex.ImGuiHandle, tex.Size);
+                }
+                ImGuiEx.Text($"{marker.IconId} / {marker.X} / {marker.Y} / {marker.Z}");
+            }
+        }
         if(ImGui.Button("copy target descriptor"))
         {
             if (Svc.Targets.Target != null) Copy(new ObjectDescriptor(Svc.Targets.Target, true).AsCtorString());
