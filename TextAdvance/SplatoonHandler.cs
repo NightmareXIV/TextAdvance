@@ -26,7 +26,7 @@ namespace TextAdvance
 
             public static class Map
             {
-                public static readonly uint[] MSQ = [71001, 71002, 71003, 71005, 70961, 70963,];
+                public static readonly uint[] MSQ = [71001, 71002, 71003, 71005, 70961, 70963, 60490];
                 public static readonly uint[] ImportantSideProgress = [70995, 71025, ];
             }
         }

@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Automation;
+using ECommons.ChatMethods;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.Interop;
@@ -19,6 +20,15 @@ public unsafe class MoveManager
 {
     private MoveManager() { }
 
+    private void Log(string message)
+    {
+        PluginLog.Debug($"[MoveManager] {message}");
+        if (P.config.VerboseChat)
+        {
+            ChatPrinter.PrintColored(UIColor.Pink, $"[TextAdvance] {message}");
+        }
+    }
+
     public void MoveToQuest()
     {
         if (!Player.Available) return;
@@ -27,6 +37,7 @@ public unsafe class MoveManager
         if(obj != null)
         {
             EnqueueMoveAndInteract(new(obj.Position, obj.DataId));
+            Log($"Precise nav: {obj.Name}/{obj.DataId:X8}");
         }
         else
         {
@@ -35,6 +46,7 @@ public unsafe class MoveManager
             {
                 var marker = markers.OrderBy(x => Vector3.Distance(x, Player.Object.Position)).First();
                 EnqueueMoveAndInteract(new(marker, 0));
+                Log($"Non-precise nav: {marker}");
             }
         }
     }
@@ -65,8 +77,8 @@ public unsafe class MoveManager
             P.EntityOverlay.TaskManager.Enqueue(MountIfCan);
         }
         P.EntityOverlay.TaskManager.Enqueue(FlyIfCan);
-        P.EntityOverlay.TaskManager.Enqueue(() => MoveToPosition(data.Position, 3f));
-        P.EntityOverlay.TaskManager.Enqueue(() => WaitUntilArrival(data.Position, 3f), 10 * 60 * 1000);
+        P.EntityOverlay.TaskManager.Enqueue(() => MoveToPosition(data, 3f));
+        P.EntityOverlay.TaskManager.Enqueue(() => WaitUntilArrival(data, 3f), 10 * 60 * 1000);
         P.EntityOverlay.TaskManager.Enqueue(P.NavmeshManager.Stop);
         if (C.NavmeshAutoInteract)
         {
@@ -138,21 +150,50 @@ public unsafe class MoveManager
         return false;
     }
 
-    public void MoveToPosition(Vector3 pos, float distance)
+    public void MoveToPosition(MoveData data, float distance)
     {
+        var pos = data.Position;
         if (Vector3.Distance(Player.Object.Position, pos) > distance)
         {
             P.NavmeshManager.PathfindAndMoveTo(pos, Svc.Condition[ConditionFlag.InFlight]);
         }
     }
 
-    public bool? WaitUntilArrival(Vector3 pos, float distance)
+    public bool? WaitUntilArrival(MoveData data, float distance)
     {
+        if(data.DataID == 0)
+        {
+            var obj = GetNearestMTQObject();
+            if(obj != null)
+            {
+                data.Position = obj.Position;
+                data.DataID = obj.DataId;
+                EzThrottler.Reset("RequeueMoveTo");
+                Log($"Correction to MTQ object: {obj.Name}/{obj.DataId:X8}");
+            }
+            else
+            {
+                if(Vector3.Distance(data.Position, Player.Object.Position) < 30f)
+                {
+                    foreach(var x in Svc.Objects.OrderBy(z => Vector3.Distance(data.Position, z.Position)))
+                    {
+                        if(Vector3.Distance(data.Position, x.Position) < 50f && x.ObjectKind.EqualsAny(ObjectKind.EventNpc | ObjectKind.EventObj) && x.IsTargetable)
+                        {
+                            data.Position = x.Position;
+                            data.DataID = x.DataId;
+                            EzThrottler.Reset("RequeueMoveTo");
+                            Log($"Correction to non-MTQ object: {obj.Name}/{obj.DataId:X8}");
+                        }
+                    }
+                }
+            }
+        }
+        var pos = data.Position;
         if (EzThrottler.Throttle("RequeueMoveTo", 5000))
         {
-            MoveToPosition(pos, distance);
+            MoveToPosition(data, distance);
         }
-        if (Vector3.Distance(Player.Object.Position, pos) > 10f && !Svc.Condition[ConditionFlag.Mounted] && ActionManager.Instance()->GetActionStatus(ActionType.Action, 7557) == 0 && !Player.Object.StatusList.Any(z => z.StatusId == 1199) && EzThrottler.Throttle("CastPeloton"))
+        if (Vector3.Distance(Player.Object.Position, pos) > 10f && !Svc.Condition[ConditionFlag.Mounted] && !Svc.Condition[ConditionFlag.InCombat] && ActionManager.Instance()->GetActionStatus(ActionType.Action, 7557) == 0 && !Player.Object.StatusList.Any(z => z.StatusId == 1199) && EzThrottler.Throttle("CastPeloton"))
         {
             Chat.Instance.ExecuteCommand($"/action \"{Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(7557).Name.ExtractText()}\"");
         }

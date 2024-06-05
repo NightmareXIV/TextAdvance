@@ -42,7 +42,6 @@ public unsafe static class Utils
         for (int i = 0; i < markers.Length; i++)
         {
             var marker = markers[i];
-            if (marker.TerritoryTypeId != Svc.ClientState.TerritoryType) continue;
             var id = marker.IconId;
             if(SplatoonHandler.Markers.Map.MSQ.Contains(id) || SplatoonHandler.Markers.Map.ImportantSideProgress.Contains(id))
             {

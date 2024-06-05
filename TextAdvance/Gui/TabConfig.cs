@@ -65,6 +65,7 @@ internal static class TabConfig
         ImGui.Checkbox($"Disable manual plugin state change notification", ref P.config.NotifyDisableManualState);
         ImGui.Checkbox($"Disable notification upon login if character has auto-enable on", ref P.config.NotifyDisableOnLogin);
         ImGui.Checkbox($"Disable reward pick chat notification", ref P.config.PickRewardSilent);
+        ImGui.Checkbox($"Enable extra verbose chat output", ref P.config.VerboseChat);
         ImGui.Separator();
         ImGuiEx.TextWrapped($"Reward pick item prioritization order. Please note: precision is not guaranteed. ");
         ImGuiEx.EnumOrderer("", P.config.PickRewardOrder);

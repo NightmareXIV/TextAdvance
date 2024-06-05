@@ -55,6 +55,7 @@ public unsafe static class ExecAutoInteract
         new(1021716, 621, ObjectKind.EventNpc, new(676.0f, 60.0f, 460.3f)), //Lyse at The Lochs
         new(1022738, 621, ObjectKind.EventNpc, new(509.6f, 111.2f, -107.1f)), //Alphinaud at The Lochs
         new(1012366, 401, ObjectKind.EventNpc, new(531.2f, -99.8f, 350.0f)), //Honoroit at The Sea of Clouds
+        new(1020539, 622, ObjectKind.EventNpc, new(498.3f, 40.8f, -508.2f)), //Cirina at The Azim Steppe
 
 
 
