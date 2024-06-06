@@ -182,7 +182,7 @@ public unsafe class MoveManager
                             data.Position = x.Position;
                             data.DataID = x.DataId;
                             EzThrottler.Reset("RequeueMoveTo");
-                            Log($"Correction to non-MTQ object: {obj.Name}/{obj.DataId:X8}");
+                            Log($"Correction to non-MTQ object: {x.Name}/{x.DataId:X8}");
                         }
                     }
                 }
