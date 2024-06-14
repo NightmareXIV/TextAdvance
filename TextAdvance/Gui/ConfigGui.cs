@@ -29,6 +29,7 @@ internal class ConfigGui : Window, IDisposable
                 ("Target indicators", TabSplatoon.Draw, null, true),
                 ("Auto-enable", TabChars.Draw, null, true),
                 ("Per area config", TabTerritory.Draw, null, true),
+                InternalLog.ImGuiTab(),
                 ("Debug", TabDebug.Draw, ImGuiColors.DalamudGrey3, true)
                 );
         }

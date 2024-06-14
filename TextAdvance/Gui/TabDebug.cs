@@ -15,13 +15,6 @@ internal static unsafe class TabDebug
 {
     internal static void Draw()
     {
-        if (ImGui.CollapsingHeader("EQM"))
-        {
-            foreach(var x in Utils.GetEligibleMapMarkerLocations())
-            {
-                ImGuiEx.Text($"{x}");
-            }
-        }
         if(ImGui.CollapsingHeader("Quest markers"))
         {
             var markers = AgentHUD.Instance()->MapMarkers.Span;

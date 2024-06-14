@@ -56,6 +56,25 @@ public unsafe static class ExecAutoInteract
         new(1022738, 621, ObjectKind.EventNpc, new(509.6f, 111.2f, -107.1f)), //Alphinaud at The Lochs
         new(1012366, 401, ObjectKind.EventNpc, new(531.2f, -99.8f, 350.0f)), //Honoroit at The Sea of Clouds
         new(1020539, 622, ObjectKind.EventNpc, new(498.3f, 40.8f, -508.2f)), //Cirina at The Azim Steppe
+        new(1024066, 737, ObjectKind.EventNpc, new(245.1f, 122.0f, -349.1f)), //Arenvald at Royal Palace
+        new(1024822, 613, ObjectKind.EventNpc, new(885.1f, 1.2f, 861.4f)), //Alphinaud at The Ruby Sea
+        new(1024986, 614, ObjectKind.EventNpc, new(-348.9f, 1.2f, -344.1f)), //Asahi at Yanxia
+        new(2009591, 622, ObjectKind.EventObj, new(-210.3f, 2.6f, 519.3f)), //Destination at The Azim Steppe
+        new(1026845, 829, ObjectKind.EventNpc, new(-476.7f, 107.6f, 103.7f)), //Raubahn at Eorzean Alliance Headquarters
+        new(1028782, 620, ObjectKind.EventNpc, new(50.5f, 118.3f, -760.2f)), //Ranaa Mihgo at The Peaks
+        new(1028955, 813, ObjectKind.EventNpc, new(-755.7f, 200.2f, -293.9f)), //Crystarium Scout at Lakeland
+        new(1004884, 212, ObjectKind.EventNpc, new(38.9f, 1.2f, 3.5f)), //Serpent Officer at The Waking Sands
+        new(1004883, 212, ObjectKind.EventNpc, new(37.9f, 1.2f, 4.1f)), //Flame Officer at The Waking Sands
+        new(1004885, 212, ObjectKind.EventNpc, new(36.5f, 1.2f, 4.7f)), //Storm Officer at The Waking Sands
+        new(1004887, 140, ObjectKind.EventNpc, new(160.8f, 54.9f, -45.6f)), //Airship Crewman at Western Thanalan
+        new(1000563, 152, ObjectKind.EventNpc, new(-3.8f, -5.9f, 217.3f)), //Ameexia at East Shroud
+        new(1000587, 152, ObjectKind.EventNpc, new(-7.2f, -8.4f, 268.2f)), //Dellexia at East Shroud
+        new(2001592, 145, ObjectKind.EventObj, new(-356.7f, -10.4f, -242.5f)), //Destination at Eastern Thanalan
+        new(1002998, 152, ObjectKind.EventNpc, new(-283.9f, 12.2f, -39.4f)), //Claxio at East Shroud
+        new(1006203, 153, ObjectKind.EventNpc, new(32.7f, 10.7f, -13.0f)), //Laurentius at South Shroud
+        new(1004886, 152, ObjectKind.EventNpc, new(30.3f, 8.4f, 475.3f)), //Airship Crewman at East Shroud
+        new(2000709, 153, ObjectKind.EventObj, new(-90.7f, 0.0f, 61.1f)), //Destination at South Shroud
+
 
 
 

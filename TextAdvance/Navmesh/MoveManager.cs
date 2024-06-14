@@ -1,5 +1,7 @@
-﻿using Dalamud.Game.ClientState.Objects.Enums;
+﻿using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
+using ECommons;
 using ECommons.Automation;
 using ECommons.ChatMethods;
 using ECommons.GameFunctions;
@@ -25,7 +27,7 @@ public unsafe class MoveManager
         PluginLog.Debug($"[MoveManager] {message}");
         if (P.config.NavStatusChat)
         {
-            ChatPrinter.PrintColored(UIColor.Pink, $"[TextAdvance] {message}");
+            ChatPrinter.PrintColored(UIColor.WarmSeaBlue, $"[TextAdvance] {message}");
         }
     }
 
@@ -41,12 +43,15 @@ public unsafe class MoveManager
         }
         else
         {
-            var markers = Utils.GetEligibleMapMarkerLocations();
-            if(markers.Count > 0)
+            Utils.GetEligibleMapMarkerLocationsAsync(Callback);
+            void Callback(List<Vector3> markers)
             {
-                var marker = markers.OrderBy(x => Vector3.Distance(x, Player.Object.Position)).First();
-                EnqueueMoveAndInteract(new(marker, 0));
-                Log($"Non-precise nav: {marker}");
+                if (markers.Count > 0)
+                {
+                    var marker = markers.OrderBy(x => Vector3.Distance(x, Player.Object.Position)).First();
+                    EnqueueMoveAndInteract(new(marker, 0));
+                    Log($"Non-precise nav: {marker}");
+                }
             }
         }
     }
@@ -66,6 +71,7 @@ public unsafe class MoveManager
 
     public void EnqueueMoveAndInteract(MoveData data)
     {
+        P.NavmeshManager.Stop();
         P.EntityOverlay.TaskManager.Abort();
         if (Svc.Condition[ConditionFlag.InFlight])
         {
@@ -161,7 +167,12 @@ public unsafe class MoveManager
 
     public bool? WaitUntilArrival(MoveData data, float distance)
     {
-        if(data.DataID == 0)
+        if (Vector3.Distance(data.Position, Player.Object.Position) > 20f && !Svc.Condition[ConditionFlag.Mounted] && ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, 9) == 0)
+        {
+            EnqueueMoveAndInteract(data);
+            return false;
+        }
+        if (data.DataID == 0)
         {
             var obj = GetNearestMTQObject();
             if(obj != null)
@@ -194,9 +205,22 @@ public unsafe class MoveManager
         {
             MoveToPosition(data, distance);
         }
-        if (Vector3.Distance(Player.Object.Position, pos) > 10f && !Svc.Condition[ConditionFlag.Mounted] && !Svc.Condition[ConditionFlag.InCombat] && ActionManager.Instance()->GetActionStatus(ActionType.Action, 7557) == 0 && !Player.Object.StatusList.Any(z => z.StatusId == 1199) && EzThrottler.Throttle("CastPeloton"))
+        if (Vector3.Distance(Player.Object.Position, pos) > 12f && !Svc.Condition[ConditionFlag.Mounted] && !Svc.Condition[ConditionFlag.InCombat])
         {
-            Chat.Instance.ExecuteCommand($"/action \"{Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(7557).Name.ExtractText()}\"");
+            if(ActionManager.Instance()->GetActionStatus(ActionType.Action, 3) == 0 && !Player.Object.StatusList.Any(z => z.StatusId == 50))
+            {
+                if (EzThrottler.Throttle("CastSprintPeloton", 2000))
+                {
+                    Chat.Instance.ExecuteCommand($"/action \"{Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(3).Name.ExtractText()}\"");
+                }
+            }
+            else if (ActionManager.Instance()->GetActionStatus(ActionType.Action, 7557) == 0 && !Player.Object.StatusList.Any(z => z.StatusId.EqualsAny<uint>(1199, 50)))
+            {
+                if (EzThrottler.Throttle("CastSprintPeloton", 2000))
+                {
+                    Chat.Instance.ExecuteCommand($"/action \"{Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(7557).Name.ExtractText()}\"");
+                }
+            }
         }
         return Vector3.Distance(Player.Object.Position, pos) < distance;
     }

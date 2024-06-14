@@ -7,6 +7,7 @@ using ECommons.Automation.LegacyTaskManager;
 using ECommons.Configuration;
 using ECommons.Events;
 using ECommons.EzEventManager;
+using ECommons.EzIpcManager;
 using ECommons.Singletons;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
@@ -107,7 +108,13 @@ public unsafe class TextAdvance : IDalamudPlugin
             ProgressOverlay = new();
             NavmeshManager = new();
             SingletonServiceManager.Initialize(typeof(ServiceManager));
+            EzIPC.OnSafeInvocationException += this.EzIPC_OnSafeInvocationException;
         });
+    }
+
+    private void EzIPC_OnSafeInvocationException(Exception obj)
+    {
+        InternalLog.Error($"IPC error: {obj}");
     }
 
     private void ClientState_TerritoryChanged(ushort obj)

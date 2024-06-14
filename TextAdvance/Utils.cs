@@ -2,6 +2,7 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.ExcelServices;
 using ECommons.GameFunctions;
+using ECommons.GameHelpers;
 using ECommons.Reflection;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
@@ -35,20 +36,68 @@ public unsafe static class Utils
        || Svc.Condition[ConditionFlag.BetweenAreas51];
     }
 
-    public static List<Vector3> GetEligibleMapMarkerLocations()
+    public static void GetEligibleMapMarkerLocationsAsync(Action<List<Vector3>> callback)
     {
-        var ret = new List<Vector3>();
-        var markers = AgentHUD.Instance()->MapMarkers.Span;
-        for (int i = 0; i < markers.Length; i++)
+        var markers = AgentHUD.Instance()->MapMarkers.Span.ToArray();
+        var playerPos = Player.Object.Position;
+        Task.Run(() =>
         {
-            var marker = markers[i];
-            var id = marker.IconId;
-            if(SplatoonHandler.Markers.Map.MSQ.Contains(id) || SplatoonHandler.Markers.Map.ImportantSideProgress.Contains(id))
+            var time = Environment.TickCount64;
+            var ret = new List<Vector3>();
+            for (int i = 0; i < markers.Length; i++)
             {
-                ret.Add(new(marker.X, marker.Y, marker.Z));
+                var marker = markers[i];
+                var id = marker.IconId;
+                if (SplatoonHandler.Markers.Map.MSQ.Contains(id) || SplatoonHandler.Markers.Map.ImportantSideProgress.Contains(id))
+                {
+                    ret.Add(new(marker.X, marker.Y, marker.Z));
+                }
+                else if (SplatoonHandler.Markers.Map.MSQXZ.Contains(id))
+                {
+                    PluginLog.Debug($"Marker {new Vector3(marker.X, marker.Y, marker.Z)} is MSQXZ");
+                    try
+                    {
+                        PluginLog.Debug($"Trying to pathfind");
+                        var result = P.NavmeshManager.Pathfind(playerPos, new(marker.X, marker.Y, marker.Z), false).Result;
+                        if (result != null && result.Count > 0)
+                        {
+                            PluginLog.Debug($"Direct path found");
+                            ret.Add(new(marker.X, marker.Y, marker.Z));
+                        }
+                        else
+                        {
+                            PluginLog.Debug($"Direct path NOT found");
+                            FindIngoringHeight();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        e.LogInfo();
+                        FindIngoringHeight();
+                    }
+
+                    void FindIngoringHeight()
+                    {
+                        var alt = P.NavmeshManager.PointOnFloor(new(marker.X, 1024, marker.Z), false, 5);
+                        PluginLog.Debug($"Trying point on floor: result = {alt}");
+                        alt ??= P.NavmeshManager.NearestPoint(new(marker.X, marker.Y, marker.Z), 5, 5);
+                        PluginLog.Debug($"Trying nearest point: result = {alt}");
+                        if (alt != null)
+                        {
+                            ret.Add(alt.Value);
+                        }
+                    }
+                }
             }
-        }
-        return ret;
+            if (Environment.TickCount64 - time > 3000)
+            {
+                DuoLog.Error($"Pathfinding took {Environment.TickCount64 - time}ms > 3000, discarding");
+            }
+            else
+            {
+                Svc.Framework.RunOnFrameworkThread(() => callback(ret));
+            }
+        });
     }
 
     public static bool IsMTQ(this GameObject x)
