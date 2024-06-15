@@ -10,6 +10,7 @@ using ECommons.Interop;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -137,9 +138,15 @@ public unsafe class MoveManager
         if (!EzThrottler.Check("CheckMount")) return false;
         if (ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, 9) == 0)
         {
+            var mount = C.Mount;
+            if (!PlayerState.Instance()->IsMountUnlocked((uint)mount))
+            {
+                DuoLog.Warning($"Mount {Utils.GetMountName(mount)} is not unlocking. Falling back to Mount roulette.");
+                mount = 0;
+            }
             if (EzThrottler.Throttle("SummonMount"))
             {
-                if (C.Mount == 0)
+                if (mount == 0)
                 {
                     Chat.Instance.ExecuteCommand($"/generalaction \"{Utils.GetGeneralActionName(9)}\"");
                 }
@@ -167,7 +174,7 @@ public unsafe class MoveManager
 
     public bool? WaitUntilArrival(MoveData data, float distance)
     {
-        if (Vector3.Distance(data.Position, Player.Object.Position) > 20f && !Svc.Condition[ConditionFlag.Mounted] && ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, 9) == 0)
+        if (P.config.Mount != - 1 && Vector3.Distance(data.Position, Player.Object.Position) > 20f && !Svc.Condition[ConditionFlag.Mounted] && ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, 9) == 0)
         {
             EnqueueMoveAndInteract(data);
             return false;
@@ -188,7 +195,7 @@ public unsafe class MoveManager
                 {
                     foreach(var x in Svc.Objects.OrderBy(z => Vector3.Distance(data.Position, z.Position)))
                     {
-                        if(Vector3.Distance(data.Position, x.Position) < 50f && x.ObjectKind.EqualsAny(ObjectKind.EventNpc | ObjectKind.EventObj) && x.IsTargetable)
+                        if(Vector3.Distance(data.Position, x.Position) < 100f && x.ObjectKind.EqualsAny(ObjectKind.EventNpc | ObjectKind.EventObj) && x.IsTargetable)
                         {
                             data.Position = x.Position;
                             data.DataID = x.DataId;
