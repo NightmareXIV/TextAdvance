@@ -102,7 +102,7 @@ public unsafe sealed class EntityOverlay : IDisposable
         void Move()
         {
             P.EntityOverlay.TaskManager.Abort();
-            S.MoveManager.EnqueueMoveAndInteract(new(obj.Position, obj.DataId));
+            S.MoveManager.EnqueueMoveAndInteract(new(obj.Position, obj.DataId, false));
         }
     }
 }

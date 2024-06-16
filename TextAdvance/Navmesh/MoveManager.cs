@@ -11,6 +11,7 @@ using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,44 @@ public unsafe class MoveManager
         }
     }
 
+    public void MoveToFlag()
+    {
+        if (!Player.Available) return;
+        if (AgentMap.Instance()->IsFlagMarkerSet == 0)
+        {
+            DuoLog.Warning($"Flag is not set");
+            return;
+        }
+        if(AgentMap.Instance()->FlagMapMarker.TerritoryId != Svc.ClientState.TerritoryType)
+        {
+            DuoLog.Warning($"Flag is in different zone than current");
+            return;
+        }
+        var m = AgentMap.Instance()->FlagMapMarker;
+        var pos = P.NavmeshManager.PointOnFloor(new(m.XFloat, 1024, m.YFloat), false, 5);
+        var iterations = 0;
+        if (pos == null)
+        {
+            for (var extent = 0; extent < 100; extent += 5)
+            {
+                for (var i = 0; i < 1000; i+= 5)
+                {
+                    iterations++;
+                    pos ??= P.NavmeshManager.NearestPoint(new(m.XFloat, Player.Object.Position.Y + i, m.YFloat), extent, 5);
+                    pos ??= P.NavmeshManager.NearestPoint(new(m.XFloat, Player.Object.Position.Y - i, m.YFloat), extent, 5);
+                    if (pos != null) break;
+                }
+            }
+        }
+        if(pos == null)
+        {
+            DuoLog.Error($"Failed to move to flag");
+            return;
+        }
+        EnqueueMoveAndInteract(new(pos.Value, 0, true));
+        Log($"Nav to flag {pos.Value:F1}, {iterations} corrections");
+    }
+
     public void MoveToQuest()
     {
         if (!Player.Available) return;
@@ -39,7 +78,7 @@ public unsafe class MoveManager
         var obj = GetNearestMTQObject();
         if(obj != null)
         {
-            EnqueueMoveAndInteract(new(obj.Position, obj.DataId));
+            EnqueueMoveAndInteract(new(obj.Position, obj.DataId, false));
             Log($"Precise nav: {obj.Name}/{obj.DataId:X8}");
         }
         else
@@ -50,8 +89,8 @@ public unsafe class MoveManager
                 if (markers.Count > 0)
                 {
                     var marker = markers.OrderBy(x => Vector3.Distance(x, Player.Object.Position)).First();
-                    EnqueueMoveAndInteract(new(marker, 0));
-                    Log($"Non-precise nav: {marker}");
+                    EnqueueMoveAndInteract(new(marker, 0, false));
+                    Log($"Non-precise nav: {marker:F1}");
                 }
             }
         }
@@ -179,29 +218,32 @@ public unsafe class MoveManager
             EnqueueMoveAndInteract(data);
             return false;
         }
-        if (data.DataID == 0)
+        if (!data.NoInteract)
         {
-            var obj = GetNearestMTQObject();
-            if(obj != null)
+            if (data.DataID == 0)
             {
-                data.Position = obj.Position;
-                data.DataID = obj.DataId;
-                EzThrottler.Reset("RequeueMoveTo");
-                Log($"Correction to MTQ object: {obj.Name}/{obj.DataId:X8}");
-            }
-            else
-            {
-                if(Vector3.Distance(data.Position, Player.Object.Position) < 30f)
+                var obj = GetNearestMTQObject();
+                if (obj != null)
                 {
-                    foreach(var x in Svc.Objects.OrderBy(z => Vector3.Distance(data.Position, z.Position)))
+                    data.Position = obj.Position;
+                    data.DataID = obj.DataId;
+                    EzThrottler.Reset("RequeueMoveTo");
+                    Log($"Correction to MTQ object: {obj.Name}/{obj.DataId:X8}");
+                }
+                else
+                {
+                    if (Vector3.Distance(data.Position, Player.Object.Position) < 30f)
                     {
-                        if(Vector3.Distance(data.Position, x.Position) < 100f && x.ObjectKind.EqualsAny(ObjectKind.EventNpc | ObjectKind.EventObj) && x.IsTargetable)
+                        foreach (var x in Svc.Objects.OrderBy(z => Vector3.Distance(data.Position, z.Position)))
                         {
-                            data.Position = x.Position;
-                            data.DataID = x.DataId;
-                            EzThrottler.Reset("RequeueMoveTo");
-                            Log($"Correction to non-MTQ object: {x.Name}/{x.DataId:X8}");
-                            break;
+                            if (Vector3.Distance(data.Position, x.Position) < 100f && x.ObjectKind.EqualsAny(ObjectKind.EventNpc | ObjectKind.EventObj) && x.IsTargetable)
+                            {
+                                data.Position = x.Position;
+                                data.DataID = x.DataId;
+                                EzThrottler.Reset("RequeueMoveTo");
+                                Log($"Correction to non-MTQ object: {x.Name}/{x.DataId:X8}");
+                                break;
+                            }
                         }
                     }
                 }
@@ -235,6 +277,7 @@ public unsafe class MoveManager
     public bool? InteractWithDataID(uint dataID)
     {
         if (!Player.Interactable) return false;
+        if (dataID == 0) return true;
         if (Svc.Targets.Target != null)
         {
             var t = Svc.Targets.Target;

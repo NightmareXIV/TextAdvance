@@ -74,6 +74,11 @@ public unsafe static class ExecAutoInteract
         new(1006203, 153, ObjectKind.EventNpc, new(32.7f, 10.7f, -13.0f)), //Laurentius at South Shroud
         new(1004886, 152, ObjectKind.EventNpc, new(30.3f, 8.4f, 475.3f)), //Airship Crewman at East Shroud
         new(2000709, 153, ObjectKind.EventObj, new(-90.7f, 0.0f, 61.1f)), //Destination at South Shroud
+        new(1000576, 152, ObjectKind.EventNpc, new(21.5f, -4.6f, 221.8f)), //Knolexia at East Shroud
+        new(1030382, 817, ObjectKind.EventNpc, new(-113.1f, -18.5f, 324.2f)), //Placid Elder at The Rak'tika Greatwood
+        new(1027750, 817, ObjectKind.EventNpc, new(-24.7f, -25.3f, 305.6f)), //Asgeir at The Rak'tika Greatwood
+        new(1027463, 817, ObjectKind.EventNpc, new(-130.3f, -18.5f, 246.6f)), //Vondia at The Rak'tika Greatwood
+        new(1029243, 817, ObjectKind.EventNpc, new(121.4f, -8.8f, -890.6f)), //Y'shtola at The Rak'tika Greatwood
 
 
 

@@ -12,11 +12,13 @@ public class MoveData
 {
     public Vector3 Position;
     public uint DataID;
+    public bool NoInteract;
 
-    public MoveData(Vector3 destination, uint dataID)
+    public MoveData(Vector3 destination, uint dataID, bool noInteract)
     {
         this.Position = destination;
         this.DataID = dataID;
+        this.NoInteract = noInteract;
     }
 
     public GameObject GetGameObject(float maxDistance = 20f)

@@ -76,9 +76,14 @@ public unsafe class TextAdvance : IDalamudPlugin
             Svc.Commands.AddHandler("/at", new CommandInfo(HandleCommand)
             {
                 ShowInHelp = true,
-                HelpMessage = "toggles TextAdvance plugin.\n/at y|yes|e|enable - turns on TextAdvance.\n/at n|no|d|disable - turns off TextAdvance.\n" +
-                "/at c|config|s|settings - opens TextAdvance settings.\n/at g - toggles visual quest target markers\n" +
-                "/at mtq - move to the first available quest location, if present (requires navmesh integration to be enabled)"
+                HelpMessage = """
+                toggles TextAdvance plugin.\n/at y|yes|e|enable - turns on TextAdvance.
+                /at n|no|d|disable - turns off TextAdvance.
+                /at c|config|s|settings - opens TextAdvance settings.
+                /at g - toggles visual quest target markers
+                /at mtq - move to the first available quest location, if present (requires navmesh integration to be enabled)
+                /at mtqstop - cancel all pending movement tasks
+                """
             });
             if (Svc.ClientState.IsLoggedIn)
             {
@@ -180,6 +185,15 @@ public unsafe class TextAdvance : IDalamudPlugin
         else if (arguments.EqualsIgnoreCaseAny("mtq"))
         {
             S.MoveManager.MoveToQuest();
+        }
+        else if (arguments.EqualsIgnoreCaseAny("mtf"))
+        {
+            S.MoveManager.MoveToFlag();
+        }
+        else if (arguments.EqualsIgnoreCaseAny("mtqstop"))
+        {
+            P.EntityOverlay.TaskManager.Abort();
+            if (C.Navmesh) P.NavmeshManager.Stop();
         }
         else if (arguments.EqualsIgnoreCase("d"))
         {
