@@ -4,9 +4,11 @@ using Dalamud.Game.ClientState.Objects.Types;
 using ECommons;
 using ECommons.Automation;
 using ECommons.ChatMethods;
+using ECommons.CircularBuffers;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.Interop;
+using ECommons.MathHelpers;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
@@ -14,6 +16,7 @@ using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -111,6 +114,7 @@ public unsafe class MoveManager
 
     public void EnqueueMoveAndInteract(MoveData data)
     {
+        SpecialAdjust(data);
         P.NavmeshManager.Stop();
         P.EntityOverlay.TaskManager.Abort();
         if (Svc.Condition[ConditionFlag.InFlight])
@@ -207,12 +211,31 @@ public unsafe class MoveManager
         var pos = data.Position;
         if (Vector3.Distance(Player.Object.Position, pos) > distance)
         {
+            LastPositionUpdate = Environment.TickCount64;
+            LastPosition = Player.Position;
             P.NavmeshManager.PathfindAndMoveTo(pos, Svc.Condition[ConditionFlag.InFlight]);
         }
     }
 
+    internal Vector3 LastPosition = Vector3.Zero;
+    internal long LastPositionUpdate = 0;
+    internal CircularBuffer<long> Unstucks = new(5);
+
     public bool? WaitUntilArrival(MoveData data, float distance)
     {
+        if (!Player.Available) return null;
+        if(!P.NavmeshManager.IsRunning())
+        {
+            LastPositionUpdate = Environment.TickCount64;
+        }
+        else
+        {
+            if(Vector3.Distance(LastPosition, Player.Position) > 0.5f)
+            {
+                LastPositionUpdate = Environment.TickCount64;
+                LastPosition = Player.Position;
+            }
+        }
         if (P.config.Mount != - 1 && Vector3.Distance(data.Position, Player.Object.Position) > 20f && !Svc.Condition[ConditionFlag.Mounted] && ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, 9) == 0)
         {
             EnqueueMoveAndInteract(data);
@@ -227,8 +250,8 @@ public unsafe class MoveManager
                 {
                     data.Position = obj.Position;
                     data.DataID = obj.DataId;
-                    EzThrottler.Reset("RequeueMoveTo");
                     Log($"Correction to MTQ object: {obj.Name}/{obj.DataId:X8}");
+                    MoveToPosition(data, distance);
                 }
                 else
                 {
@@ -240,8 +263,8 @@ public unsafe class MoveManager
                             {
                                 data.Position = x.Position;
                                 data.DataID = x.DataId;
-                                EzThrottler.Reset("RequeueMoveTo");
                                 Log($"Correction to non-MTQ object: {x.Name}/{x.DataId:X8}");
+                                MoveToPosition(data, distance);
                                 break;
                             }
                         }
@@ -250,9 +273,21 @@ public unsafe class MoveManager
             }
         }
         var pos = data.Position;
-        if (EzThrottler.Throttle("RequeueMoveTo", 5000))
+        if (Environment.TickCount64 - LastPositionUpdate > 500 && EzThrottler.Throttle("RequeueMoveTo", 1000))
         {
-            MoveToPosition(data, distance);
+            var cnt = Unstucks.Count(x => Environment.TickCount64 - x < 10000);
+            if (cnt < 5)
+            {
+                Log($"Stuck, rebuilding path ({cnt + 1}/5)");
+                MoveToPosition(data, distance);
+                Unstucks.PushFront(Environment.TickCount64);
+            }
+            else
+            {
+                DuoLog.Error($"Stuck, move manually");
+                P.NavmeshManager.Stop();
+                return null;
+            }
         }
         if (Vector3.Distance(Player.Object.Position, pos) > 12f && !Svc.Condition[ConditionFlag.Mounted] && !Svc.Condition[ConditionFlag.InCombat])
         {
@@ -269,6 +304,14 @@ public unsafe class MoveManager
                 {
                     Chat.Instance.ExecuteCommand($"/action \"{Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(7557).Name.ExtractText()}\"");
                 }
+            }
+        }
+        if(data.NoInteract)
+        {
+            if (Vector2.Distance(Player.Object.Position.ToVector2(), pos.ToVector2()) < distance)
+            {
+                Log("Stopped by 2D distance");
+                return true;
             }
         }
         return Vector3.Distance(Player.Object.Position, pos) < distance;
@@ -299,5 +342,26 @@ public unsafe class MoveManager
             }
         }
         return false;
+    }
+
+    public void SpecialAdjust(MoveData data)
+    {
+        if(Player.Territory == 212) //adjust for walking sands
+        {
+            if(Player.Position.X < 24.5f && data.Position.X > 24.5f)
+            {
+                Log("Special adjustment: Entrance to the Solar at The Waking Sands");
+                //new(2001715, 212, ObjectKind.EventObj, new(23.2f, 2.1f, -0.0f)), //Entrance to the Solar at The Waking Sands
+                data.DataID = 2001715;
+                data.Position = new(23.2f, 2.1f, -0.0f);
+            }
+            else if(Player.Position.X > 24.5f && data.Position.X < 24.5f)
+            {
+                Log("Special adjustment: Exit to the Waking Sands at The Waking Sands");
+                //new(2001717, 212, ObjectKind.EventObj, new(25.5f, 2.1f, -0.0f)), //Exit to the Waking Sands at The Waking Sands
+                data.DataID = 2001717;
+                data.Position = new(25.5f, 2.1f, -0.0f);
+            }
+        }
     }
 }

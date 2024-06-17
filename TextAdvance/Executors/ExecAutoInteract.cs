@@ -79,6 +79,7 @@ public unsafe static class ExecAutoInteract
         new(1027750, 817, ObjectKind.EventNpc, new(-24.7f, -25.3f, 305.6f)), //Asgeir at The Rak'tika Greatwood
         new(1027463, 817, ObjectKind.EventNpc, new(-130.3f, -18.5f, 246.6f)), //Vondia at The Rak'tika Greatwood
         new(1029243, 817, ObjectKind.EventNpc, new(121.4f, -8.8f, -890.6f)), //Y'shtola at The Rak'tika Greatwood
+        new(1006230, 146, ObjectKind.EventNpc, new(34.9f, 3.4f, -343.7f)), //Wilred at Southern Thanalan
 
 
 

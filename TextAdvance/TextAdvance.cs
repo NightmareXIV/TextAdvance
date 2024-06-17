@@ -83,6 +83,7 @@ public unsafe class TextAdvance : IDalamudPlugin
                 /at g - toggles visual quest target markers
                 /at mtq - move to the first available quest location, if present (requires navmesh integration to be enabled)
                 /at mtqstop - cancel all pending movement tasks
+                /at mtf - move to flag
                 """
             });
             if (Svc.ClientState.IsLoggedIn)

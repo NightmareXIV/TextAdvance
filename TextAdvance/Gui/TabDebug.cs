@@ -1,4 +1,5 @@
-﻿using Dalamud.Memory;
+﻿using Dalamud.Game.Gui.Toast;
+using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -15,6 +16,14 @@ internal static unsafe class TabDebug
 {
     internal static void Draw()
     {
+        if (ImGui.CollapsingHeader("Antistuck"))
+        {
+            ImGuiEx.Text($"""
+                Last position: {S.MoveManager.LastPosition}
+                Last update: {S.MoveManager.LastPositionUpdate} ({Environment.TickCount64 - S.MoveManager.LastPositionUpdate} ms ago)
+                IsRunning: {P.NavmeshManager.IsRunning()}
+                """);
+        }
         if(ImGui.CollapsingHeader("Quest markers"))
         {
             var markers = AgentHUD.Instance()->MapMarkers.Span;
