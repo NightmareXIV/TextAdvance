@@ -324,7 +324,7 @@ public unsafe class MoveManager
         if (Svc.Targets.Target != null)
         {
             var t = Svc.Targets.Target;
-            if (t.IsTargetable && t.DataId == dataID && Vector3.Distance(Player.Object.Position, t.Position) < 10f && !IsOccupied() && Utils.ThrottleAutoInteract())
+            if (t.IsTargetable && t.DataId == dataID && Vector3.Distance(Player.Object.Position, t.Position) < 10f && !IsOccupied() && !Player.IsAnimationLocked && Utils.ThrottleAutoInteract())
             {
                 TargetSystem.Instance()->InteractWithObject(Svc.Targets.Target.Struct(), false);
                 return true;

@@ -128,7 +128,7 @@ public unsafe static class ExecAutoInteract
         if (WasInteracted(obj)) return;
         if (Svc.Targets.Target.AddressEquals(obj))
         {
-            if (obj.IsTargetable && Vector3.Distance(Player.Object.Position, obj.Position) < GetMinDistance(obj) && Utils.ThrottleAutoInteract())
+            if (obj.IsTargetable && Vector3.Distance(Player.Object.Position, obj.Position) < GetMinDistance(obj) && !Player.IsAnimationLocked && Utils.ThrottleAutoInteract())
             {
                 P.EntityOverlay.TaskManager.Abort();
                 P.NavmeshManager.Stop();

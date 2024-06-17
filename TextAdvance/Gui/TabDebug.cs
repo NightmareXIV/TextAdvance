@@ -1,5 +1,6 @@
 ﻿using Dalamud.Game.Gui.Toast;
 using Dalamud.Memory;
+using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -22,6 +23,7 @@ internal static unsafe class TabDebug
                 Last position: {S.MoveManager.LastPosition}
                 Last update: {S.MoveManager.LastPositionUpdate} ({Environment.TickCount64 - S.MoveManager.LastPositionUpdate} ms ago)
                 IsRunning: {P.NavmeshManager.IsRunning()}
+                Animation locked: {Player.IsAnimationLocked} / {Player.AnimationLock}
                 """);
         }
         if(ImGui.CollapsingHeader("Quest markers"))
