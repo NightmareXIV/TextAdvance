@@ -187,7 +187,7 @@ public unsafe class MoveManager
                 DuoLog.Warning($"Mount {Utils.GetMountName(mount)} is not unlocking. Falling back to Mount roulette.");
                 mount = 0;
             }
-            if (EzThrottler.Throttle("SummonMount"))
+            if (!Player.IsAnimationLocked && EzThrottler.Throttle("SummonMount"))
             {
                 if (mount == 0)
                 {
@@ -289,7 +289,7 @@ public unsafe class MoveManager
                 return null;
             }
         }
-        if (Vector3.Distance(Player.Object.Position, pos) > 12f && !Svc.Condition[ConditionFlag.Mounted] && !Svc.Condition[ConditionFlag.InCombat])
+        if (Vector3.Distance(Player.Object.Position, pos) > 12f && !Svc.Condition[ConditionFlag.Mounted] && !Svc.Condition[ConditionFlag.InCombat] && !Player.IsAnimationLocked)
         {
             if(ActionManager.Instance()->GetActionStatus(ActionType.Action, 3) == 0 && !Player.Object.StatusList.Any(z => z.StatusId == 50))
             {
