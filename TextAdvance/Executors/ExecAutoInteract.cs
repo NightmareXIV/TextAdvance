@@ -80,6 +80,8 @@ public unsafe static class ExecAutoInteract
         new(1027463, 817, ObjectKind.EventNpc, new(-130.3f, -18.5f, 246.6f)), //Vondia at The Rak'tika Greatwood
         new(1029243, 817, ObjectKind.EventNpc, new(121.4f, -8.8f, -890.6f)), //Y'shtola at The Rak'tika Greatwood
         new(1006230, 146, ObjectKind.EventNpc, new(34.9f, 3.4f, -343.7f)), //Wilred at Southern Thanalan
+        new(2002329, 156, ObjectKind.EventObj, new(-169.8f, 14.1f, -609.5f)), //Destination at Mor Dhona
+        new(1006561, 156, ObjectKind.EventNpc, new(-59.3f, 3.3f, -637.8f)), //Magitek Reaper at Mor Dhona
 
 
 

@@ -363,5 +363,22 @@ public unsafe class MoveManager
                 data.Position = new(25.5f, 2.1f, -0.0f);
             }
         }
+        else if(Player.Territory == 351) //rising stones
+        {
+            if (Player.Position.Z < -28.0f && data.Position.Z > -28.0f)
+            {
+                Log("Special adjustment: Exit to the Rising Stones at The Rising Stones");
+                //new(2002880, 351, ObjectKind.EventObj, new(-0.0f, -1.0f, -29.3f)), //Exit to the Rising Stones at The Rising Stones
+                data.DataID = 2002880;
+                data.Position = new(-0.0f, -1.0f, -29.3f);
+            }
+            else if (Player.Position.Z > -28.0f && data.Position.Z < -28.0f)
+            {
+                Log("Special adjustment: Entrance to the Solar at The Rising Stones");
+                //new(2002878, 351, ObjectKind.EventObj, new(-0.0f, -1.0f, -26.8f)), //Entrance to the Solar at The Rising Stones
+                data.DataID = 2002878;
+                data.Position = new(-0.0f, -1.0f, -26.8f);
+            }
+        }
     }
 }

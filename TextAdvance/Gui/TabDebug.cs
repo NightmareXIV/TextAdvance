@@ -1,4 +1,5 @@
 ﻿using Dalamud.Game.Gui.Toast;
+using Dalamud.Game.Network.Structures;
 using Dalamud.Memory;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
@@ -36,7 +37,8 @@ internal static unsafe class TabDebug
                 {
                     ImGui.Image(tex.ImGuiHandle, tex.Size);
                 }
-                ImGuiEx.Text($"{marker.IconId} / {marker.X} / {marker.Y} / {marker.Z}");
+                ImGuiEx.Text($"{marker.IconId} / {marker.X} / {marker.Y} / {marker.Z} / {Vector3.Distance(Player.Position, new(marker.X, marker.Y, marker.Z))}");
+                ImGui.Separator();
             }
         }
         if(ImGui.Button("copy target descriptor"))
