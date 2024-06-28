@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>NightmareXIV</Authors>
-		<Version>3.2.2.2</Version>
+		<Version>3.2.2.3</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -27,7 +27,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="DalamudPackager" Version="2.1.12" />
+	  <PackageReference Include="DalamudPackager" Version="2.1.13" />
 	</ItemGroup>
 
 	<ItemGroup>

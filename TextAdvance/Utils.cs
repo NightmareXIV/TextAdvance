@@ -124,7 +124,7 @@ public unsafe static class Utils
         return Svc.Data.GetExcelSheet<Mount>().GetRow((uint)id).Singular.ExtractText();
     }
 
-    public static bool CanFly() => C.EnableFlight && P.Memory.IsFlightProhibited(P.Memory.FlightAddr) == 0;
+    public static bool CanFly() => false;// C.EnableFlight && P.Memory.IsFlightProhibited(P.Memory.FlightAddr) == 0;
 
     public static bool ThrottleAutoInteract() => EzThrottler.Throttle("AutoInteract");
     public static bool ReThrottleAutoInteract() => EzThrottler.Throttle("AutoInteract", rethrottle:true);
@@ -134,9 +134,9 @@ public unsafe static class Utils
     {   
         var ret = new List<(int, int)>();
         var manager = QuestManager.Instance();
-        for (int i = 0; i < manager->NormalQuestsSpan.Length; i++)
+        for (int i = 0; i < manager->NormalQuests.Length; i++)
         {
-            var q = manager->NormalQuestsSpan[i];
+            var q = manager->NormalQuests[i];
             ret.Add((q.QuestId, q.Sequence));
         }
         return ret;

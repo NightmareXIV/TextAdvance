@@ -26,8 +26,8 @@ internal unsafe static class ExecRequestComplete
             if (textComponent->AtkResNode.Color.A != 255) return;
             for (var i = 16; i <= 12; i--)
             {
-                if (((AtkComponentNode*)questAddon->UldManager.NodeList[i])->AtkResNode.IsVisible
-                    && ((AtkComponentNode*)questAddon->UldManager.NodeList[i - 6])->AtkResNode.IsVisible) return;
+                if (((AtkComponentNode*)questAddon->UldManager.NodeList[i])->AtkResNode.IsVisible()
+                    && ((AtkComponentNode*)questAddon->UldManager.NodeList[i - 6])->AtkResNode.IsVisible()) return;
             }
             if (request->HandOverButton != null && request->HandOverButton->IsEnabled)
             {

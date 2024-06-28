@@ -1,6 +1,5 @@
 ﻿using Dalamud.Game.Command;
 using Dalamud.Game.Gui.Toast;
-using Dalamud.Interface.Internal.Notifications;
 using ECommons;
 using ECommons.Automation;
 using ECommons.Automation.LegacyTaskManager;
@@ -241,8 +240,7 @@ public unsafe class TextAdvance : IDalamudPlugin
                     Enabled = true;
                     if (!P.config.NotifyDisableOnLogin)
                     {
-                        Svc.PluginInterface.UiBuilder.AddNotification("Auto text advance has been automatically enabled on this character",
-                            "TextAdvance", NotificationType.Info, 10000);
+                        Notify.Success("Auto text advance has been automatically enabled on this character");
                     }
                 }
             }

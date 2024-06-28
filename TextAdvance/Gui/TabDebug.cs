@@ -56,9 +56,9 @@ internal static unsafe class TabDebug
         }
         if (ImGui.CollapsingHeader("Map"))
         {
-            ImGuiEx.Text($"Flight addr: {P.Memory.FlightAddr:X16} / {(P.Memory.FlightAddr - Process.GetCurrentProcess().MainModule.BaseAddress):X}");
-            ImGuiEx.Text($"CanFly: {P.Memory.IsFlightProhibited(P.Memory.FlightAddr)}");
-            var questLinkSpan = new ReadOnlySpan<QuestLinkMarker>(AgentMap.Instance()->MiniMapQuestLinkContainer.Markers, AgentMap.Instance()->MiniMapQuestLinkContainer.MarkerCount);
+            //ImGuiEx.Text($"Flight addr: {P.Memory.FlightAddr:X16} / {(P.Memory.FlightAddr - Process.GetCurrentProcess().MainModule.BaseAddress):X}");
+            //ImGuiEx.Text($"CanFly: {P.Memory.IsFlightProhibited(P.Memory.FlightAddr)}");
+            var questLinkSpan = AgentMap.Instance()->MiniMapQuestLinkContainer.Markers;
 
             foreach(var q in questLinkSpan)
             {
