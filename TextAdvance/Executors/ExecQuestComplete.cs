@@ -9,25 +9,17 @@ internal unsafe static class ExecQuestComplete
 {
     internal static void Tick()
     {
-        var addon = Svc.GameGui.GetAddonByName("JournalResult", 1);
-        if (addon == IntPtr.Zero)
+        if(TryGetAddonByName<AtkUnitBase>("JournalResult", out var addon) && IsAddonReady(addon))
         {
-            return;
-        }
-        var questAddon = (AtkUnitBase*)addon;
-        if (!IsAddonReady(questAddon)) return;
-        if (questAddon->UldManager.NodeListCount <= 4) return;
-        var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[4];
-        if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
-        var textComponent = (AtkTextNode*)buttonNode->Component->UldManager.NodeList[2];
-        if (!Lang.CompleteStr.Contains(Marshal.PtrToStringUTF8((IntPtr)textComponent->NodeText.StringPtr))) return;
-        if (textComponent->AtkResNode.Color.A != 255) return;
-        //pi.Framework.Gui.Chat.Print(Environment.TickCount + " Pass");
-        if (!((AddonJournalResult*)addon)->CompleteButton->IsEnabled) return;
-        if (EzThrottler.Throttle("Complete"))
-        {
-            PluginLog.Debug("Completing quest");
-            ClickJournalResult.Using(addon).Complete();
+            var button = addon->GetButtonNodeById(37);
+            if (button->IsEnabled)
+            {
+                if (EzThrottler.Throttle("JournalResultComplete"))
+                {
+                    PluginLog.Debug("Completing quest");
+                    button->ClickAddonButton(addon);
+                }
+            }
         }
     }
 }

@@ -30,7 +30,7 @@ namespace TextAdvance.Executors
         {
             if (IsEnabled)
             {
-                var canvas = (nint)((AtkUnitBase*)args.Addon)->UldManager.NodeList[7]->GetComponent();
+                var canvas = (nint)((AtkUnitBase*)args.Addon)->GetComponentNodeById(34);
                 var r = new ReaderJournalResult((AtkUnitBase*)args.Addon);
                 if(r.OptionalRewards.Count > 0)
                 {

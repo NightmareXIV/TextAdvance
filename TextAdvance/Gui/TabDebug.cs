@@ -1,8 +1,10 @@
 ﻿using Dalamud.Game.Gui.Toast;
 using Dalamud.Game.Network.Structures;
 using Dalamud.Memory;
+using ECommons.Automation;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets;
@@ -18,6 +20,15 @@ internal static unsafe class TabDebug
 {
     internal static void Draw()
     {
+        if (ImGui.CollapsingHeader("Request"))
+        {
+            if (TryGetAddonByName<AddonRequest>("Request", out var request) && IsAddonReady((AtkUnitBase*)request))
+            {
+                ImGuiEx.Text($"{request->EntryCount}");
+            }
+        }
+        if (ImGui.Button("Install hook")) Callback.InstallHook();
+        if (ImGui.Button("UnInstall hook")) Callback.UninstallHook();
         if (ImGui.CollapsingHeader("Antistuck"))
         {
             ImGuiEx.Text($"""
@@ -27,13 +38,13 @@ internal static unsafe class TabDebug
                 Animation locked: {Player.IsAnimationLocked} / {Player.AnimationLock}
                 """);
         }
-        if(ImGui.CollapsingHeader("Quest markers"))
+        if (ImGui.CollapsingHeader("Quest markers"))
         {
-            var markers = AgentHUD.Instance()->MapMarkers.Span;
+            var markers = AgentHUD.Instance()->MapMarkers.AsSpan();
             for (int i = 0; i < markers.Length; i++)
             {
                 var marker = markers[i];
-                if(ThreadLoadImageHandler.TryGetIconTextureWrap(marker.IconId, false, out var tex))
+                if (ThreadLoadImageHandler.TryGetIconTextureWrap(marker.IconId, false, out var tex))
                 {
                     ImGui.Image(tex.ImGuiHandle, tex.Size);
                 }
@@ -41,11 +52,11 @@ internal static unsafe class TabDebug
                 ImGui.Separator();
             }
         }
-        if(ImGui.Button("copy target descriptor"))
+        if (ImGui.Button("copy target descriptor"))
         {
             if (Svc.Targets.Target != null) Copy(new ObjectDescriptor(Svc.Targets.Target, true).AsCtorString());
         }
-        if(ImGui.CollapsingHeader("Auto interact"))
+        if (ImGui.CollapsingHeader("Auto interact"))
         {
             ImGuiEx.Text($"Target: {ExecAutoInteract.WasInteracted(Svc.Targets.Target)}");
             ImGuiEx.Text($"Auto interacted objects: {ExecAutoInteract.InteractedObjects.Print("\n")}");
@@ -60,23 +71,26 @@ internal static unsafe class TabDebug
             //ImGuiEx.Text($"CanFly: {P.Memory.IsFlightProhibited(P.Memory.FlightAddr)}");
             var questLinkSpan = AgentMap.Instance()->MiniMapQuestLinkContainer.Markers;
 
-            foreach(var q in questLinkSpan)
+            foreach (var q in questLinkSpan)
             {
                 ImGuiEx.Text($"{q.TooltipText.ToString()}");
                 if (Svc.Data.GetExcelSheet<Level>().GetRow(q.LevelId) is not { X: var x, Y: var y, Z: var z }) continue;
                 ImGuiEx.Text($"   {x}, {y} {z}");
             }
         }
-        if(TryGetAddonByName<AtkUnitBase>("JournalResult", out var addon) && IsAddonReady(addon))
+        if (ImGui.CollapsingHeader("Reward pick"))
         {
-            var canvas = addon->UldManager.NodeList[7];
-            var r = new ReaderJournalResult(addon);
-            ImGuiEx.Text($"Rewards: \n{r.OptionalRewards.Select(x => $"ID:{x.ItemID} / Icon:{x.IconID} / Amount:{x.Amount} / Name:{x.Name} ").Print("\n")}");
-            for (int i = 0; i < 5; i++)
+            if (TryGetAddonByName<AtkUnitBase>("JournalResult", out var addon) && IsAddonReady(addon))
             {
-                if (ImGui.Button($"{i}"))
+                var canvas = addon->UldManager.NodeList[7];
+                var r = new ReaderJournalResult(addon);
+                ImGuiEx.Text($"Rewards: \n{r.OptionalRewards.Select(x => $"ID:{x.ItemID} / Icon:{x.IconID} / Amount:{x.Amount} / Name:{x.Name} ").Print("\n")}");
+                for (int i = 0; i < 5; i++)
                 {
-                    P.Memory.PickRewardItemUnsafe((nint)canvas->GetComponent(), i);
+                    if (ImGui.Button($"{i}"))
+                    {
+                        P.Memory.PickRewardItemUnsafe((nint)canvas->GetComponent(), i);
+                    }
                 }
             }
         }

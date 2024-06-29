@@ -1,6 +1,7 @@
 ﻿using ClickLib.Clicks;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using ECommons.Automation;
 using ECommons.Configuration;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
@@ -24,18 +25,9 @@ internal unsafe static class ExecSkipTalk
 
     private static void Click(AddonEvent type, AddonArgs args)
     {
-        if (IsEnabled)
+        if (IsEnabled && IsAddonReady((AtkUnitBase*)args.Addon))
         {
-            ClickTalk.Using(args.Addon).Click();
+            Callback.Fire((AtkUnitBase*)args.Addon, true);
         }
-    }
-
-    internal static void Tick()
-    {
-        var addon = Svc.GameGui.GetAddonByName("Talk", 1);
-        if (addon == IntPtr.Zero) return;
-        var talkAddon = (AtkUnitBase*)addon;
-        if (!IsAddonReady(talkAddon)) return;
-        ClickTalk.Using(addon).Click();
     }
 }

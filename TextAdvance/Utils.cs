@@ -100,7 +100,7 @@ public unsafe static class Utils
         });
     }
 
-    public static bool IsMTQ(this GameObject x)
+    public static bool IsMTQ(this IGameObject x)
     {
         var id = x.Struct()->NamePlateIconId;
         if (Markers.MSQ.Contains(id) || Markers.ImportantSideProgress.Contains(id) || Markers.SideProgress.Contains(id))

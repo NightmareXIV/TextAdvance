@@ -21,7 +21,7 @@ public class MoveData
         this.NoInteract = noInteract;
     }
 
-    public GameObject GetGameObject(float maxDistance = 20f)
+    public IGameObject GetIGameObject(float maxDistance = 20f)
     {
         if(!Player.Available) return null;
         if (DataID == 0)

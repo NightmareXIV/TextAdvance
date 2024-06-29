@@ -78,6 +78,10 @@ public unsafe class MoveManager
     {
         if (!Player.Available) return;
         //P.EntityOverlay.AutoFrame = CSFramework.Instance()->FrameCounter + 1;
+        if(EzThrottler.Throttle("WarnMTQ", int.MaxValue))
+        {
+            ChatPrinter.Red($"[TextAdvance] MoveToQuest function may not work correctly until complete Dalamud update");
+        }
         var obj = GetNearestMTQObject();
         if(obj != null)
         {
@@ -99,7 +103,7 @@ public unsafe class MoveManager
         }
     }
 
-    private GameObject GetNearestMTQObject(Vector3? reference = null, float? maxDistance = null)
+    private IGameObject GetNearestMTQObject(Vector3? reference = null, float? maxDistance = null)
     {
         if (!Player.Available) return null;
         if (!(C.Navmesh && P.NavmeshManager.IsReady())) return null;
@@ -134,7 +138,7 @@ public unsafe class MoveManager
         {
             P.EntityOverlay.TaskManager.Enqueue(() =>
             {
-                var obj = data.GetGameObject();
+                var obj = data.GetIGameObject();
                 if(obj != null)
                 {
                     P.EntityOverlay.TaskManager.Insert(() => InteractWithDataID(obj.DataId));

@@ -2,6 +2,7 @@
 using ECommons.Automation;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace TextAdvance.Executors;
 
@@ -16,12 +17,12 @@ internal unsafe static class ExecConfirmCutsceneSkip
         {
             return;
         }
-        PluginLog.Debug($"1: {selectStrAddon->AtkUnitBase.UldManager.NodeList[3]->GetAsAtkTextNode()->NodeText.ToString()}");
+        PluginLog.Debug($"1: {selectStrAddon->GetTextNodeById(2)->NodeText.ToString()}");
         if (!Lang.SkipCutsceneStr.Contains(selectStrAddon->AtkUnitBase.UldManager.NodeList[3]->GetAsAtkTextNode()->NodeText.ToString())) return;
         if (EzThrottler.Throttle("SkipCutsceneConfirm"))
         {
             PluginLog.Debug("Selecting cutscene skipping");
-            ClickSelectString.Using(addon).SelectItem(0);
+            Callback.Fire((AtkUnitBase*)addon, true, 0);
         }
     }
 }

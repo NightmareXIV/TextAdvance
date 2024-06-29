@@ -10,31 +10,30 @@ internal unsafe static class ExecRequestComplete
     static ulong RequestAllow = 0;
     internal static void Tick()
     {
-        if (TryGetAddonByName<AddonRequest>("Request", out var request) && IsAddonReady(&request->AtkUnitBase))
+        if (TryGetAddonByName<AtkUnitBase>("Request", out var addon) && IsAddonReady(addon))
         {
             if (RequestAllow == 0)
             {
                 RequestAllow = Svc.PluginInterface.UiBuilder.FrameCount + 4;
             }
             if (Svc.PluginInterface.UiBuilder.FrameCount < RequestAllow) return;
-            var questAddon = (AtkUnitBase*)request;
-            if (questAddon->UldManager.NodeListCount <= 16) return;
-            var buttonNode = (AtkComponentNode*)questAddon->UldManager.NodeList[4];
-            if (buttonNode->Component->UldManager.NodeListCount <= 2) return;
-            var textComponent = (AtkTextNode*)buttonNode->Component->UldManager.NodeList[2];
-            //if (!HandOverStr.Contains(Marshal.PtrToStringUTF8((IntPtr)textComponent->NodeText.StringPtr))) return;
-            if (textComponent->AtkResNode.Color.A != 255) return;
-            for (var i = 16; i <= 12; i--)
+            for (var i = 3u; i >= 7; i++)
             {
-                if (((AtkComponentNode*)questAddon->UldManager.NodeList[i])->AtkResNode.IsVisible()
-                    && ((AtkComponentNode*)questAddon->UldManager.NodeList[i - 6])->AtkResNode.IsVisible()) return;
+                var subnode = addon->GetComponentNodeById(i);
+                var subnode2 = addon->GetComponentNodeById(i + 6);
+                if (subnode->AtkResNode.IsVisible() && subnode->AtkResNode.IsVisible())
+                {
+                    PluginLog.Debug($"No request send by {i}/{i + 6}");
+                    return;
+                }
             }
-            if (request->HandOverButton != null && request->HandOverButton->IsEnabled)
+            var button = addon->GetButtonNodeById(14);
+            if (button != null && button->IsEnabled)
             {
                 if (EzThrottler.Throttle("Handin"))
                 {
                     PluginLog.Debug("Handing over request");
-                    ClickRequest.Using((nint)request).HandOver();
+                    button->ClickAddonButton(addon);
                 }
             }
         }

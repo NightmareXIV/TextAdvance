@@ -117,7 +117,7 @@ public unsafe static class ExecAutoInteract
         }
     }
 
-    static float GetMinDistance(GameObject obj)
+    static float GetMinDistance(IGameObject obj)
     {
         if (obj.ObjectKind == ObjectKind.Aetheryte) return 8f;
         if (obj.ObjectKind == ObjectKind.EventNpc) return 6f + obj.HitboxRadius;
@@ -125,7 +125,7 @@ public unsafe static class ExecAutoInteract
         return -999f;
     }
 
-    static void Interact(GameObject obj)
+    static void Interact(IGameObject obj)
     {
         if (WasInteracted(obj)) return;
         if (Svc.Targets.Target.AddressEquals(obj))
@@ -149,13 +149,13 @@ public unsafe static class ExecAutoInteract
         }
     }
 
-    static void RecordInteractionWith(GameObject obj)
+    static void RecordInteractionWith(IGameObject obj)
     {
         InteractedObjects.RemoveWhere(x => x.DataID == obj.DataId);
         InteractedObjects.Add(new(obj.DataId));
     }
 
-    public static bool WasInteracted(GameObject obj)
+    public static bool WasInteracted(IGameObject obj)
     {
         if(obj == null) return false;
         return InteractedObjects.Contains(new(obj.DataId));

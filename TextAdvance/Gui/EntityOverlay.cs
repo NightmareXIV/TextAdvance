@@ -71,7 +71,7 @@ public unsafe sealed class EntityOverlay : IDisposable
         }
     }
 
-    void DrawButton(GameObject obj)
+    void DrawButton(IGameObject obj)
     {
         if (Vector3.Distance(obj.Position, Player.Object.Position) < 3f) return;
         if(CSFramework.Instance()->FrameCounter == this.AutoFrame)
