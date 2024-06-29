@@ -11,7 +11,7 @@ If you like this or any of the other plugins I maintain, please consider becomin
 # [⚠ For installation instructions please click here. ⚠](https://github.com/NightmareXIV/MyDalamudPlugins#installation)
 A tool to assist with quest speedrunning. 
 
-<p align="center"><img src="https://raw.githubusercontent.com/NightmareXIV/MyDalamudPlugins/main/TextAdvance/icon.png"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/NightmareXIV/TextAdvance/main/meta/image.png"></p>
 
 Primary functions:
 - Automatically skip quest subtitles
