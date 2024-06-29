@@ -57,7 +57,7 @@ public unsafe class TextAdvance : IDalamudPlugin
         P = null;
     }
 
-    public TextAdvance(DalamudPluginInterface pluginInterface)
+    public TextAdvance(IDalamudPluginInterface pluginInterface)
     {
         P = this;
         ECommonsMain.Init(pluginInterface, this, Module.SplatoonAPI);
