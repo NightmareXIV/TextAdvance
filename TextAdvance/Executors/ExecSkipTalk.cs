@@ -3,6 +3,8 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using ECommons.Automation;
 using ECommons.Configuration;
+using ECommons.UIHelpers.AddonMasterImplementations;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace TextAdvance.Executors;
@@ -25,9 +27,9 @@ internal unsafe static class ExecSkipTalk
 
     private static void Click(AddonEvent type, AddonArgs args)
     {
-        if (IsEnabled && IsAddonReady((AtkUnitBase*)args.Addon))
+        if (IsEnabled && ((AtkUnitBase*)args.Addon)->IsVisible)
         {
-            Callback.Fire((AtkUnitBase*)args.Addon, true);
+            new TalkMaster(args.Addon).Click();
         }
     }
 }
