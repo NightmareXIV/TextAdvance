@@ -80,7 +80,7 @@ public unsafe class MoveManager
         //P.EntityOverlay.AutoFrame = CSFramework.Instance()->FrameCounter + 1;
         if(EzThrottler.Throttle("WarnMTQ", int.MaxValue))
         {
-            ChatPrinter.Red($"[TextAdvance] MoveToQuest function may not work correctly until complete Dalamud update");
+            //ChatPrinter.Red($"[TextAdvance] MoveToQuest function may not work correctly until complete Dalamud update");
         }
         var obj = GetNearestMTQObject();
         if(obj != null)

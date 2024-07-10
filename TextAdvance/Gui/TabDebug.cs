@@ -20,6 +20,10 @@ internal static unsafe class TabDebug
 {
     internal static void Draw()
     {
+        if (ImGui.CollapsingHeader("Cutscene"))
+        {
+            
+        }
         if (ImGui.CollapsingHeader("Request"))
         {
             if (TryGetAddonByName<AddonRequest>("Request", out var request) && IsAddonReady((AtkUnitBase*)request))

@@ -19,7 +19,7 @@ internal unsafe static class ExecRequestComplete
                 RequestAllow = Svc.PluginInterface.UiBuilder.FrameCount + 4;
             }
             if (Svc.PluginInterface.UiBuilder.FrameCount < RequestAllow) return;
-            var m = new RequestMaster(addon);
+            var m = new AddonMaster.Request(addon);
             if (m.IsHandOverEnabled && m.IsFilled)
             {
                 if (EzThrottler.Throttle("Handin"))
