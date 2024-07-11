@@ -2,6 +2,7 @@
 using Dalamud.Game.Network.Structures;
 using Dalamud.Memory;
 using ECommons.Automation;
+using ECommons.Automation.LegacyTaskManager;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
@@ -18,6 +19,7 @@ namespace TextAdvance.Gui;
 
 internal static unsafe class TabDebug
 {
+    static TaskManager TestTaskManager;
     internal static void Draw()
     {
         if (ImGui.CollapsingHeader("Cutscene"))
@@ -95,6 +97,23 @@ internal static unsafe class TabDebug
                     {
                         P.Memory.PickRewardItemUnsafe((nint)canvas->GetComponent(), i);
                     }
+                }
+                if(ImGui.Button("Stress test"))
+                {
+                    TestTaskManager ??= new();
+                    for (int i = 0; i < 1000; i++)
+                    {
+                        var x = i % 5;
+                        TestTaskManager.Enqueue(() => P.Memory.PickRewardItemUnsafe((nint)canvas->GetComponent(), x));
+                    }
+                }
+                if(TestTaskManager != null)
+                {
+                    ImGuiEx.Text($"Task {TestTaskManager.MaxTasks - TestTaskManager.NumQueuedTasks}/{TestTaskManager.MaxTasks}");
+                }
+                if(ImGui.Button("Stop stress test"))
+                {
+                    TestTaskManager.Abort();
                 }
             }
         }
