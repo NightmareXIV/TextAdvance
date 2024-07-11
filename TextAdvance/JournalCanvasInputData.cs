@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TextAdvance
 {
-    [StructLayout(LayoutKind.Explicit)]
+    [StructLayout(LayoutKind.Explicit, Size = 100)]
     internal unsafe struct JournalCanvasInputData
     {
         [FieldOffset(0)] internal int Unk0;
