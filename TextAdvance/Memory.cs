@@ -60,6 +60,11 @@ namespace TextAdvance
 
         internal void PickRewardItemUnsafe(nint canvas, int index)
         {
+            if(canvas < 1024)
+            {
+                DuoLog.Error($"TextAdvance anti-crash: canvas={canvas:X16} invalid data detected. Please report to developer.");
+                return;
+            }
             var emptyBytes = stackalloc byte[50];
             var data = stackalloc JournalCanvasInputData[1];
             AtkComponentJournalCanvas_ReceiveEventDetour(canvas, 9, 7 + index, data, emptyBytes);
@@ -67,6 +72,7 @@ namespace TextAdvance
 
         nint AtkComponentJournalCanvas_ReceiveEventDetour(nint a1, ushort a2, int a3, JournalCanvasInputData* a4, void* a5)
         {
+            PluginLog.Information($"AtkComponentJournalCanvas_ReceiveEventDetour: Canvas ptr: {a1:X16}");
             var ret = AtkComponentJournalCanvas_ReceiveEventHook.Original(a1, a2, a3, a4, a5);
             try
             {
