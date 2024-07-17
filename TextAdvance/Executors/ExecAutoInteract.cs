@@ -1,9 +1,11 @@
 ﻿using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
+using ECommons.Automation.UIInput;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using FFXIVClientStructs.FFXIV.Component.SteamApi.Callbacks;
 using System.Collections.Frozen;
 using static TextAdvance.SplatoonHandler;
@@ -82,6 +84,13 @@ public unsafe static class ExecAutoInteract
         new(1006230, 146, ObjectKind.EventNpc, new(34.9f, 3.4f, -343.7f)), //Wilred at Southern Thanalan
         new(2002329, 156, ObjectKind.EventObj, new(-169.8f, 14.1f, -609.5f)), //Destination at Mor Dhona
         new(1006561, 156, ObjectKind.EventNpc, new(-59.3f, 3.3f, -637.8f)), //Magitek Reaper at Mor Dhona
+        new(1046681, 1185, ObjectKind.EventNpc, new(-194.8f, 120.8f, -359.2f)), //Sunperch Guard at Tuliyollal
+        new(1046678, 1188, ObjectKind.EventNpc, new(605.6f, 119.5f, 185.0f)), //Kind-eyed Xbr'aal at Kozama'uka
+        new(1046679, 1188, ObjectKind.EventNpc, new(590.4f, 119.5f, 144.1f)), //Enthusiastic Moblin at Kozama'uka
+        new(1046680, 1188, ObjectKind.EventNpc, new(545.4f, 116.7f, 152.9f)), //Cheery Pelu at Kozama'uka
+        new(1047570, 1189, ObjectKind.EventNpc, new(-526.9f, 28.8f, -426.0f)), //Wuk Lamat at Yak T'el
+        new(1047682, 1189, ObjectKind.EventNpc, new(353.6f, -114.0f, 597.0f)), //Wuk Lamat at Yak T'el
+        new(1046974, 1190, ObjectKind.EventNpc, new(-386.8f, 18.2f, -136.7f)), //Wihuwte at Shaaloani
 
 
 
@@ -91,6 +100,7 @@ public unsafe static class ExecAutoInteract
     public readonly static HashSet<ObjectQuestID> InteractedObjects = [];
     public static void Tick()
     {
+
         if (!Player.Interactable) return;
         if (!IsScreenReady()) return;
         if (Svc.Condition[ConditionFlag.InFlight] || Svc.Condition[ConditionFlag.Jumping]) return;

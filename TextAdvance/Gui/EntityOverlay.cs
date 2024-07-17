@@ -84,17 +84,30 @@ public unsafe sealed class EntityOverlay : IDisposable
             var size = ImGuiHelpers.GetButtonSize(FontAwesomeIcon.PersonWalkingArrowRight.ToIconString());
             ImGuiHelpers.ForceNextWindowMainViewport();
             ImGuiHelpers.SetNextWindowPosRelativeMainViewport((pos - size));
-            if (ImGui.Begin($"##TextAdvanceButton-{obj.Address}", ImGuiEx.OverlayFlags & ~ImGuiWindowFlags.NoMouseInputs))
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+            if (ImGui.Begin($"##TextAdvanceButton-{obj.Address}", ImGuiEx.OverlayFlags & ~ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.AlwaysUseWindowPadding))
             {
+                ImGui.PopStyleVar();
                 ImGui.PushFont(UiBuilder.IconFont);
                 ImGui.SetWindowFontScale(2f);
                 if (ImGui.Button(FontAwesomeIcon.PersonWalkingArrowRight.ToIconString() + $"##{obj.Address}"))
                 {
-                    Move();
+                    try
+                    {
+                        Move();
+                    }
+                    catch(Exception e)
+                    {
+                        e.Log();
+                    }
                 }
                 ImGui.PopFont();
                 ImGui.SetWindowFontScale(1f);
                 ImGuiEx.Tooltip($"{obj.Name}");
+            }
+            else
+            {
+                ImGui.PopStyleVar();
             }
             ImGui.End();
         }
