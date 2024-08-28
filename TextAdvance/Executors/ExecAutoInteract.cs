@@ -3,11 +3,14 @@ using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Automation.UIInput;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
+using ECommons.Reflection;
 using ECommons.Throttlers;
+using ECommons.UIHelpers.AddonMasterImplementations;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using FFXIVClientStructs.FFXIV.Component.SteamApi.Callbacks;
 using System.Collections.Frozen;
+using System.Reflection;
 using static TextAdvance.SplatoonHandler;
 
 namespace TextAdvance.Executors;
@@ -100,7 +103,6 @@ public unsafe static class ExecAutoInteract
     public readonly static HashSet<ObjectQuestID> InteractedObjects = [];
     public static void Tick()
     {
-
         if (!Player.Interactable) return;
         if (!IsScreenReady()) return;
         if (Svc.Condition[ConditionFlag.InFlight] || Svc.Condition[ConditionFlag.Jumping]) return;

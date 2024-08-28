@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace TextAdvance.Services;
 public class IPCProvider
 {
-    public TerritoryConfig Config = null;
+    public ExternalTerritoryConfig ExternalConfig = null;
     public string Requester = null;
 
     private IPCProvider()
@@ -17,11 +17,12 @@ public class IPCProvider
     }
 
     [EzIPC]
-    public bool EnableExternalControl(string requester, TerritoryConfig config)
+    public bool EnableExternalControl(string requester, ExternalTerritoryConfig config)
     {
         if(!IsInExternalControl() || Requester == requester)
         {
-            Config = config;
+            ExternalConfig = config;
+            Requester = requester;
             return true;
         }
         return false;
@@ -32,7 +33,8 @@ public class IPCProvider
     {
         if(!IsInExternalControl() || Requester == requester)
         {
-            Config = null;
+            ExternalConfig = null;
+            Requester = requester;
             return true;
         }
         return false;
@@ -41,6 +43,6 @@ public class IPCProvider
     [EzIPC]
     public bool IsInExternalControl()
     {
-        return Requester != null && Config != null;
+        return Requester != null && ExternalConfig != null;
     }
 }

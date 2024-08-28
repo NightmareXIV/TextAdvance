@@ -20,8 +20,8 @@ namespace TextAdvance
         EzHook<AtkComponentJournalCanvas_ReceiveEventDelegate> AtkComponentJournalCanvas_ReceiveEventHook;
 
         internal delegate nint IsFlightProhibitedDelegate(nint a1);
-        //internal IsFlightProhibitedDelegate IsFlightProhibited = EzDelegate.Get<IsFlightProhibitedDelegate>("48 89 5C 24 ?? 57 48 83 EC 20 48 8B 1D ?? ?? ?? ?? 48 8B F9 48 85 DB 0F 84 ?? ?? ?? ?? 80 3D");
-        //internal nint FlightAddr = Svc.SigScanner.GetStaticAddressFromSig("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 75 11");
+        internal IsFlightProhibitedDelegate IsFlightProhibited = EzDelegate.Get<IsFlightProhibitedDelegate>("40 53 48 83 EC 20 48 8B 1D ?? ?? ?? ?? 48 85 DB 0F 84 ?? ?? ?? ?? 80 3D");
+        internal nint FlightAddr = Svc.SigScanner.GetStaticAddressFromSig("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 75 11");
 
         internal delegate nint AddonTalk_ReceiveEventDelegate(nint a1, ushort a2, nint a3, nint a4, nint a5);
         [EzHook("40 53 48 83 EC 40 0F B7 C2", false)]

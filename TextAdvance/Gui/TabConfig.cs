@@ -19,6 +19,16 @@ internal static class TabConfig
             }
         }
 
+        if (S.IPCProvider.IsInExternalControl())
+        {
+            ImGuiEx.TextWrapped(EColor.RedBright, $"TextAdvance is externally controlled by {S.IPCProvider.Requester}. All your settings are being ignored.");
+            if (ImGui.SmallButton("Cancel external control"))
+            {
+                S.IPCProvider.Requester = null;
+                S.IPCProvider.ExternalConfig = null;
+            }
+        }
+
         new NuiBuilder()
         .Section("Plugin operation")
         .Widget(() =>

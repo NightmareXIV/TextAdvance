@@ -22,6 +22,24 @@ internal static unsafe class TabDebug
     static TaskManager TestTaskManager;
     internal static void Draw()
     {
+        if(ImGui.CollapsingHeader("External control test"))
+        {
+            var opts = Ref<ExternalTerritoryConfig>.Get("", new());
+            ImGuiEx.Checkbox("EnableAutoInteract", ref opts.EnableAutoInteract);
+            ImGuiEx.Checkbox("EnableCutsceneEsc", ref opts.EnableCutsceneEsc);
+            ImGuiEx.Checkbox("EnableCutsceneSkipConfirm", ref opts.EnableCutsceneSkipConfirm);
+            ImGuiEx.Checkbox("EnableQuestAccept", ref opts.EnableQuestAccept);
+            ImGuiEx.Checkbox("EnableQuestComplete", ref opts.EnableQuestComplete);
+            ImGuiEx.Checkbox("EnableRequestFill", ref opts.EnableRequestFill);
+            ImGuiEx.Checkbox("EnableRequestHandin", ref opts.EnableRequestHandin);
+            ImGuiEx.Checkbox("EnableRewardPick", ref opts.EnableRewardPick);
+            ImGuiEx.Checkbox("EnableTalkSkip", ref opts.EnableTalkSkip);
+            ImGuiEx.Text($"Is in external control: {S.IPCTester.IsInExternalControl()}");
+            if (ImGui.Button("Enable external control (Plugin1)")) DuoLog.Information(S.IPCTester.EnableExternalControl("Plugin1", opts).ToString());
+            if (ImGui.Button("Enable external control (Plugin2)")) DuoLog.Information(S.IPCTester.EnableExternalControl("Plugin2", opts).ToString());
+            if (ImGui.Button("Disable external control (Plugin1)")) DuoLog.Information(S.IPCTester.DisableExternalControl("Plugin1").ToString());
+            if (ImGui.Button("Disable external control (Plugin2)")) DuoLog.Information(S.IPCTester.DisableExternalControl("Plugin1").ToString());
+        }
         if (ImGui.CollapsingHeader("Cutscene"))
         {
             

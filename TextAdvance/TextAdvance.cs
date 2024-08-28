@@ -214,14 +214,14 @@ public unsafe class TextAdvance : IDalamudPlugin
 
     internal bool IsEnabled(bool pure = false)
     {
-        return (Enabled || IsTerritoryEnabled()) && (!Locked || pure);
+        return (Enabled || S.IPCProvider.IsInExternalControl() || IsTerritoryEnabled()) && (!Locked || pure);
     }
 
     internal bool IsTerritoryEnabled()
     {
         if (S.IPCProvider.IsInExternalControl())
         {
-            return S.IPCProvider.Config.IsEnabled();
+            return false;
         }
         return P.config.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var cfg) && cfg.IsEnabled();
     }
