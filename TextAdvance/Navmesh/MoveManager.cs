@@ -121,11 +121,11 @@ public unsafe class MoveManager
         SpecialAdjust(data);
         P.NavmeshManager.Stop();
         P.EntityOverlay.TaskManager.Abort();
-        if (Svc.Condition[ConditionFlag.InFlight])
+        /*if (Svc.Condition[ConditionFlag.InFlight])
         {
             Svc.Toasts.ShowError("[TextAdvance] Flying pathfinding is not supported");
             return;
-        }
+        }*/
         if (Vector3.Distance(data.Position, Player.Object.Position) > 20f)
         {
             P.EntityOverlay.TaskManager.Enqueue(MountIfCan);

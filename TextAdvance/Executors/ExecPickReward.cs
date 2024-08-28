@@ -5,6 +5,7 @@ using ECommons.Automation;
 using ECommons.Automation.NeoTaskManager;
 using ECommons.ChatMethods;
 using ECommons.ExcelServices;
+using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -110,9 +111,48 @@ namespace TextAdvance.Executors
             Random = null;
         }
 
+        internal static string[] DetermineGearCoffer()
+        {
+            if (Player.Object.GetRole() == CombatRole.Tank) return Lang.CofferOfFending;
+            if (Player.Object.GetRole() == CombatRole.Healer) return Lang.CofferOfHealing;
+            if (Player.Job.GetUpgradedJob().EqualsAny(Job.BRD, Job.DNC, Job.MCH)) return Lang.CofferOfAiming;
+            if (Player.Job.GetUpgradedJob().EqualsAny(Job.DRG, Job.RPR)) return Lang.CofferOfMaiming;
+            if (Player.Job.GetUpgradedJob().EqualsAny(Job.NIN, Job.VPR)) return Lang.CofferOfScouting;
+            if (Player.Object.ClassJob.GameData.Role == 2) return Lang.CofferOfSlaying; //other melees
+            if (Player.Object.GetRole() == CombatRole.DPS) return Lang.CofferOfCasting; //only casters left
+            return null; //doh/dol
+        }
+
+        internal static string[] DetermineAccessoryCoffer()
+        {
+            if (Player.Object.GetRole() == CombatRole.Tank) return Lang.CofferOfFending;
+            if (Player.Object.GetRole() == CombatRole.Healer) return Lang.CofferOfHealing;
+            if (Player.Job.GetUpgradedJob().EqualsAny(Job.BRD, Job.DNC, Job.MCH, Job.NIN, Job.VPR)) return Lang.CofferOfAiming;
+            if (Player.Object.ClassJob.GameData.Role == 3) return Lang.CofferOfCasting; //phys rangeds are excluded before
+            if (Player.Object.GetRole() == CombatRole.DPS) return Lang.CofferOfStriking; //only non-aiming melee left
+            return null; //doh/dol
+        }
+
         internal static bool TrySelectCoffer(List<ReaderJournalResult.OptionalReward> data, out int index)
         {
             List<int> possible = [];
+            var accessoryString = DetermineAccessoryCoffer();
+            var gearString = DetermineGearCoffer();
+            for (int i = 0; i < data.Count; i++)
+            {
+                if (gearString != null && data[i].Name.ContainsAny(StringComparison.OrdinalIgnoreCase, gearString))
+                {
+                    PluginLog.Information($"Gear string was {gearString.Print()}");
+                    index = i;
+                    return true;
+                }
+                if (accessoryString != null && data[i].Name.ContainsAny(StringComparison.OrdinalIgnoreCase, gearString))
+                {
+                    PluginLog.Information($"Accessory string was {gearString.Print()}");
+                    index = i;
+                    return true;
+                }
+            }
             for (var i = 0; i < data.Count; i++)
             {
                 var d = data[i];

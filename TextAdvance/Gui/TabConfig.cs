@@ -132,6 +132,7 @@ internal static class TabConfig
                 ImGui.EndCombo();
             }
             ImGui.Checkbox($"Print navigation status into chat", ref P.config.NavStatusChat);
+            ImGui.Checkbox("(very experimental) Allow flight", ref P.config.EnableFlight);
         })
 
         .Section("Miscellaneous")

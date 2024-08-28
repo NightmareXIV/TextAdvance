@@ -31,6 +31,10 @@ internal class Overlay : Window
         {
             col = EColor.GreenBright;
         }
+        if (P.IsDisableButtonHeld())
+        {
+            col = ImGuiColors.DalamudRed;
+        }
         ImGuiEx.Text(col, "TextAdvance: ");
         ImGui.SameLine(0, 0);
         if (!blocked || Environment.TickCount64 % 2000 > 1000)

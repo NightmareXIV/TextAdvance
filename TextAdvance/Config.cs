@@ -31,7 +31,7 @@ public class Config : IEzConfig
     public int Mount = 0;
     public bool NavStatusChat = false;
     public bool DisplayFunding = true;
-    internal bool EnableFlight = false;
+    public bool EnableFlight = false;
 
     public bool GetEnableQuestAccept()
     {

@@ -12,6 +12,7 @@ using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets;
+using System.Security.Principal;
 using TextAdvance.Executors;
 using TextAdvance.Gui;
 using TextAdvance.Navmesh;
@@ -214,7 +215,7 @@ public unsafe class TextAdvance : IDalamudPlugin
 
     internal bool IsEnabled(bool pure = false)
     {
-        return (Enabled || S.IPCProvider.IsInExternalControl() || IsTerritoryEnabled()) && (!Locked || pure);
+        return (Enabled || S.IPCProvider.IsInExternalControl() || IsTerritoryEnabled() || IsEnableButtonHeld()) && (!Locked || pure);
     }
 
     internal bool IsTerritoryEnabled()
@@ -262,7 +263,7 @@ public unsafe class TextAdvance : IDalamudPlugin
                         }
                         if (config.GetEnableAutoInteract()) ExecAutoInteract.Tick();
                     }
-                    if ((IsEnabled() || (IsEnableButtonHeld() && Native.ApplicationIsActivated())) &&
+                    if (IsEnabled() &&
                         (Svc.Condition[ConditionFlag.OccupiedInQuestEvent] ||
                         Svc.Condition[ConditionFlag.Occupied33] ||
                         Svc.Condition[ConditionFlag.OccupiedInEvent] ||
@@ -300,17 +301,17 @@ public unsafe class TextAdvance : IDalamudPlugin
 
     internal bool IsDisableButtonHeld()
     {
-        if (config.TempDisableButton == Button.ALT && ImGui.GetIO().KeyAlt) return true;
-        if (config.TempDisableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return true;
-        if (config.TempDisableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return true;
+        if (config.TempDisableButton == Button.ALT && ImGui.GetIO().KeyAlt) return !CSFramework.Instance()->WindowInactive;
+        if (config.TempDisableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return !CSFramework.Instance()->WindowInactive;
+        if (config.TempDisableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return !CSFramework.Instance()->WindowInactive;
         return false;
     }
 
     bool IsEnableButtonHeld()
     {
-        if (config.TempEnableButton == Button.ALT && ImGui.GetIO().KeyAlt) return true;
-        if (config.TempEnableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return true;
-        if (config.TempEnableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return true;
+        if (config.TempEnableButton == Button.ALT && ImGui.GetIO().KeyAlt) return !CSFramework.Instance()->WindowInactive;
+        if (config.TempEnableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return !CSFramework.Instance()->WindowInactive;
+        if (config.TempEnableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return !CSFramework.Instance()->WindowInactive;
         return false;
     }
 }
