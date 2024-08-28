@@ -1,6 +1,4 @@
-# TextAdvance
-# [⚠ For installation instructions please click here. ⚠](https://github.com/NightmareXIV/MyDalamudPlugins#installation)
-A tool to assist with quest speedrunning. 
+## Description
 
 <p align="center"><img src="https://raw.githubusercontent.com/NightmareXIV/TextAdvance/master/meta/image.png"></p>
 
@@ -20,10 +18,3 @@ Additional functions:
 **TextAdvance automatically disables itself every time you log out and requires you to type `/at` command whenever you want to reenable it.** You can override this behavior by enabling "Don't auto-disable plugin on logout" option.
 
 Alternatively, you can configure characters on which you want it to automatically enable upon log in.
-
-## Install
-Dalamud repository:
-
-`https://raw.githubusercontent.com/NightmareXIV/MyDalamudPlugins/main/pluginmaster.json`
-
-Detailed instructions available here: https://github.com/NightmareXIV/MyDalamudPlugins
