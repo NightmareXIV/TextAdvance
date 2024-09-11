@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>NightmareXIV</Authors>
-		<Version>3.2.3.4</Version>
+		<Version>3.2.3.5</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -14,7 +14,7 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<OutputPath>bin\$(Configuration)\</OutputPath>
-		<NoWarn>CS1591</NoWarn>
+		<NoWarn>CS1591;CS8632</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Label="Documentation">

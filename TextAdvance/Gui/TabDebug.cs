@@ -22,6 +22,22 @@ internal static unsafe class TabDebug
     static TaskManager TestTaskManager;
     internal static void Draw()
     {
+        if(ImGui.CollapsingHeader("IPC test"))
+        {
+            ImGuiEx.Text($"""
+                IsEnabled {S.IPCTester.IsEnabled()}
+                GetEnableQuestAccept {S.IPCTester.GetEnableQuestAccept()}
+                GetEnableQuestComplete {S.IPCTester.GetEnableQuestComplete()}
+                GetEnableRewardPick {S.IPCTester.GetEnableRewardPick()}
+                GetEnableCutsceneEsc {S.IPCTester.GetEnableCutsceneEsc()}
+                GetEnableCutsceneSkipConfirm {S.IPCTester.GetEnableCutsceneSkipConfirm()}
+                GetEnableRequestHandin {S.IPCTester.GetEnableRequestHandin()}
+                GetEnableRequestFill {S.IPCTester.GetEnableRequestFill()}
+                GetEnableTalkSkip {S.IPCTester.GetEnableTalkSkip()}
+                GetEnableAutoInteract {S.IPCTester.GetEnableAutoInteract()}
+                IsPaused {S.IPCTester.IsPaused()}
+                """);
+        }
         if(ImGui.CollapsingHeader("External control test"))
         {
             var opts = Ref<ExternalTerritoryConfig>.Get("", new());
@@ -38,7 +54,7 @@ internal static unsafe class TabDebug
             if (ImGui.Button("Enable external control (Plugin1)")) DuoLog.Information(S.IPCTester.EnableExternalControl("Plugin1", opts).ToString());
             if (ImGui.Button("Enable external control (Plugin2)")) DuoLog.Information(S.IPCTester.EnableExternalControl("Plugin2", opts).ToString());
             if (ImGui.Button("Disable external control (Plugin1)")) DuoLog.Information(S.IPCTester.DisableExternalControl("Plugin1").ToString());
-            if (ImGui.Button("Disable external control (Plugin2)")) DuoLog.Information(S.IPCTester.DisableExternalControl("Plugin1").ToString());
+            if (ImGui.Button("Disable external control (Plugin2)")) DuoLog.Information(S.IPCTester.DisableExternalControl("Plugin2").ToString());
         }
         if (ImGui.CollapsingHeader("Cutscene"))
         {

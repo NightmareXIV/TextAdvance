@@ -34,7 +34,7 @@ public class IPCProvider
         if(!IsInExternalControl() || Requester == requester)
         {
             ExternalConfig = null;
-            Requester = requester;
+            Requester = null;
             return true;
         }
         return false;
@@ -45,4 +45,16 @@ public class IPCProvider
     {
         return Requester != null && ExternalConfig != null;
     }
+
+    [EzIPC] public bool IsEnabled() => P.IsEnabled(true);
+    [EzIPC] public bool GetEnableQuestAccept() => P.config.GetEnableQuestAccept();
+    [EzIPC] public bool GetEnableQuestComplete() => P.config.GetEnableQuestComplete();
+    [EzIPC] public bool GetEnableRewardPick() => P.config.GetEnableRewardPick();
+    [EzIPC] public bool GetEnableCutsceneEsc() => P.config.GetEnableCutsceneEsc();
+    [EzIPC] public bool GetEnableCutsceneSkipConfirm() => P.config.GetEnableCutsceneSkipConfirm();
+    [EzIPC] public bool GetEnableRequestHandin() => P.config.GetEnableRequestHandin();
+    [EzIPC] public bool GetEnableRequestFill() => P.config.GetEnableRequestFill();
+    [EzIPC] public bool GetEnableTalkSkip() => P.config.GetEnableTalkSkip();
+    [EzIPC] public bool GetEnableAutoInteract() => P.config.GetEnableAutoInteract();
+    [EzIPC] public bool IsPaused() => P.BlockList.Count != 0;
 }
