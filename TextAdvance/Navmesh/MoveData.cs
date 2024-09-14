@@ -13,6 +13,8 @@ public class MoveData
     public Vector3 Position;
     public uint DataID;
     public bool NoInteract;
+    public bool? Mount = null;
+    public bool? Fly = null;
 
     public MoveData(Vector3 destination, uint dataID, bool noInteract)
     {

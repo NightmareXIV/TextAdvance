@@ -74,6 +74,33 @@ public unsafe class MoveManager
         Log($"Nav to flag {pos.Value:F1}, {iterations} corrections");
     }
 
+    public void MoveTo2DPoint(MoveData data)
+    {
+        var pos = P.NavmeshManager.PointOnFloor(new(data.Position.X, 1024, data.Position.Z), false, 5);
+        var iterations = 0;
+        if (pos == null)
+        {
+            for (var extent = 0; extent < 100; extent += 5)
+            {
+                for (var i = 0; i < 1000; i += 5)
+                {
+                    iterations++;
+                    pos ??= P.NavmeshManager.NearestPoint(new(data.Position.X, Player.Object.Position.Y + i, data.Position.Z), extent, 5);
+                    pos ??= P.NavmeshManager.NearestPoint(new(data.Position.X, Player.Object.Position.Y - i, data.Position.Z), extent, 5);
+                    if (pos != null) break;
+                }
+            }
+        }
+        if (pos == null)
+        {
+            DuoLog.Error($"Failed to move to 2d point");
+            return;
+        }
+        data.Position = pos.Value;
+        EnqueueMoveAndInteract(data);
+        Log($"Nav to 2d point {pos.Value:F1}, {iterations} corrections");
+    }
+
     public void MoveToQuest()
     {
         if (!Player.Available) return;
@@ -126,15 +153,15 @@ public unsafe class MoveManager
             Svc.Toasts.ShowError("[TextAdvance] Flying pathfinding is not supported");
             return;
         }*/
-        if (Vector3.Distance(data.Position, Player.Object.Position) > 20f)
+        if (data.Mount ?? Vector3.Distance(data.Position, Player.Object.Position) > 20f)
         {
             P.EntityOverlay.TaskManager.Enqueue(MountIfCan);
         }
-        P.EntityOverlay.TaskManager.Enqueue(FlyIfCan);
+        if(data.Fly != false) P.EntityOverlay.TaskManager.Enqueue(FlyIfCan);
         P.EntityOverlay.TaskManager.Enqueue(() => MoveToPosition(data, 3f));
         P.EntityOverlay.TaskManager.Enqueue(() => WaitUntilArrival(data, 3f), 10 * 60 * 1000);
         P.EntityOverlay.TaskManager.Enqueue(P.NavmeshManager.Stop);
-        if (C.NavmeshAutoInteract)
+        if (C.NavmeshAutoInteract && !data.NoInteract)
         {
             P.EntityOverlay.TaskManager.Enqueue(() =>
             {
@@ -240,7 +267,7 @@ public unsafe class MoveManager
                 LastPosition = Player.Position;
             }
         }
-        if (P.config.Mount != - 1 && Vector3.Distance(data.Position, Player.Object.Position) > 20f && !Svc.Condition[ConditionFlag.Mounted] && ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, 9) == 0)
+        if (data.Mount != false && P.config.Mount != -1 && Vector3.Distance(data.Position, Player.Object.Position) > 20f && !Svc.Condition[ConditionFlag.Mounted] && ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, 9) == 0)
         {
             EnqueueMoveAndInteract(data);
             return false;

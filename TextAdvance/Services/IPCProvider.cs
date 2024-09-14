@@ -1,9 +1,11 @@
 ﻿using ECommons.EzIpcManager;
+using ECommons.GameHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TextAdvance.Navmesh;
 
 namespace TextAdvance.Services;
 public class IPCProvider
@@ -57,4 +59,24 @@ public class IPCProvider
     [EzIPC] public bool GetEnableTalkSkip() => P.config.GetEnableTalkSkip();
     [EzIPC] public bool GetEnableAutoInteract() => P.config.GetEnableAutoInteract();
     [EzIPC] public bool IsPaused() => P.BlockList.Count != 0;
+
+    [EzIPC]
+    public void EnqueueMoveAndInteract(MoveData data)
+    {
+        S.MoveManager.EnqueueMoveAndInteract(data);
+    }
+    [EzIPC]
+    public void EnqueueMoveTo2DPoint(MoveData data)
+    {
+        S.MoveManager.MoveTo2DPoint(data);
+    }
+    [EzIPC] public void Stop()
+    {
+        P.EntityOverlay.TaskManager.Abort();
+        if (C.Navmesh) P.NavmeshManager.Stop();
+    }
+    [EzIPC] public bool IsBusy()
+    {
+        return P.EntityOverlay.TaskManager.IsBusy;
+    }
 }
