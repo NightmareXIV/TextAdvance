@@ -113,6 +113,7 @@ public unsafe class TextAdvance : IDalamudPlugin
             EntityOverlay = new();
             ProgressOverlay = new();
             NavmeshManager = new();
+            ExecAutoSnipe.Init(); // must init after memory
             SingletonServiceManager.Initialize(typeof(ServiceManager));
             EzIPC.OnSafeInvocationException += this.EzIPC_OnSafeInvocationException;
         });
@@ -233,6 +234,7 @@ public unsafe class TextAdvance : IDalamudPlugin
         {
             ExecSkipTalk.IsEnabled = false;
             ExecPickReward.IsEnabled = false;
+            ExecAutoSnipe.IsEnabled = false;
             if (loggedIn && Svc.ClientState.LocalPlayer != null)
             {
                 loggedIn = false;
@@ -283,6 +285,7 @@ public unsafe class TextAdvance : IDalamudPlugin
                         if (config.GetEnableRequestHandin()) ExecRequestComplete.Tick();
                         if (config.GetEnableRequestFill()) ExecRequestFill.Tick();
                         if (config.GetEnableRewardPick()) ExecPickReward.IsEnabled = true;
+                        if (config.GetEnableAutoSnipe()) ExecAutoSnipe.IsEnabled = true;
                     }
                 }
             }
