@@ -164,6 +164,15 @@ public class Config : IEzConfig
         }
         return MainConfig.EnableAutoInteract;
     }
+    public bool GetEnableAutoSnipe()
+    {
+        if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(MainConfig).EnableAutoSnipe;
+        if (!(GlobalOverridesLocal && P.Enabled) && TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+        {
+            return val.EnableAutoSnipe;
+        }
+        return MainConfig.EnableAutoSnipe;
+    }
 }
 
 public enum Button
@@ -183,6 +192,7 @@ public class TerritoryConfig
     public bool EnableTalkSkip = true;
     public bool EnableRequestFill = true;
     public bool EnableAutoInteract = false;
+    public bool EnableAutoSnipe = false;
 
     public bool QTIQuestEnabled = true;
     public Vector4 QTIQuestColor = EColor.PurpleBright;
@@ -203,7 +213,7 @@ public class TerritoryConfig
 
     public bool IsEnabled()
     {
-        return EnableQuestAccept || EnableQuestComplete || EnableRequestHandin || EnableCutsceneEsc || EnableCutsceneSkipConfirm || EnableTalkSkip || EnableRequestFill || EnableRewardPick || EnableAutoInteract;
+        return EnableQuestAccept || EnableQuestComplete || EnableRequestHandin || EnableCutsceneEsc || EnableCutsceneSkipConfirm || EnableTalkSkip || EnableRequestFill || EnableRewardPick || EnableAutoInteract || EnableAutoSnipe;
     }
 }
 
@@ -219,6 +229,7 @@ public class ExternalTerritoryConfig
     public bool? EnableTalkSkip = null;
     public bool? EnableRequestFill = null;
     public bool? EnableAutoInteract = null;
+    public bool? EnableAutoSnipe = null;
 
     public TerritoryConfig Merge(TerritoryConfig other)
     {
@@ -234,6 +245,7 @@ public class ExternalTerritoryConfig
         ret.EnableTalkSkip = this.EnableTalkSkip ?? other.EnableTalkSkip;
         ret.EnableRequestFill = this.EnableRequestFill ?? other.EnableRequestFill;
         ret.EnableAutoInteract = this.EnableAutoInteract ?? other.EnableAutoInteract;
+        ret.EnableAutoSnipe = this.EnableAutoSnipe ?? other.EnableAutoSnipe;
         return ret;
     }
 }
