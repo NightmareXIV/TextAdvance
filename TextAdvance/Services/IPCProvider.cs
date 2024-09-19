@@ -63,13 +63,21 @@ public class IPCProvider
     [EzIPC]
     public void EnqueueMoveAndInteract(MoveData data)
     {
-        S.MoveManager.EnqueueMoveAndInteract(data);
+        S.MoveManager.EnqueueMoveAndInteract(data, 3f);
     }
+
     [EzIPC]
-    public void EnqueueMoveTo2DPoint(MoveData data)
+    public void EnqueueMoveTo2DPoint(MoveData data, float distance)
     {
-        S.MoveManager.MoveTo2DPoint(data);
+        S.MoveManager.MoveTo2DPoint(data, distance);
     }
+
+    [EzIPC]
+    public void EnqueueMoveTo3DPoint(MoveData data, float distance)
+    {
+        S.MoveManager.MoveTo3DPoint(data, distance);
+    }
+
     [EzIPC] public void Stop()
     {
         P.EntityOverlay.TaskManager.Abort();

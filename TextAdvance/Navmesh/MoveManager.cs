@@ -70,11 +70,11 @@ public unsafe class MoveManager
             DuoLog.Error($"Failed to move to flag");
             return;
         }
-        EnqueueMoveAndInteract(new(pos.Value, 0, true));
+        EnqueueMoveAndInteract(new(pos.Value, 0, true), 3f);
         Log($"Nav to flag {pos.Value:F1}, {iterations} corrections");
     }
 
-    public void MoveTo2DPoint(MoveData data)
+    public void MoveTo2DPoint(MoveData data, float distance)
     {
         var pos = P.NavmeshManager.PointOnFloor(new(data.Position.X, 1024, data.Position.Z), false, 5);
         var iterations = 0;
@@ -97,8 +97,13 @@ public unsafe class MoveManager
             return;
         }
         data.Position = pos.Value;
-        EnqueueMoveAndInteract(data);
-        Log($"Nav to 2d point {pos.Value:F1}, {iterations} corrections");
+        EnqueueMoveAndInteract(data, distance);
+        Log($"Nav to 2d point {pos.Value:F1}, {iterations} corrections, distance={distance:F1}");
+    }
+    public void MoveTo3DPoint(MoveData data, float distance)
+    {
+        EnqueueMoveAndInteract(data, distance);
+        Log($"Nav to 3d point {data.Position:F1}, distance={distance:F1}");
     }
 
     public void MoveToQuest()
@@ -112,7 +117,7 @@ public unsafe class MoveManager
         var obj = GetNearestMTQObject();
         if(obj != null)
         {
-            EnqueueMoveAndInteract(new(obj.Position, obj.DataId, false));
+            EnqueueMoveAndInteract(new(obj.Position, obj.DataId, false), 3f);
             Log($"Precise nav: {obj.Name}/{obj.DataId:X8}");
         }
         else
@@ -123,7 +128,7 @@ public unsafe class MoveManager
                 if (markers.Count > 0)
                 {
                     var marker = markers.OrderBy(x => Vector3.Distance(x, Player.Object.Position)).First();
-                    EnqueueMoveAndInteract(new(marker, 0, false));
+                    EnqueueMoveAndInteract(new(marker, 0, false), 3f);
                     Log($"Non-precise nav: {marker:F1}");
                 }
             }
@@ -143,7 +148,7 @@ public unsafe class MoveManager
         return null;
     }
 
-    public void EnqueueMoveAndInteract(MoveData data)
+    public void EnqueueMoveAndInteract(MoveData data, float distance)
     {
         SpecialAdjust(data);
         P.NavmeshManager.Stop();
@@ -158,8 +163,8 @@ public unsafe class MoveManager
             P.EntityOverlay.TaskManager.Enqueue(MountIfCan);
         }
         if(data.Fly != false) P.EntityOverlay.TaskManager.Enqueue(FlyIfCan);
-        P.EntityOverlay.TaskManager.Enqueue(() => MoveToPosition(data, 3f));
-        P.EntityOverlay.TaskManager.Enqueue(() => WaitUntilArrival(data, 3f), 10 * 60 * 1000);
+        P.EntityOverlay.TaskManager.Enqueue(() => MoveToPosition(data, distance));
+        P.EntityOverlay.TaskManager.Enqueue(() => WaitUntilArrival(data, distance), 10 * 60 * 1000);
         P.EntityOverlay.TaskManager.Enqueue(P.NavmeshManager.Stop);
         if (C.NavmeshAutoInteract && !data.NoInteract)
         {
@@ -269,7 +274,7 @@ public unsafe class MoveManager
         }
         if (data.Mount != false && P.config.Mount != -1 && Vector3.Distance(data.Position, Player.Object.Position) > 20f && !Svc.Condition[ConditionFlag.Mounted] && ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, 9) == 0)
         {
-            EnqueueMoveAndInteract(data);
+            EnqueueMoveAndInteract(data, distance);
             return false;
         }
         if (!data.NoInteract)
