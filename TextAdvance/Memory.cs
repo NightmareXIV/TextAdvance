@@ -30,35 +30,9 @@ namespace TextAdvance
         [EzHook("40 53 48 83 EC 40 0F B7 C2", false)]
         EzHook<AddonTalk_ReceiveEventDelegate> AddonTalk_ReceiveEventHook;
 
-        [EzHook("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 50 48 8B F1 48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8B 4C 24 ??", false)]
+        /*[EzHook("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC 50 48 8B F1 48 8D 4C 24 ?? E8 ?? ?? ?? ?? 48 8B 4C 24 ??", false)]
         internal EzHook<EnqueueSnipeTaskDelegate> SnipeHook = null!;
-        internal delegate ulong EnqueueSnipeTaskDelegate(EventSceneModuleImplBase* scene, lua_State* state);
-
-        internal nint AddonTalk_ReceiveEventDetour(nint a1, ushort a2, nint a3, nint a4, nint a5)
-        {
-            try
-            {
-                var memory = MemoryHelper.ReadRaw(a5, 40);
-                PluginLog.Information($"TalkEvent: {a1:X16}, {a2}, {a3:X16}, {a4:X16}, {a5:X16}");
-                var e = (AtkEvent*)a4;
-                PluginLog.Information($"""
-
-                    L {(nint)e->Listener:X16}
-                    F {e->Flags}
-                    E {(nint)e->NextEvent:X16}
-                    N {(nint)e->Node:X16}
-                    P {e->Param}
-                    T {(nint)e->Target:X16}
-                    {(nint)(&AtkStage.Instance()->AtkEventTarget):X16}
-                    """);
-            }
-            catch(Exception e)
-            {
-                e.Log();
-            }
-            return AddonTalk_ReceiveEventHook.Original(a1, a2, a3, a4, a5);
-        }
-
+        internal delegate ulong EnqueueSnipeTaskDelegate(EventSceneModuleImplBase* scene, lua_State* state);*/
         internal Memory()
         {
             AtkComponentJournalCanvas_ReceiveEventHook = new("48 89 5C 24 ?? 48 89 74 24 ?? 48 89 7C 24 ?? 4C 89 4C 24 ?? 55", AtkComponentJournalCanvas_ReceiveEventDetour);
@@ -93,7 +67,7 @@ namespace TextAdvance
             return ret;
         }
 
-        ulong SnipeDetour(EventSceneModuleImplBase* scene, lua_State* state)
+        /*ulong SnipeDetour(EventSceneModuleImplBase* scene, lua_State* state)
         {
             PluginLog.Information($"{nameof(SnipeDetour)}: {state->top->tt} {state->top->value.n}");
             var ret = SnipeHook.Original.Invoke(scene, state);
@@ -115,6 +89,6 @@ namespace TextAdvance
             {
                 return ret;
             }
-        }
+        }*/
     }
 }

@@ -19,7 +19,7 @@ internal static class TabChars
         }
         if (ImGui.Button("Add current character") && Svc.ClientState.LocalPlayer != null)
         {
-            P.config.AutoEnableNames.Add(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.GameData.Name);
+            P.config.AutoEnableNames.Add(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.Value.Name.ToString());
         }
         ImGui.SameLine();
         ImGui.SetNextItemWidth(200f);

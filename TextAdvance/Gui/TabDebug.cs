@@ -8,11 +8,10 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Lumina.Excel.GeneratedSheets;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.Sheets;
 using System.Diagnostics;
 using TextAdvance.Executors;
-using Level = Lumina.Excel.GeneratedSheets.Level;
+using Level = Lumina.Excel.Sheets.Level;
 using QuestLinkMarker = FFXIVClientStructs.FFXIV.Client.UI.Agent.QuestLinkMarker;
 
 namespace TextAdvance.Gui;
@@ -40,7 +39,7 @@ internal static unsafe class TabDebug
         }
         if(ImGui.CollapsingHeader("External control test"))
         {
-            var opts = Ref<ExternalTerritoryConfig>.Get("", new());
+            var opts = Ref<ExternalTerritoryConfig>.Get("", () => new());
             ImGuiEx.Checkbox("EnableAutoInteract", ref opts.EnableAutoInteract);
             ImGuiEx.Checkbox("EnableCutsceneEsc", ref opts.EnableCutsceneEsc);
             ImGuiEx.Checkbox("EnableCutsceneSkipConfirm", ref opts.EnableCutsceneSkipConfirm);
@@ -104,19 +103,6 @@ internal static unsafe class TabDebug
         if (ImGui.CollapsingHeader("Quests"))
         {
             ImGuiEx.Text($"{Utils.GetQuestArray().Print("\n")}");
-        }
-        if (ImGui.CollapsingHeader("Map"))
-        {
-            //ImGuiEx.Text($"Flight addr: {P.Memory.FlightAddr:X16} / {(P.Memory.FlightAddr - Process.GetCurrentProcess().MainModule.BaseAddress):X}");
-            //ImGuiEx.Text($"CanFly: {P.Memory.IsFlightProhibited(P.Memory.FlightAddr)}");
-            var questLinkSpan = AgentMap.Instance()->MiniMapQuestLinkContainer.Markers;
-
-            foreach (var q in questLinkSpan)
-            {
-                ImGuiEx.Text($"{q.TooltipText.ToString()}");
-                if (Svc.Data.GetExcelSheet<Level>().GetRow(q.LevelId) is not { X: var x, Y: var y, Z: var z }) continue;
-                ImGuiEx.Text($"   {x}, {y} {z}");
-            }
         }
         if (ImGui.CollapsingHeader("Reward pick"))
         {

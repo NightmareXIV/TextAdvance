@@ -9,7 +9,7 @@ using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +42,7 @@ namespace TextAdvance.Executors
                     PluginLog.Information($"Preparing to select optional reward item. Candidates: ({r.OptionalRewards.Count})\n{r.OptionalRewards.Select(x => $"ID:{x.ItemID} / Icon:{x.IconID} / Amount:{x.Amount} / Name:{x.Name} ").Print("\n")}");
                     foreach (var x in r.OptionalRewards)
                     {
-                        if (Svc.Data.GetExcelSheet<Item>().GetRow(x.ItemID) == null)
+                        if (Svc.Data.GetExcelSheet<Item>().GetRowOrDefault(x.ItemID) == null)
                         {
                             DuoLog.Warning($"Encountered unknown item id: {x.ItemID}. Selecting cancelled. Please report this error with logs and screenshot.");
                             return;
@@ -118,7 +118,7 @@ namespace TextAdvance.Executors
             if (Player.Job.GetUpgradedJob().EqualsAny(Job.BRD, Job.DNC, Job.MCH)) return Lang.CofferOfAiming;
             if (Player.Job.GetUpgradedJob().EqualsAny(Job.DRG, Job.RPR)) return Lang.CofferOfMaiming;
             if (Player.Job.GetUpgradedJob().EqualsAny(Job.NIN, Job.VPR)) return Lang.CofferOfScouting;
-            if (Player.Object.ClassJob.GameData.Role == 2) return Lang.CofferOfSlaying; //other melees
+            if (Player.Object.ClassJob.Value.Role == 2) return Lang.CofferOfSlaying; //other melees
             if (Player.Object.GetRole() == CombatRole.DPS) return Lang.CofferOfCasting; //only casters left
             return null; //doh/dol
         }
@@ -128,7 +128,7 @@ namespace TextAdvance.Executors
             if (Player.Object.GetRole() == CombatRole.Tank) return Lang.CofferOfFending;
             if (Player.Object.GetRole() == CombatRole.Healer) return Lang.CofferOfHealing;
             if (Player.Job.GetUpgradedJob().EqualsAny(Job.BRD, Job.DNC, Job.MCH, Job.NIN, Job.VPR)) return Lang.CofferOfAiming;
-            if (Player.Object.ClassJob.GameData.Role == 3) return Lang.CofferOfCasting; //phys rangeds are excluded before
+            if (Player.Object.ClassJob.Value.Role == 3) return Lang.CofferOfCasting; //phys rangeds are excluded before
             if (Player.Object.GetRole() == CombatRole.DPS) return Lang.CofferOfStriking; //only non-aiming melee left
             return null; //doh/dol
         }
@@ -192,11 +192,11 @@ namespace TextAdvance.Executors
             for (var i = 0; i < data.Count; i++)
             {
                 var d = data[i];
-                var item = Svc.Data.GetExcelSheet<Item>().GetRow(d.ItemID);
-                if (item != null && item.PriceLow * d.Amount > value)
+                var item = Svc.Data.GetExcelSheet<Item>().GetRowOrDefault(d.ItemID);
+                if (item != null && item.Value.PriceLow * d.Amount > value)
                 {
                     index = i;
-                    value = item.PriceLow * d.Amount;
+                    value = item.Value.PriceLow * d.Amount;
                 }
             }
             return value > 0;
@@ -210,8 +210,8 @@ namespace TextAdvance.Executors
                 for (var i = 0; i < data.Count; i++)
                 {
                     var d = data[i];
-                    var item = Svc.Data.GetExcelSheet<Item>().GetRow(d.ItemID);
-                    if (item != null && item.ClassJobCategory.Value != null && item.ClassJobCategory.Value.IsJobInCategory((Job)Player.Object.ClassJob.Id))
+                    var item = Svc.Data.GetExcelSheet<Item>().GetRowOrDefault(d.ItemID);
+                    if (item != null && item.Value.ClassJobCategory.ValueNullable != null && item.Value.ClassJobCategory.Value.IsJobInCategory((Job)Player.Object.ClassJob.RowId))
                     {
                         possible.Add(i);
                     }
@@ -233,8 +233,8 @@ namespace TextAdvance.Executors
             for (var i = 0; i < data.Count; i++)
             {
                 var d = data[i];
-                var item = Svc.Data.GetExcelSheet<Item>().GetRow(d.ItemID);
-                if (d.IsHQ && item != null && item.ItemUICategory?.Value.RowId.EqualsAny(GearCats) == true)
+                var item = Svc.Data.GetExcelSheet<Item>().GetRowOrDefault(d.ItemID);
+                if (d.IsHQ && item != null && item.Value.ItemUICategory.ValueNullable?.RowId.EqualsAny(GearCats) == true)
                 {
                     possible.Add(i);
                 }

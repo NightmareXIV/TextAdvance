@@ -7,7 +7,7 @@ using ECommons.Reflection;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +19,15 @@ using static TextAdvance.SplatoonHandler;
 namespace TextAdvance;
 public unsafe static class Utils
 {
+    public static uint GetInstallationID()
+    {
+        var uniqueId = Svc.PluginInterface.AssemblyLocation.FullName;
+        uniqueId += Environment.ProcessPath ?? "";
+        uniqueId += Environment.UserName;
+        var hashedId = Lumina.Misc.Crc32.Get(uniqueId);
+        return hashedId;
+    }
+
     public static bool ShouldHideUI()
     {
         return Svc.Condition[ConditionFlag.Occupied]
@@ -116,7 +125,7 @@ public unsafe static class Utils
 
     public static string GetGeneralActionName(int id)
     {
-        return Svc.Data.GetExcelSheet<GeneralAction>().GetRow((uint)id).Name;
+        return Svc.Data.GetExcelSheet<GeneralAction>().GetRow((uint)id).Name.ToString();
     }
 
     public static string GetMountName(int id)

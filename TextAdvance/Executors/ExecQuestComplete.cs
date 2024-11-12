@@ -1,4 +1,4 @@
-﻿using ClickLib.Clicks;
+﻿
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;

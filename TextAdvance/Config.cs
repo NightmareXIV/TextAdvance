@@ -32,6 +32,7 @@ public class Config : IEzConfig
     public bool NavStatusChat = false;
     public bool DisplayFunding = true;
     public bool EnableFlight = false;
+    public uint? AllowUnsafeOptions = null;
 
     public bool GetEnableQuestAccept()
     {

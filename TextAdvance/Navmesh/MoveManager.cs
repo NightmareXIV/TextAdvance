@@ -331,14 +331,14 @@ public unsafe class MoveManager
             {
                 if (EzThrottler.Throttle("CastSprintPeloton", 2000))
                 {
-                    Chat.Instance.ExecuteCommand($"/action \"{Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(3).Name.ExtractText()}\"");
+                    Chat.Instance.ExecuteCommand($"/action \"{Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow(3).Name.ExtractText()}\"");
                 }
             }
             else if (ActionManager.Instance()->GetActionStatus(ActionType.Action, 7557) == 0 && !Player.Object.StatusList.Any(z => z.StatusId.EqualsAny<uint>(1199, 50)))
             {
                 if (EzThrottler.Throttle("CastSprintPeloton", 2000))
                 {
-                    Chat.Instance.ExecuteCommand($"/action \"{Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(7557).Name.ExtractText()}\"");
+                    Chat.Instance.ExecuteCommand($"/action \"{Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow(7557).Name.ExtractText()}\"");
                 }
             }
         }

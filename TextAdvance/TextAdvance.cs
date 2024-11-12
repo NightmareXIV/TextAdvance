@@ -11,7 +11,7 @@ using ECommons.Singletons;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using System.Security.Principal;
 using TextAdvance.Executors;
 using TextAdvance.Gui;
@@ -95,10 +95,10 @@ public unsafe class TextAdvance : IDalamudPlugin
             WaitOverlay = new();
             configGui.ws.AddWindow(WaitOverlay);
             
-            TerritoryNames = Svc.Data.GetExcelSheet<TerritoryType>().Where(x => x.PlaceName?.Value?.Name?.ToString().Length > 0)
+            TerritoryNames = Svc.Data.GetExcelSheet<TerritoryType>().Where(x => x.PlaceName.ValueNullable?.Name.ToString().Length > 0)
             .ToDictionary(
                 x => x.RowId, 
-                x => $"{x.RowId} | {x.PlaceName?.Value?.Name}{(x.ContentFinderCondition?.Value?.Name?.ToString().Length > 0 ? $" ({x.ContentFinderCondition?.Value?.Name})" : string.Empty)}");
+                x => $"{x.RowId} | {x.PlaceName.ValueNullable?.Name}{(x.ContentFinderCondition.ValueNullable?.Name.ToString().Length > 0 ? $" ({x.ContentFinderCondition.ValueNullable?.Name})" : string.Empty)}");
             BlockList = Svc.PluginInterface.GetOrCreateData<HashSet<string>>(BlockListNamespace, () => new());
             BlockList.Clear(); 
             AutoCutsceneSkipper.Init(CutsceneSkipHandler);
@@ -113,7 +113,7 @@ public unsafe class TextAdvance : IDalamudPlugin
             EntityOverlay = new();
             ProgressOverlay = new();
             NavmeshManager = new();
-            ExecAutoSnipe.Init(); // must init after memory
+            //ExecAutoSnipe.Init(); // must init after memory
             SingletonServiceManager.Initialize(typeof(ServiceManager));
             EzIPC.OnSafeInvocationException += this.EzIPC_OnSafeInvocationException;
         });
@@ -238,7 +238,7 @@ public unsafe class TextAdvance : IDalamudPlugin
             if (loggedIn && Svc.ClientState.LocalPlayer != null)
             {
                 loggedIn = false;
-                if(config.AutoEnableNames.Contains(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.GameData.Name))
+                if(config.AutoEnableNames.Contains(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.Value.Name.ToString()))
                 {
                     Enabled = true;
                     if (!P.config.NotifyDisableOnLogin)

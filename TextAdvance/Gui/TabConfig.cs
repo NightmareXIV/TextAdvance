@@ -1,6 +1,6 @@
 ﻿using Dalamud.Interface.Components;
 using ECommons.SplatoonAPI;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using NightmareUI.PrimaryUI;
 
 namespace TextAdvance.Gui;
