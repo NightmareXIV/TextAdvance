@@ -24,7 +24,7 @@ namespace TextAdvance
 
         internal delegate nint IsFlightProhibitedDelegate(nint a1);
         internal IsFlightProhibitedDelegate IsFlightProhibited = EzDelegate.Get<IsFlightProhibitedDelegate>("40 53 48 83 EC 20 48 8B 1D ?? ?? ?? ?? 48 85 DB 0F 84 ?? ?? ?? ?? 80 3D");
-        internal nint FlightAddr = Svc.SigScanner.GetStaticAddressFromSig("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 75 11");
+        internal nint FlightAddr = Svc.SigScanner.TryScanText("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 75 11", out var result)?result:default;
 
         internal delegate nint AddonTalk_ReceiveEventDelegate(nint a1, ushort a2, nint a3, nint a4, nint a5);
         [EzHook("40 53 48 83 EC 40 0F B7 C2", false)]
@@ -35,8 +35,16 @@ namespace TextAdvance
         internal delegate ulong EnqueueSnipeTaskDelegate(EventSceneModuleImplBase* scene, lua_State* state);*/
         internal Memory()
         {
-            AtkComponentJournalCanvas_ReceiveEventHook = new("48 89 5C 24 ?? 48 89 74 24 ?? 48 89 7C 24 ?? 4C 89 4C 24 ?? 55", AtkComponentJournalCanvas_ReceiveEventDetour);
-            EzSignatureHelper.Initialize(this);
+            try
+            {
+                AtkComponentJournalCanvas_ReceiveEventHook = new("48 89 5C 24 ?? 48 89 74 24 ?? 4C 89 4C 24 ?? 55", AtkComponentJournalCanvas_ReceiveEventDetour);
+                AtkComponentJournalCanvas_ReceiveEventHook.Enable();
+                EzSignatureHelper.Initialize(this);
+            }
+            catch(Exception e)
+            {
+                e.Log();
+            }
         }
 
         internal void PickRewardItemUnsafe(nint canvas, int index)

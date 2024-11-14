@@ -32,10 +32,11 @@ namespace TextAdvance.Executors
 
         private static void OnJournalResultSetup(AddonEvent type, AddonArgs args)
         {
-            if (IsEnabled && TryGetAddonByName<AtkUnitBase>("JournalResult", out var addon) && IsAddonReady(addon))
+            var addon = (AtkUnitBase*)args.Addon;
+            var canvas = ((AtkComponentNode*)addon->UldManager.NodeList[7])->Component;
+            PluginLog.Information($"Component: {(nint)canvas:X16}");
+            if (IsEnabled)
             {
-                var canvas = ((AtkComponentNode*)addon->UldManager.NodeList[7])->Component;
-                PluginLog.Information($"Component: {(nint)canvas:X16}");
                 var r = new ReaderJournalResult(addon);
                 if (r.OptionalRewards.Count > 0)
                 {

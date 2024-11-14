@@ -10,7 +10,7 @@ namespace TextAdvance
 {
     internal unsafe class ReaderJournalResult(AtkUnitBase* UnitBase, int BeginOffset = 0) : AtkReader(UnitBase, BeginOffset)
     {
-        internal List<OptionalReward> OptionalRewards => Loop<OptionalReward>(84, 1, 5);
+        internal List<OptionalReward> OptionalRewards => Loop<OptionalReward>(82, 1, 5);
 
         internal unsafe class OptionalReward(nint UnitBasePtr, int BeginOffset = 0) : AtkReader(UnitBasePtr, BeginOffset)
         {

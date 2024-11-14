@@ -238,7 +238,7 @@ public unsafe class TextAdvance : IDalamudPlugin
             if (loggedIn && Svc.ClientState.LocalPlayer != null)
             {
                 loggedIn = false;
-                if(config.AutoEnableNames.Contains(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.Value.Name.ToString()))
+                if(config.AutoEnableNames.Contains(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.ValueNullable?.Name.ToString()))
                 {
                     Enabled = true;
                     if (!P.config.NotifyDisableOnLogin)
