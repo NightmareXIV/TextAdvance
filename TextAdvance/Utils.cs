@@ -47,7 +47,7 @@ public unsafe static class Utils
 
     public static void GetEligibleMapMarkerLocationsAsync(Action<List<Vector3>> callback)
     {
-        var markers = AgentHUD.Instance()->MapMarkers.Span.ToArray();
+        var markers = AgentHUD.Instance()->MapMarkers.AsSpan().ToArray();
         var playerPos = Player.Object.Position;
         Task.Run(() =>
         {
