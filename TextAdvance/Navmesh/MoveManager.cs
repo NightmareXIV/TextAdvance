@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Utility;
 using ECommons;
 using ECommons.Automation;
 using ECommons.ChatMethods;
@@ -14,6 +15,8 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using FFXIVClientStructs.FFXIV.Component.GUI;
+using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -32,7 +35,7 @@ public unsafe class MoveManager
         PluginLog.Debug($"[MoveManager] {message}");
         if (P.config.NavStatusChat)
         {
-            ChatPrinter.PrintColored(UIColor.WarmSeaBlue, $"[TextAdvance] {message}");
+            ChatPrinter.PrintColored(ECommons.ChatMethods.UIColor.WarmSeaBlue, $"[TextAdvance] {message}");
         }
     }
 
@@ -44,12 +47,24 @@ public unsafe class MoveManager
             DuoLog.Warning($"Flag is not set");
             return;
         }
-        if(AgentMap.Instance()->FlagMapMarker.TerritoryId != Svc.ClientState.TerritoryType)
+        if(!P.config.EnableTeleportToFlag && AgentMap.Instance()->FlagMapMarker.TerritoryId != Svc.ClientState.TerritoryType)
         {
             DuoLog.Warning($"Flag is in different zone than current");
             return;
         }
         var m = AgentMap.Instance()->FlagMapMarker;
+
+        // Don't try to teleport if it's not enabled
+        if (P.config.EnableTeleportToFlag)
+        {
+            var n = GetNearestAetheryteTo(m);
+            if (n != null && n.HasValue)
+            {
+                S.TeleporterIPC.Teleport(n.Value.RowId, 0);
+                return;
+            }
+        }
+
         var pos = P.NavmeshManager.PointOnFloor(new(m.XFloat, 1024, m.YFloat), false, 5);
         var iterations = 0;
         if (pos == null)
@@ -72,6 +87,68 @@ public unsafe class MoveManager
         }
         EnqueueMoveAndInteract(new(pos.Value, 0, true), 3f);
         Log($"Nav to flag {pos.Value:F1}, {iterations} corrections");
+    }
+
+    private Aetheryte? GetNearestAetheryteTo(FlagMapMarker flag)
+    {
+        // Get the closest Aetheryte to the FlagMapMarker
+        var nA = Svc.Data.GetExcelSheet<Aetheryte>()
+                         .Where(a => flag.MapId == a.Map.RowId)
+                         .Select(a => new KeyValuePair<Aetheryte, MapMarker?>(
+                             a, Svc.Data.GetSubrowExcelSheet<MapMarker>().AllRows().FirstOrNull(m => (m.DataType == 3 && m.DataKey.RowId == a.RowId))))
+                         .Where(a => a.Value != null && a.Value.HasValue && a.Key.Map.IsValid)
+                         .OrderBy(a => Vector2.Distance(
+                             ConvertFlagMapMarkerToMapCoordinate(flag, a.Key.Map.Value.SizeFactor),
+                             ConvertMapMarkerToMapCoordinate(a.Value.Value.X, a.Value.Value.Y, a.Key.Map.Value.SizeFactor)))
+                         .First();
+
+        if (!nA.Key.Map.IsValid || nA.Value == null || !nA.Value.HasValue)
+        {
+            return null;
+        }
+
+        var localPlayer = Svc.ClientState.LocalPlayer;
+        if (!localPlayer.IsValid()) 
+        { 
+            return null; 
+        }
+
+        // Compare the flag's position to the player and the nearest Aetheryte and only teleport if the Aetheryte is closer
+        // Add a buffer to the Aetheryte's distance to account for teleport and load time
+        var fMC = ConvertFlagMapMarkerToMapCoordinate(flag, nA.Key.Map.Value.SizeFactor);
+        var pMC = new Vector2(localPlayer.GetMapCoordinates().X, localPlayer.GetMapCoordinates().Y);
+        var nAMC = ConvertMapMarkerToMapCoordinate(nA.Value.Value.X, nA.Value.Value.Y, nA.Key.Map.Value.SizeFactor);
+        if (Svc.ClientState.TerritoryType == flag.TerritoryId && Vector2.Distance(fMC, pMC) < Vector2.Distance(fMC, nAMC) + 3)
+        {
+            return null;
+        }
+
+        return nA.Key;
+    }
+
+    private Vector2 ConvertFlagMapMarkerToMapCoordinate(FlagMapMarker flag, float scale)
+    {
+        float num = 100f / scale;
+        float convertedX = ((flag.XFloat + (1024f * num)) / (1024f * num * 2)) * (41f * num) + 1f;
+        float convertedY = ((flag.YFloat + (1024f * num)) / (1024f * num * 2)) * (41f * num) + 1f;
+
+        return new Vector2(convertedX, convertedY);
+    }
+
+    private Vector2 ConvertMapMarkerToMapCoordinate(float x, float y, float scale)
+    {
+        float num = scale / 100f;
+        var rawX = (int)((float)(x - 1024.0) / num * 1000f);
+        var rawY = (int)((float)(y - 1024.0) / num * 1000f);
+
+        return ConvertRawPositionToMapCoordinate(rawX, rawY, scale);
+    }
+
+    private Vector2 ConvertRawPositionToMapCoordinate(float x, float y, float scale)
+    {
+        float num = scale / 100f;
+
+        return new Vector2((float)((x / 1000f * num + 1024.0) / 2048.0 * 41.0 / num + 1.0), (float)((y / 1000f * num + 1024.0) / 2048.0 * 41.0 / num + 1.0));
     }
 
     public void MoveTo2DPoint(MoveData data, float distance)
@@ -352,7 +429,6 @@ public unsafe class MoveManager
         }
         return Vector3.Distance(Player.Object.Position, pos) < distance;
     }
-
     public bool? InteractWithDataID(uint dataID)
     {
         if (!Player.Interactable) return false;
@@ -415,6 +491,6 @@ public unsafe class MoveManager
                 data.DataID = 2002878;
                 data.Position = new(-0.0f, -1.0f, -26.8f);
             }
-        }
     }
+}
 }

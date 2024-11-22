@@ -33,6 +33,7 @@ public class Config : IEzConfig
     public bool DisplayFunding = true;
     public bool EnableFlight = false;
     public uint? AllowUnsafeOptions = null;
+    public bool EnableTeleportToFlag = false;
 
     public bool GetEnableQuestAccept()
     {

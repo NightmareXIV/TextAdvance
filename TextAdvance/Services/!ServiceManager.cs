@@ -11,4 +11,5 @@ public static class ServiceManager
     public static IPCProvider IPCProvider { get; private set; }
     public static MoveManager MoveManager { get; private set; }
     public static IPCTester IPCTester { get; private set; }
+    public static TeleporterIPC TeleporterIPC { get; private set; }
 }
