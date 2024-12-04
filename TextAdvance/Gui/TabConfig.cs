@@ -135,6 +135,7 @@ internal static class TabConfig
             }
             ImGui.Checkbox($"Print navigation status into chat", ref P.config.NavStatusChat);
             ImGui.Checkbox("(very experimental) Allow flight", ref P.config.EnableFlight);
+            ImGui.Checkbox($"Allow teleporting to the nearest Aetheryte to a flag", ref P.config.EnableTeleportToFlag);
         })
 
         .Section("Miscellaneous")
