@@ -2,7 +2,7 @@
 
 namespace TextAdvance;
 
-class Native
+internal class Native
 {
     /// <summary>Returns true if the current application has focus, false otherwise</summary>
     public static bool ApplicationIsActivated()
@@ -27,16 +27,15 @@ class Native
     public static extern IntPtr GetForegroundWindow();
 
     [DllImport("user32.dll")]
-    static extern IntPtr FindWindowEx(IntPtr hWndParent, IntPtr hWndChildAfter, string lpszClass, string lpszWindow);
+    private static extern IntPtr FindWindowEx(IntPtr hWndParent, IntPtr hWndChildAfter, string lpszClass, string lpszWindow);
 
     public class Keypress
     {
         public const int LControlKey = 162;
         public const int Space = 32;
         public const int Escape = 0x1B;
-
-        const uint WM_KEYUP = 0x101;
-        const uint WM_KEYDOWN = 0x100;
+        private const uint WM_KEYUP = 0x101;
+        private const uint WM_KEYDOWN = 0x100;
 
 
         [DllImport("user32.dll")]

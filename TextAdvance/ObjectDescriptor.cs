@@ -31,7 +31,7 @@ public struct ObjectDescriptor : IEquatable<ObjectDescriptor>
         this.TerritoryType = Svc.ClientState.TerritoryType;
         this.Kind = o.ObjectKind;
         this.Position = o.Position;
-        if(name) this.Name = o.Name.ToString();
+        if (name) this.Name = o.Name.ToString();
     }
 
     public string Serialize()

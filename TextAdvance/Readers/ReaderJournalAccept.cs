@@ -9,5 +9,5 @@ using System.Threading.Tasks;
 namespace TextAdvance.Readers;
 public unsafe class ReaderJournalAccept(AtkUnitBase* UnitBase, int BeginOffset = 0) : AtkReader(UnitBase, BeginOffset)
 {
-    public uint QuestId => ReadUInt(266) ?? 0;
+    public uint QuestId => this.ReadUInt(266) ?? 0;
 }

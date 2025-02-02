@@ -4,7 +4,7 @@ namespace TextAdvance.Gui;
 
 internal class Overlay : Window
 {
-    public Overlay() : base("TextAdvance overlay", 
+    public Overlay() : base("TextAdvance overlay",
         ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoFocusOnAppearing
         | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysUseWindowPadding | ImGuiWindowFlags.AlwaysAutoResize)
     {
@@ -27,7 +27,7 @@ internal class Overlay : Window
         var blocked = P.BlockList.Count != 0;
         List<string> l = [];
         var col = blocked ? ImGuiColors.DalamudRed : ImGuiColors.DalamudOrange;
-        if(S.IPCProvider.IsInExternalControl() && !blocked)
+        if (S.IPCProvider.IsInExternalControl() && !blocked)
         {
             col = EColor.GreenBright;
         }

@@ -31,7 +31,7 @@ public class ProgressOverlay : EzOverlayWindow
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Right))
             {
                 P.EntityOverlay.TaskManager.Abort();
-                if(C.Navmesh) P.NavmeshManager.Stop();
+                if (C.Navmesh) P.NavmeshManager.Stop();
             }
         }
         var percent = 1f - (float)P.EntityOverlay.TaskManager.NumQueuedTasks / (float)P.EntityOverlay.TaskManager.MaxTasks;

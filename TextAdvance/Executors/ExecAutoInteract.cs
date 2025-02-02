@@ -14,9 +14,9 @@ using System.Reflection;
 using static TextAdvance.SplatoonHandler;
 
 namespace TextAdvance.Executors;
-public unsafe static class ExecAutoInteract
+public static unsafe class ExecAutoInteract
 {
-    public readonly static ObjectDescriptor[] Blacklist = ((ObjectDescriptor[])[
+    public static readonly ObjectDescriptor[] Blacklist = ((ObjectDescriptor[])[
         new(1006568, 335, ObjectKind.EventNpc, new(-559.4f, -1.9f, -318.3f)), //Imperial Courier at Mor Dhona
         new(1006567, 335, ObjectKind.EventNpc, new(-532.2f, -1.9f, -284.5f)), //Imperial Decurion at Mor Dhona
         new(1006569, 335, ObjectKind.EventNpc, new(-491.4f, -3.9f, -300.8f)), //Imperial Guard at Mor Dhona
@@ -100,7 +100,7 @@ public unsafe static class ExecAutoInteract
 
         ]);
 
-    public readonly static HashSet<ObjectQuestID> InteractedObjects = [];
+    public static readonly HashSet<ObjectQuestID> InteractedObjects = [];
     public static void Tick()
     {
         if (!Player.Interactable) return;
@@ -129,20 +129,20 @@ public unsafe static class ExecAutoInteract
         }
     }
 
-    static float GetMinDistance(IGameObject obj)
+    private static float GetMinDistance(IGameObject obj)
     {
         var ret = -999f;
         if (obj.ObjectKind == ObjectKind.Aetheryte) ret = 8f;
         else if (obj.ObjectKind == ObjectKind.EventNpc) ret = 6f + obj.HitboxRadius;
         else if (obj.ObjectKind == ObjectKind.EventObj) ret = 3f;
-        if(ret > P.config.AutoInteractMaxRadius)
+        if (ret > P.config.AutoInteractMaxRadius)
         {
             ret = P.config.AutoInteractMaxRadius;
         }
         return ret;
     }
 
-    static void Interact(IGameObject obj)
+    private static void Interact(IGameObject obj)
     {
         if (WasInteracted(obj)) return;
         if (Svc.Targets.Target.AddressEquals(obj))
@@ -166,7 +166,7 @@ public unsafe static class ExecAutoInteract
         }
     }
 
-    static void RecordInteractionWith(IGameObject obj)
+    private static void RecordInteractionWith(IGameObject obj)
     {
         InteractedObjects.RemoveWhere(x => x.DataID == obj.DataId);
         InteractedObjects.Add(new(obj.DataId));
@@ -174,7 +174,7 @@ public unsafe static class ExecAutoInteract
 
     public static bool WasInteracted(IGameObject obj)
     {
-        if(obj == null) return false;
+        if (obj == null) return false;
         return InteractedObjects.Contains(new(obj.DataId));
     }
 }

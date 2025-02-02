@@ -18,10 +18,10 @@ namespace TextAdvance.Gui;
 
 internal static unsafe class TabDebug
 {
-    static TaskManager TestTaskManager;
+    private static TaskManager TestTaskManager;
     internal static void Draw()
     {
-        if(ImGui.CollapsingHeader("IPC test"))
+        if (ImGui.CollapsingHeader("IPC test"))
         {
             ImGuiEx.Text($"""
                 IsEnabled {S.IPCTester.IsEnabled()}
@@ -37,7 +37,7 @@ internal static unsafe class TabDebug
                 IsPaused {S.IPCTester.IsPaused()}
                 """);
         }
-        if(ImGui.CollapsingHeader("External control test"))
+        if (ImGui.CollapsingHeader("External control test"))
         {
             var opts = Ref<ExternalTerritoryConfig>.Get("", () => new());
             ImGuiEx.Checkbox("EnableAutoInteract", ref opts.EnableAutoInteract);
@@ -57,7 +57,7 @@ internal static unsafe class TabDebug
         }
         if (ImGui.CollapsingHeader("Cutscene"))
         {
-            
+
         }
         if (ImGui.CollapsingHeader("Request"))
         {
@@ -80,7 +80,7 @@ internal static unsafe class TabDebug
         if (ImGui.CollapsingHeader("Quest markers"))
         {
             var markers = AgentHUD.Instance()->MapMarkers.AsSpan();
-            for (int i = 0; i < markers.Length; i++)
+            for (var i = 0; i < markers.Length; i++)
             {
                 var marker = markers[i];
                 if (ThreadLoadImageHandler.TryGetIconTextureWrap(marker.IconId, false, out var tex))
@@ -111,27 +111,27 @@ internal static unsafe class TabDebug
                 var canvas = addon->UldManager.NodeList[7];
                 var r = new ReaderJournalResult(addon);
                 ImGuiEx.Text($"Rewards: \n{r.OptionalRewards.Select(x => $"ID:{x.ItemID} / Icon:{x.IconID} / Amount:{x.Amount} / Name:{x.Name} ").Print("\n")}");
-                for (int i = 0; i < 5; i++)
+                for (var i = 0; i < 5; i++)
                 {
                     if (ImGui.Button($"{i}"))
                     {
                         P.Memory.PickRewardItemUnsafe((nint)canvas->GetComponent(), i);
                     }
                 }
-                if(ImGui.Button("Stress test"))
+                if (ImGui.Button("Stress test"))
                 {
                     TestTaskManager ??= new();
-                    for (int i = 0; i < 1000; i++)
+                    for (var i = 0; i < 1000; i++)
                     {
                         var x = i % 5;
                         TestTaskManager.Enqueue(() => P.Memory.PickRewardItemUnsafe((nint)canvas->GetComponent(), x));
                     }
                 }
-                if(TestTaskManager != null)
+                if (TestTaskManager != null)
                 {
                     ImGuiEx.Text($"Task {TestTaskManager.MaxTasks - TestTaskManager.NumQueuedTasks}/{TestTaskManager.MaxTasks}");
                 }
-                if(ImGui.Button("Stop stress test"))
+                if (ImGui.Button("Stop stress test"))
                 {
                     TestTaskManager.Abort();
                 }

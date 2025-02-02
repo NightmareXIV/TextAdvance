@@ -34,14 +34,14 @@ internal class WaitOverlay : Window
     public override void Draw()
     {
         ImGui.SetWindowFocus();
-        if (ImGui.GetFrameCount() - Frame > 1) StartTime = Environment.TickCount64;
-        Frame = ImGui.GetFrameCount();
+        if (ImGui.GetFrameCount() - this.Frame > 1) this.StartTime = Environment.TickCount64;
+        this.Frame = ImGui.GetFrameCount();
         CImGui.igBringWindowToDisplayFront(CImGui.igGetCurrentWindow());
         ImGui.Dummy(new(ImGuiHelpers.MainViewport.Size.X, ImGuiHelpers.MainViewport.Size.Y / 3));
         ImGuiEx.ImGuiLineCentered("Waitoverlay1", () => ImGuiEx.Text($"Filling in request."));
         ImGuiEx.ImGuiLineCentered("Waitoverlay2", () => ImGuiEx.Text($"This can take couple seconds. If this process is stuck, please click the button below."));
         ImGuiEx.Text("");
-        var span = TimeSpan.FromMilliseconds(Environment.TickCount64 - StartTime);
+        var span = TimeSpan.FromMilliseconds(Environment.TickCount64 - this.StartTime);
         ImGuiEx.ImGuiLineCentered("Waitoverlay4", () => ImGuiEx.Text($"{span.Minutes:D2}:{span.Seconds:D2}"));
         ImGuiEx.Text("");
         ImGuiEx.Text("");

@@ -1,15 +1,15 @@
 ﻿
+using ECommons.Automation.UIInput;
 using ECommons.Throttlers;
+using ECommons.UIHelpers.AddonMasterImplementations;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using ECommons.Automation.UIInput;
-using ECommons.UIHelpers.AddonMasterImplementations;
 
 namespace TextAdvance.Executors;
 
-internal unsafe static class ExecRequestComplete
+internal static unsafe class ExecRequestComplete
 {
-    static ulong RequestAllow = 0;
+    private static ulong RequestAllow = 0;
     internal static void Tick()
     {
         if (TryGetAddonByName<AtkUnitBase>("Request", out var addon) && IsAddonReady(addon))

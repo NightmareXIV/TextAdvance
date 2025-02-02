@@ -33,27 +33,27 @@ namespace TextAdvance
         }
 
         internal List<Element> Elements = [];
-        int CurrentCnt = 0;
+        private int CurrentCnt = 0;
 
         internal SplatoonHandler()
         {
-            Splatoon.SetOnConnect(OnConnect);
+            Splatoon.SetOnConnect(this.OnConnect);
         }
 
-        void OnConnect() => Reset();
+        private void OnConnect() => this.Reset();
 
         internal void Reset()
         {
-            Elements.Clear();
-            CurrentCnt = 0;
+            this.Elements.Clear();
+            this.CurrentCnt = 0;
         }
 
         public Element GetFreeElement(Vector3 pos)
         {
-            if (CurrentCnt < Elements.Count)
+            if (this.CurrentCnt < this.Elements.Count)
             {
-                var ret = Elements[CurrentCnt];
-                CurrentCnt++;
+                var ret = this.Elements[this.CurrentCnt];
+                this.CurrentCnt++;
                 ret.SetRefCoord(pos);
                 return ret;
             }
@@ -63,15 +63,15 @@ namespace TextAdvance
                 {
                     radius = 0,
                 };
-                Elements.Add(ret);
-                ApplySettings(ret);
-                CurrentCnt = Elements.Count;
+                this.Elements.Add(ret);
+                this.ApplySettings(ret);
+                this.CurrentCnt = this.Elements.Count;
                 ret.SetRefCoord(pos);
                 return ret;
             }
         }
 
-        void ApplySettings(Element e)
+        private void ApplySettings(Element e)
         {
             e.thicc = P.config.GetQTAQuestThickness();
             e.color = P.config.GetQTAQuestColor().ToUint();

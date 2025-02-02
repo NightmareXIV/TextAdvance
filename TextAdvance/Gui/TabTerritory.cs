@@ -4,9 +4,9 @@ namespace TextAdvance.Gui;
 
 internal static class TabTerritory
 {
-    static uint SelectedKey = uint.MaxValue;
-    static bool OnlyModded = false;
-    static string Filter = string.Empty;
+    private static uint SelectedKey = uint.MaxValue;
+    private static bool OnlyModded = false;
+    private static string Filter = string.Empty;
     internal static void Draw()
     {
         ImGui.Checkbox("Global enable overrides local settings", ref P.config.GlobalOverridesLocal);
@@ -39,18 +39,18 @@ internal static class TabTerritory
                 {
                     SelectedKey = x.Key;
                 }
-                if(ImGui.IsWindowAppearing() && SelectedKey == x.Key)
+                if (ImGui.IsWindowAppearing() && SelectedKey == x.Key)
                 {
                     ImGui.SetScrollHereY();
                 }
             }
             ImGui.EndCombo();
         }
-        if(P.TerritoryNames.ContainsKey(SelectedKey))
+        if (P.TerritoryNames.ContainsKey(SelectedKey))
         {
-            if(P.config.TerritoryConditions.TryGetValue(SelectedKey, out var settings))
+            if (P.config.TerritoryConditions.TryGetValue(SelectedKey, out var settings))
             {
-                if(ImGui.Button("Remove custom settings"))
+                if (ImGui.Button("Remove custom settings"))
                 {
                     P.config.TerritoryConditions.Remove(SelectedKey);
                 }

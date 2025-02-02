@@ -139,7 +139,7 @@ namespace TextAdvance.Executors
             List<int> possible = [];
             var accessoryString = DetermineAccessoryCoffer();
             var gearString = DetermineGearCoffer();
-            for (int i = 0; i < data.Count; i++)
+            for (var i = 0; i < data.Count; i++)
             {
                 if (gearString != null && data[i].Name.ContainsAny(StringComparison.OrdinalIgnoreCase, gearString))
                 {

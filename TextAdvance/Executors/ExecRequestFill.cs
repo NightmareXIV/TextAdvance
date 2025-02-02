@@ -8,11 +8,13 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 namespace TextAdvance.Executors;
 
 //by Taurenkey https://github.com/PunishXIV/PandorasBox/blob/24a4352f5b01751767c7ca7f1d4b48369be98711/PandorasBox/Features/UI/AutoSelectTurnin.cs
-internal unsafe static class ExecRequestFill
+internal static unsafe class ExecRequestFill
 {
-    static bool active = false;
-    static List<int> SlotsFilled { get; set; } = [];
-    static TaskManager TaskManager => P.TaskManager;
+    private static bool active = false;
+
+    private static List<int> SlotsFilled { get; set; } = [];
+
+    private static TaskManager TaskManager => P.TaskManager;
     public static bool DontFillThisWindow = false;
     internal static void Tick()
     {
@@ -41,7 +43,7 @@ internal unsafe static class ExecRequestFill
         }
     }
 
-    static bool? TryClickItem(AddonRequest* addon, int i)
+    private static bool? TryClickItem(AddonRequest* addon, int i)
     {
         if (SlotsFilled.Contains(i)) return true;
 

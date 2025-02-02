@@ -11,7 +11,7 @@ namespace TextAdvance.Gui
         public static void Draw()
         {
             ImGuiEx.TextWrapped("These functions require Splatoon plugin installed and enabled.");
-            if(Svc.PluginInterface.InstalledPlugins.TryGetFirst(x => x.InternalName == "Splatoon", out var plugin))
+            if (Svc.PluginInterface.InstalledPlugins.TryGetFirst(x => x.InternalName == "Splatoon", out var plugin))
             {
                 if (plugin.IsLoaded)
                 {

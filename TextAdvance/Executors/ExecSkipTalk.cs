@@ -10,7 +10,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace TextAdvance.Executors;
 
-internal unsafe static class ExecSkipTalk
+internal static unsafe class ExecSkipTalk
 {
     internal static bool IsEnabled = false;
 

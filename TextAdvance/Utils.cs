@@ -17,7 +17,7 @@ using System.Xml.Serialization;
 using static TextAdvance.SplatoonHandler;
 
 namespace TextAdvance;
-public unsafe static class Utils
+public static unsafe class Utils
 {
     public static uint GetInstallationID()
     {
@@ -53,7 +53,7 @@ public unsafe static class Utils
         {
             var time = Environment.TickCount64;
             var ret = new List<Vector3>();
-            for (int i = 0; i < markers.Length; i++)
+            for (var i = 0; i < markers.Length; i++)
             {
                 var marker = markers[i];
                 var id = marker.IconId;
@@ -136,14 +136,14 @@ public unsafe static class Utils
     public static bool CanFly() => C.EnableFlight && P.Memory.IsFlightProhibited(P.Memory.FlightAddr) == 0;
 
     public static bool ThrottleAutoInteract() => EzThrottler.Throttle("AutoInteract");
-    public static bool ReThrottleAutoInteract() => EzThrottler.Throttle("AutoInteract", rethrottle:true);
+    public static bool ReThrottleAutoInteract() => EzThrottler.Throttle("AutoInteract", rethrottle: true);
     public static bool CheckThrottleAutoInteract() => EzThrottler.Check("AutoInteract");
 
     public static List<(int, int)> GetQuestArray()
-    {   
+    {
         var ret = new List<(int, int)>();
         var manager = QuestManager.Instance();
-        for (int i = 0; i < manager->NormalQuests.Length; i++)
+        for (var i = 0; i < manager->NormalQuests.Length; i++)
         {
             var q = manager->NormalQuests[i];
             ret.Add((q.QuestId, q.Sequence));

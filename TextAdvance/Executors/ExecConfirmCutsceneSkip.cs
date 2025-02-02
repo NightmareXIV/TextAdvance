@@ -5,7 +5,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace TextAdvance.Executors;
 
-internal unsafe static class ExecConfirmCutsceneSkip
+internal static unsafe class ExecConfirmCutsceneSkip
 {
     internal static void Tick()
     {

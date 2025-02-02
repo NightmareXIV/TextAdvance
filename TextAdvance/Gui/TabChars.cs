@@ -2,7 +2,7 @@
 
 internal static class TabChars
 {
-    static string Name = "";
+    private static string Name = "";
     internal static void Draw()
     {
 

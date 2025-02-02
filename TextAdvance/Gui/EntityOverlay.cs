@@ -19,14 +19,14 @@ using TextAdvance.Navmesh;
 using static TextAdvance.SplatoonHandler;
 
 namespace TextAdvance.Gui;
-public unsafe sealed class EntityOverlay : IDisposable
+public sealed unsafe class EntityOverlay : IDisposable
 {
     public TaskManager TaskManager;
     public ulong AutoFrame;
     public EntityOverlay()
     {
-        Svc.PluginInterface.UiBuilder.Draw += Draw;
-        TaskManager = new()
+        Svc.PluginInterface.UiBuilder.Draw += this.Draw;
+        this.TaskManager = new()
         {
             AbortOnTimeout = true,
         };
@@ -34,7 +34,7 @@ public unsafe sealed class EntityOverlay : IDisposable
 
     public void Dispose()
     {
-        Svc.PluginInterface.UiBuilder.Draw -= Draw;
+        Svc.PluginInterface.UiBuilder.Draw -= this.Draw;
     }
 
     public void Draw()
@@ -48,11 +48,11 @@ public unsafe sealed class EntityOverlay : IDisposable
             var id = x.Struct()->NamePlateIconId;
             if (qtaEnabled && (Markers.MSQ.Contains(id) || Markers.ImportantSideProgress.Contains(id) || Markers.SideProgress.Contains(id)))
             {
-                DrawButton(x);
+                this.DrawButton(x);
             }
             else if (qtaEnabled && x.ObjectKind == ObjectKind.EventObj && x.IsTargetable && (Markers.EventObjWhitelist.Contains(x.DataId) || Markers.EventObjNameWhitelist.ContainsIgnoreCase(x.Name.ToString())))
             {
-                DrawButton(x);
+                this.DrawButton(x);
             }
             else if (x.IsTargetable && finderEnabled)
             {
@@ -67,13 +67,13 @@ public unsafe sealed class EntityOverlay : IDisposable
                 }
                 if (display)
                 {
-                    DrawButton(x);
+                    this.DrawButton(x);
                 }
             }
         }
     }
 
-    void DrawButton(IGameObject obj)
+    private void DrawButton(IGameObject obj)
     {
         if (Vector3.Distance(obj.Position, Player.Object.Position) < 3f) return;
         if (P.config.GetQTAQuestTether())
@@ -103,7 +103,7 @@ public unsafe sealed class EntityOverlay : IDisposable
                     {
                         Move();
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         e.Log();
                     }

@@ -21,10 +21,10 @@ public class IPCProvider
     [EzIPC]
     public bool EnableExternalControl(string requester, ExternalTerritoryConfig config)
     {
-        if(!IsInExternalControl() || Requester == requester)
+        if (!this.IsInExternalControl() || this.Requester == requester)
         {
-            ExternalConfig = config;
-            Requester = requester;
+            this.ExternalConfig = config;
+            this.Requester = requester;
             return true;
         }
         return false;
@@ -33,10 +33,10 @@ public class IPCProvider
     [EzIPC]
     public bool DisableExternalControl(string requester)
     {
-        if(!IsInExternalControl() || Requester == requester)
+        if (!this.IsInExternalControl() || this.Requester == requester)
         {
-            ExternalConfig = null;
-            Requester = null;
+            this.ExternalConfig = null;
+            this.Requester = null;
             return true;
         }
         return false;
@@ -45,7 +45,7 @@ public class IPCProvider
     [EzIPC]
     public bool IsInExternalControl()
     {
-        return Requester != null && ExternalConfig != null;
+        return this.Requester != null && this.ExternalConfig != null;
     }
 
     [EzIPC] public bool IsEnabled() => P.IsEnabled(true);
@@ -79,12 +79,14 @@ public class IPCProvider
         S.MoveManager.MoveTo3DPoint(data, distance);
     }
 
-    [EzIPC] public void Stop()
+    [EzIPC]
+    public void Stop()
     {
         P.EntityOverlay.TaskManager.Abort();
         if (C.Navmesh) P.NavmeshManager.Stop();
     }
-    [EzIPC] public bool IsBusy()
+    [EzIPC]
+    public bool IsBusy()
     {
         return P.EntityOverlay.TaskManager.IsBusy;
     }

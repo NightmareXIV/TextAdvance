@@ -27,14 +27,14 @@ public unsafe class TextAdvance : IDalamudPlugin
     internal bool InCutscene = false;
     internal bool WasInCutscene = false;
     internal bool Enabled = false;
-    bool CanPressEsc = false;
+    private bool CanPressEsc = false;
     //static string[] HandOverStr = { "Hand Over" };
     internal Config config;
     internal ConfigGui configGui;
-    bool loggedIn = false;
+    private bool loggedIn = false;
     internal static TextAdvance P;
     internal Dictionary<uint, string> TerritoryNames = [];
-    Overlay overlay;
+    private Overlay overlay;
 
     internal const string BlockListNamespace = "TextAdvance.StopRequests";
     internal HashSet<string> BlockList;
@@ -53,7 +53,7 @@ public unsafe class TextAdvance : IDalamudPlugin
         Svc.Commands.RemoveHandler("/at");
         Safe(ExecSkipTalk.Shutdown);
         Safe(ExecPickReward.Shutdown);
-        Safe(() => EntityOverlay?.Dispose());
+        Safe(() => this.EntityOverlay?.Dispose());
         ECommonsMain.Dispose();
         P = null;
     }
@@ -65,15 +65,15 @@ public unsafe class TextAdvance : IDalamudPlugin
         new TickScheduler(delegate
         {
             EzConfig.Migrate<Config>();
-            config = EzConfig.Init<Config>();
-            new EzFrameworkUpdate(Tick);
-            new EzLogout(Logout);
-            ProperOnLogin.RegisterAvailable(Login);
-            configGui = new ConfigGui(this);
-            overlay = new();
-            SplatoonHandler = new();
-            Svc.PluginInterface.UiBuilder.OpenConfigUi += delegate { configGui.IsOpen = true; };
-            Svc.Commands.AddHandler("/at", new CommandInfo(HandleCommand)
+            this.config = EzConfig.Init<Config>();
+            new EzFrameworkUpdate(this.Tick);
+            new EzLogout(this.Logout);
+            ProperOnLogin.RegisterAvailable(this.Login);
+            this.configGui = new ConfigGui(this);
+            this.overlay = new();
+            this.SplatoonHandler = new();
+            Svc.PluginInterface.UiBuilder.OpenConfigUi += delegate { this.configGui.IsOpen = true; };
+            Svc.Commands.AddHandler("/at", new CommandInfo(this.HandleCommand)
             {
                 ShowInHelp = true,
                 HelpMessage = """
@@ -88,31 +88,31 @@ public unsafe class TextAdvance : IDalamudPlugin
             });
             if (Svc.ClientState.IsLoggedIn)
             {
-                loggedIn = true;
+                this.loggedIn = true;
             }
-            overlay = new();
-            configGui.ws.AddWindow(overlay);
-            WaitOverlay = new();
-            configGui.ws.AddWindow(WaitOverlay);
-            
-            TerritoryNames = Svc.Data.GetExcelSheet<TerritoryType>().Where(x => x.PlaceName.ValueNullable?.Name.ToString().Length > 0)
+            this.overlay = new();
+            this.configGui.ws.AddWindow(this.overlay);
+            this.WaitOverlay = new();
+            this.configGui.ws.AddWindow(this.WaitOverlay);
+
+            this.TerritoryNames = Svc.Data.GetExcelSheet<TerritoryType>().Where(x => x.PlaceName.ValueNullable?.Name.ToString().Length > 0)
             .ToDictionary(
-                x => x.RowId, 
+                x => x.RowId,
                 x => $"{x.RowId} | {x.PlaceName.ValueNullable?.Name}{(x.ContentFinderCondition.ValueNullable?.Name.ToString().Length > 0 ? $" ({x.ContentFinderCondition.ValueNullable?.Name})" : string.Empty)}");
-            BlockList = Svc.PluginInterface.GetOrCreateData<HashSet<string>>(BlockListNamespace, () => new());
-            BlockList.Clear(); 
-            AutoCutsceneSkipper.Init(CutsceneSkipHandler);
-            TaskManager = new()
+            this.BlockList = Svc.PluginInterface.GetOrCreateData<HashSet<string>>(BlockListNamespace, () => []);
+            this.BlockList.Clear();
+            AutoCutsceneSkipper.Init(this.CutsceneSkipHandler);
+            this.TaskManager = new()
             {
                 AbortOnTimeout = true,
             };
-            new EzTerritoryChanged(ClientState_TerritoryChanged);
+            new EzTerritoryChanged(this.ClientState_TerritoryChanged);
             ExecSkipTalk.Init();
             ExecPickReward.Init();
-            Memory = new();
-            EntityOverlay = new();
-            ProgressOverlay = new();
-            NavmeshManager = new();
+            this.Memory = new();
+            this.EntityOverlay = new();
+            this.ProgressOverlay = new();
+            this.NavmeshManager = new();
             //ExecAutoSnipe.Init(); // must init after memory
             SingletonServiceManager.Initialize(typeof(ServiceManager));
             EzIPC.OnSafeInvocationException += this.EzIPC_OnSafeInvocationException;
@@ -126,11 +126,11 @@ public unsafe class TextAdvance : IDalamudPlugin
 
     private void ClientState_TerritoryChanged(ushort obj)
     {
-        SplatoonHandler.Reset();
+        this.SplatoonHandler.Reset();
         ExecAutoInteract.InteractedObjects.Clear();
     }
 
-    bool CutsceneSkipHandler(nint ptr)
+    private bool CutsceneSkipHandler(nint ptr)
     {
         if (Svc.ClientState.TerritoryType.EqualsAny<ushort>(670))
         {
@@ -141,17 +141,17 @@ public unsafe class TextAdvance : IDalamudPlugin
 
     private void Logout()
     {
-        SplatoonHandler.Reset();
-        if (!config.DontAutoDisable)
+        this.SplatoonHandler.Reset();
+        if (!this.config.DontAutoDisable)
         {
-            Enabled = false;
+            this.Enabled = false;
         }
     }
 
     private void Login()
     {
-        SplatoonHandler.Reset();
-        loggedIn = true;
+        this.SplatoonHandler.Reset();
+        this.loggedIn = true;
     }
 
     private void HandleCommand(string command, string arguments)
@@ -170,12 +170,12 @@ public unsafe class TextAdvance : IDalamudPlugin
         }
         else if (arguments.EqualsIgnoreCaseAny("s", "settings", "c", "config"))
         {
-            configGui.IsOpen = true;
+            this.configGui.IsOpen = true;
         }
         else if (arguments.EqualsIgnoreCaseAny("g", "gui"))
         {
-            config.QTIEnabled = !config.QTIEnabled;
-            if (config.QTIEnabled)
+            this.config.QTIEnabled = !this.config.QTIEnabled;
+            if (this.config.QTIEnabled)
             {
                 Notify.Info($"Quest target indicators enabled");
             }
@@ -203,20 +203,20 @@ public unsafe class TextAdvance : IDalamudPlugin
         }
         else
         {
-            Enabled = arguments.EqualsIgnoreCaseAny("enable", "e", "yes", "y") || (!arguments.EqualsIgnoreCaseAny("disable", "d", "no", "n") && !Enabled);
+            this.Enabled = arguments.EqualsIgnoreCaseAny("enable", "e", "yes", "y") || (!arguments.EqualsIgnoreCaseAny("disable", "d", "no", "n") && !this.Enabled);
             if (!P.config.NotifyDisableManualState)
             {
-                Svc.Toasts.ShowQuest("Auto advance " + (Enabled ? "globally enabled" : "disabled (except custom territories)"),
+                Svc.Toasts.ShowQuest("Auto advance " + (this.Enabled ? "globally enabled" : "disabled (except custom territories)"),
                     new QuestToastOptions() { PlaySound = true, DisplayCheckmark = true });
             }
         }
     }
 
-    internal bool Locked => BlockList.Count != 0;
+    internal bool Locked => this.BlockList.Count != 0;
 
     internal bool IsEnabled(bool pure = false)
     {
-        return (Enabled || S.IPCProvider.IsInExternalControl() || IsTerritoryEnabled() || IsEnableButtonHeld()) && (!Locked || pure);
+        return (this.Enabled || S.IPCProvider.IsInExternalControl() || this.IsTerritoryEnabled() || this.IsEnableButtonHeld()) && (!this.Locked || pure);
     }
 
     internal bool IsTerritoryEnabled()
@@ -235,33 +235,33 @@ public unsafe class TextAdvance : IDalamudPlugin
             ExecSkipTalk.IsEnabled = false;
             ExecPickReward.IsEnabled = false;
             ExecAutoSnipe.IsEnabled = false;
-            if (loggedIn && Svc.ClientState.LocalPlayer != null)
+            if (this.loggedIn && Svc.ClientState.LocalPlayer != null)
             {
-                loggedIn = false;
-                if(config.AutoEnableNames.Contains(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.ValueNullable?.Name.ToString()))
+                this.loggedIn = false;
+                if (this.config.AutoEnableNames.Contains(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.ValueNullable?.Name.ToString()))
                 {
-                    Enabled = true;
+                    this.Enabled = true;
                     if (!P.config.NotifyDisableOnLogin)
                     {
                         Notify.Success("Auto text advance has been automatically enabled on this character");
                     }
                 }
             }
-            InCutscene = Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
+            this.InCutscene = Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
                 || Svc.Condition[ConditionFlag.WatchingCutscene78];
-            if (!Locked)
+            if (!this.Locked)
             {
-                if (!IsDisableButtonHeld() || !IsEnabled())
+                if (!this.IsDisableButtonHeld() || !this.IsEnabled())
                 {
-                    if (IsEnabled())
+                    if (this.IsEnabled())
                     {
-                        if (config.GetEnableCutsceneSkipConfirm() && InCutscene)
+                        if (this.config.GetEnableCutsceneSkipConfirm() && this.InCutscene)
                         {
                             ExecConfirmCutsceneSkip.Tick();
                         }
-                        if (config.GetEnableAutoInteract()) ExecAutoInteract.Tick();
+                        if (this.config.GetEnableAutoInteract()) ExecAutoInteract.Tick();
                     }
-                    if (IsEnabled() &&
+                    if (this.IsEnabled() &&
                         (Svc.Condition[ConditionFlag.OccupiedInQuestEvent] ||
                         Svc.Condition[ConditionFlag.Occupied33] ||
                         Svc.Condition[ConditionFlag.OccupiedInEvent] ||
@@ -273,21 +273,21 @@ public unsafe class TextAdvance : IDalamudPlugin
                         Svc.Condition[ConditionFlag.Mounting71] ||
                         Svc.Condition[ConditionFlag.CarryingObject] ||
                         Svc.Condition[ConditionFlag.CarryingItem] ||
-                        InCutscene))
+                        this.InCutscene))
                     {
-                        if (config.GetEnableTalkSkip()) ExecSkipTalk.IsEnabled = true;
-                        if (config.GetEnableQuestComplete()) ExecQuestComplete.Tick();
-                        if (config.GetEnableQuestAccept()) ExecQuestAccept.Tick();
-                        if (config.GetEnableRequestHandin()) ExecRequestComplete.Tick();
-                        if (config.GetEnableRequestFill()) ExecRequestFill.Tick();
-                        if (config.GetEnableRewardPick()) ExecPickReward.IsEnabled = true;
-                        if (config.GetEnableAutoSnipe()) ExecAutoSnipe.IsEnabled = true;
+                        if (this.config.GetEnableTalkSkip()) ExecSkipTalk.IsEnabled = true;
+                        if (this.config.GetEnableQuestComplete()) ExecQuestComplete.Tick();
+                        if (this.config.GetEnableQuestAccept()) ExecQuestAccept.Tick();
+                        if (this.config.GetEnableRequestHandin()) ExecRequestComplete.Tick();
+                        if (this.config.GetEnableRequestFill()) ExecRequestFill.Tick();
+                        if (this.config.GetEnableRewardPick()) ExecPickReward.IsEnabled = true;
+                        if (this.config.GetEnableAutoSnipe()) ExecAutoSnipe.IsEnabled = true;
                     }
                 }
             }
-            WasInCutscene = InCutscene;
+            this.WasInCutscene = this.InCutscene;
         }
-        catch(NullReferenceException e)
+        catch (NullReferenceException e)
         {
             PluginLog.Debug(e.Message + "" + e.StackTrace);
             //Svc.Chat.Print(e.Message + "" + e.StackTrace);
@@ -300,17 +300,17 @@ public unsafe class TextAdvance : IDalamudPlugin
 
     internal bool IsDisableButtonHeld()
     {
-        if (config.TempDisableButton == Button.ALT && ImGui.GetIO().KeyAlt) return !CSFramework.Instance()->WindowInactive;
-        if (config.TempDisableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return !CSFramework.Instance()->WindowInactive;
-        if (config.TempDisableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return !CSFramework.Instance()->WindowInactive;
+        if (this.config.TempDisableButton == Button.ALT && ImGui.GetIO().KeyAlt) return !CSFramework.Instance()->WindowInactive;
+        if (this.config.TempDisableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return !CSFramework.Instance()->WindowInactive;
+        if (this.config.TempDisableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return !CSFramework.Instance()->WindowInactive;
         return false;
     }
 
-    bool IsEnableButtonHeld()
+    private bool IsEnableButtonHeld()
     {
-        if (config.TempEnableButton == Button.ALT && ImGui.GetIO().KeyAlt) return !CSFramework.Instance()->WindowInactive;
-        if (config.TempEnableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return !CSFramework.Instance()->WindowInactive;
-        if (config.TempEnableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return !CSFramework.Instance()->WindowInactive;
+        if (this.config.TempEnableButton == Button.ALT && ImGui.GetIO().KeyAlt) return !CSFramework.Instance()->WindowInactive;
+        if (this.config.TempEnableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return !CSFramework.Instance()->WindowInactive;
+        if (this.config.TempEnableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return !CSFramework.Instance()->WindowInactive;
         return false;
     }
 }

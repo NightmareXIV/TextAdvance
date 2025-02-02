@@ -6,18 +6,18 @@ namespace TextAdvance.Gui;
 
 internal class ConfigGui : Window, IDisposable
 {
-    TextAdvance p;
+    private TextAdvance p;
     internal WindowSystem ws = new();
     public ConfigGui(TextAdvance plugin) : base("TextAdvance config")
     {
-        p = plugin;
-        SizeConstraints = new WindowSizeConstraints()
+        this.p = plugin;
+        this.SizeConstraints = new WindowSizeConstraints()
         {
             MinimumSize = new Vector2(400, 200),
             MaximumSize = new Vector2(99999, 99999),
         };
-        ws.AddWindow(this);
-        Svc.PluginInterface.UiBuilder.Draw += ws.Draw;
+        this.ws.AddWindow(this);
+        Svc.PluginInterface.UiBuilder.Draw += this.ws.Draw;
     }
 
     public override void Draw()
@@ -51,6 +51,6 @@ internal class ConfigGui : Window, IDisposable
 
     public void Dispose()
     {
-        Svc.PluginInterface.UiBuilder.Draw -= ws.Draw;
+        Svc.PluginInterface.UiBuilder.Draw -= this.ws.Draw;
     }
 }

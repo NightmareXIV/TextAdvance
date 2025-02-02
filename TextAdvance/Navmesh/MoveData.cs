@@ -25,17 +25,17 @@ public class MoveData
 
     public IGameObject GetIGameObject(float maxDistance = 20f)
     {
-        if(!Player.Available) return null;
-        if (DataID == 0)
+        if (!Player.Available) return null;
+        if (this.DataID == 0)
         {
-            if (Vector3.Distance(Player.Object.Position, Position) > maxDistance) return null;
+            if (Vector3.Distance(Player.Object.Position, this.Position) > maxDistance) return null;
             foreach (var x in Svc.Objects.OrderBy(z => Vector3.Distance(Player.Object.Position, z.Position)))
             {
                 if (x.IsMTQ()) return x;
             }
             foreach (var x in Svc.Objects.OrderBy(z => Vector3.Distance(Player.Object.Position, z.Position)))
             {
-                if(x.ObjectKind.EqualsAny(ObjectKind.EventNpc, ObjectKind.EventObj) && x.IsTargetable && Vector3.Distance(x.Position, Position) < 10f)
+                if (x.ObjectKind.EqualsAny(ObjectKind.EventNpc, ObjectKind.EventObj) && x.IsTargetable && Vector3.Distance(x.Position, this.Position) < 10f)
                 {
                     return x;
                 }
@@ -45,7 +45,7 @@ public class MoveData
         {
             foreach (var x in Svc.Objects)
             {
-                if (x.DataId == DataID && Vector3.Distance(Position, x.Position) < 1f) return x;
+                if (x.DataId == this.DataID && Vector3.Distance(this.Position, x.Position) < 1f) return x;
             }
         }
         return null;
