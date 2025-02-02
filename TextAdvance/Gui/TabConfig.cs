@@ -140,6 +140,7 @@ internal static class TabConfig
                 }
                 ImGui.EndCombo();
             }
+            ImGui.Checkbox("Use sprint and peloton if possible", ref P.config.UseSprintPeloton);
             ImGui.Checkbox($"Print navigation status into chat", ref P.config.NavStatusChat);
             ImGui.Checkbox("(very experimental) Allow flight", ref P.config.EnableFlight);
             //ImGui.Checkbox($"Allow teleporting to the nearest Aetheryte to a flag", ref P.config.EnableTeleportToFlag);

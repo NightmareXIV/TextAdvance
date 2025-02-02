@@ -129,7 +129,7 @@ public static unsafe class ExecAutoInteract
         }
     }
 
-    private static float GetMinDistance(IGameObject obj)
+    public static float GetMinDistance(IGameObject obj)
     {
         var ret = -999f;
         if (obj.ObjectKind == ObjectKind.Aetheryte) ret = 8f;
