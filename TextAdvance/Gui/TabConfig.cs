@@ -36,6 +36,9 @@ internal static class TabConfig
             ImGui.Checkbox("Enable plugin (non-persistent)", ref P.Enabled);
             ImGui.Checkbox($"Don't auto-disable plugin on logout", ref P.config.DontAutoDisable);
             ImGui.Checkbox($"Enable quest target indicators (global, persistent)", ref P.config.QTIEnabled);
+            ImGui.Indent();
+            ImGui.Checkbox("Enable indicators when plugin is disabled", ref P.config.QTAEnabledWhenTADisable);
+            ImGui.Checkbox("Enable finder when plugin is disabled", ref P.config.QTAFinderEnabledWhenTADisable);
             if (P.config.QTIEnabled)
             {
                 if (!Splatoon.IsConnected())
@@ -43,6 +46,10 @@ internal static class TabConfig
                     ImGuiEx.TextWrapped(EColor.PurpleBright, "You need to have Splatoon plugin installed and enabled for quest target indicators to work");
                 }
             }
+            ImGui.Unindent();
+            ImGui.SetNextItemWidth(150f);
+            ImGui.SliderFloat("Auto-interact max radius", ref C.AutoInteractMaxRadius, 3f, 10f);
+            ImGuiEx.HelpMarker("Lowering this radius may cause issues", ImGuiColors.DalamudOrange, FontAwesomeIcon.ExclamationTriangle.ToIconString());
         })
 
         .Section("Keybinds")
@@ -135,11 +142,8 @@ internal static class TabConfig
             }
             ImGui.Checkbox($"Print navigation status into chat", ref P.config.NavStatusChat);
             ImGui.Checkbox("(very experimental) Allow flight", ref P.config.EnableFlight);
-            ImGui.Checkbox($"Allow teleporting to the nearest Aetheryte to a flag", ref P.config.EnableTeleportToFlag);
+            //ImGui.Checkbox($"Allow teleporting to the nearest Aetheryte to a flag", ref P.config.EnableTeleportToFlag);
         })
-
-        .Section("Miscellaneous")
-        .CheckboxInverted("Hide Patreon banner", () => ref P.config.DisplayFunding)
 
         .Draw();
     }

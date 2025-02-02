@@ -34,6 +34,9 @@ public class Config : IEzConfig
     public bool EnableFlight = false;
     public uint? AllowUnsafeOptions = null;
     public bool EnableTeleportToFlag = false;
+    public bool QTAEnabledWhenTADisable = false;
+    public bool QTAFinderEnabledWhenTADisable = false;
+    public float AutoInteractMaxRadius = 10f;
 
     public bool GetEnableQuestAccept()
     {

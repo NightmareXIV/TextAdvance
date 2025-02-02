@@ -40,44 +40,6 @@ namespace TextAdvance
             Splatoon.SetOnConnect(OnConnect);
         }
 
-        internal void Tick()
-        {
-            if (P.config.GetQTAQuestEnabled() && Splatoon.IsConnected() && !Utils.ShouldHideUI())
-            {
-                foreach (var x in Svc.Objects)
-                {
-                    var id = x.Struct()->NamePlateIconId;
-                    if (Markers.MSQ.Contains(id) || Markers.ImportantSideProgress.Contains(id) || Markers.SideProgress.Contains(id))
-                    {
-                        var e = GetFreeElement(x.Position);
-                        Splatoon.DisplayOnce(e);
-                    }
-                    else if (x.ObjectKind == ObjectKind.EventObj && x.IsTargetable && (Markers.EventObjWhitelist.Contains(x.DataId) || Markers.EventObjNameWhitelist.ContainsIgnoreCase(x.Name.ToString())))
-                    {
-                        var e = GetFreeElement(x.Position);
-                        Splatoon.DisplayOnce(e);
-                    }
-                    else if (x.IsTargetable)
-                    {
-                        var display = false;
-                        if (x.ObjectKind == ObjectKind.EventObj && P.config.EObjFinder)
-                        {
-                            display = P.config.FinderKey == LimitedKeys.None || IsKeyPressed(P.config.FinderKey);
-                        }
-                        if (x.ObjectKind == ObjectKind.EventNpc && P.config.ENpcFinder)
-                        {
-                            display = P.config.FinderKey == LimitedKeys.None || IsKeyPressed(P.config.FinderKey);
-                        }
-                        if (display)
-                        {
-                            var e = GetFreeElement(x.Position);
-                            Splatoon.DisplayOnce(e);
-                        }
-                    }
-                }
-            }
-        }
-
         void OnConnect() => Reset();
 
         internal void Reset()
@@ -86,7 +48,7 @@ namespace TextAdvance
             CurrentCnt = 0;
         }
 
-        Element GetFreeElement(Vector3 pos)
+        public Element GetFreeElement(Vector3 pos)
         {
             if (CurrentCnt < Elements.Count)
             {

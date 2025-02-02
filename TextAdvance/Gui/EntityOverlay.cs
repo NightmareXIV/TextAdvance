@@ -41,18 +41,20 @@ public unsafe sealed class EntityOverlay : IDisposable
     {
         if (!(C.Navmesh && P.NavmeshManager.IsReady())) return;
         if (Utils.ShouldHideUI()) return;
+        var qtaEnabled = (P.config.QTAEnabledWhenTADisable || P.IsEnabled()) && P.config.GetQTAQuestEnabled();
+        var finderEnabled = (P.config.QTAFinderEnabledWhenTADisable || P.IsEnabled());
         foreach (var x in Svc.Objects)
         {
             var id = x.Struct()->NamePlateIconId;
-            if (Markers.MSQ.Contains(id) || Markers.ImportantSideProgress.Contains(id) || Markers.SideProgress.Contains(id))
+            if (qtaEnabled && (Markers.MSQ.Contains(id) || Markers.ImportantSideProgress.Contains(id) || Markers.SideProgress.Contains(id)))
             {
                 DrawButton(x);
             }
-            else if (x.ObjectKind == ObjectKind.EventObj && x.IsTargetable && (Markers.EventObjWhitelist.Contains(x.DataId) || Markers.EventObjNameWhitelist.ContainsIgnoreCase(x.Name.ToString())))
+            else if (qtaEnabled && x.ObjectKind == ObjectKind.EventObj && x.IsTargetable && (Markers.EventObjWhitelist.Contains(x.DataId) || Markers.EventObjNameWhitelist.ContainsIgnoreCase(x.Name.ToString())))
             {
                 DrawButton(x);
             }
-            else if (x.IsTargetable)
+            else if (x.IsTargetable && finderEnabled)
             {
                 var display = false;
                 if (x.ObjectKind == ObjectKind.EventObj && P.config.EObjFinder)
@@ -74,7 +76,12 @@ public unsafe sealed class EntityOverlay : IDisposable
     void DrawButton(IGameObject obj)
     {
         if (Vector3.Distance(obj.Position, Player.Object.Position) < 3f) return;
-        if(CSFramework.Instance()->FrameCounter == this.AutoFrame)
+        if (P.config.GetQTAQuestTether())
+        {
+            var e = P.SplatoonHandler.GetFreeElement(obj.Position);
+            Splatoon.DisplayOnce(e);
+        }
+        if (CSFramework.Instance()->FrameCounter == this.AutoFrame)
         {
             Move();
             this.AutoFrame = 0;

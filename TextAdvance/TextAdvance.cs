@@ -249,10 +249,6 @@ public unsafe class TextAdvance : IDalamudPlugin
             }
             InCutscene = Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
                 || Svc.Condition[ConditionFlag.WatchingCutscene78];
-            if(config.QTIEnabled && IsEnabled() && !InCutscene)
-            {
-                SplatoonHandler.Tick();
-            }
             if (!Locked)
             {
                 if (!IsDisableButtonHeld() || !IsEnabled())

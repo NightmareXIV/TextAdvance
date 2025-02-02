@@ -131,10 +131,15 @@ public unsafe static class ExecAutoInteract
 
     static float GetMinDistance(IGameObject obj)
     {
-        if (obj.ObjectKind == ObjectKind.Aetheryte) return 8f;
-        if (obj.ObjectKind == ObjectKind.EventNpc) return 6f + obj.HitboxRadius;
-        if (obj.ObjectKind == ObjectKind.EventObj) return 3f;
-        return -999f;
+        var ret = -999f;
+        if (obj.ObjectKind == ObjectKind.Aetheryte) ret = 8f;
+        else if (obj.ObjectKind == ObjectKind.EventNpc) ret = 6f + obj.HitboxRadius;
+        else if (obj.ObjectKind == ObjectKind.EventObj) ret = 3f;
+        if(ret > P.config.AutoInteractMaxRadius)
+        {
+            ret = P.config.AutoInteractMaxRadius;
+        }
+        return ret;
     }
 
     static void Interact(IGameObject obj)
