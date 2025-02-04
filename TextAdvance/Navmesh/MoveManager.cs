@@ -1,26 +1,16 @@
-﻿using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.ClientState.Objects.Enums;
+﻿using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
-using ECommons;
 using ECommons.Automation;
 using ECommons.ChatMethods;
 using ECommons.CircularBuffers;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
-using ECommons.Interop;
 using ECommons.MathHelpers;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static TextAdvance.SplatoonHandler;
 
 namespace TextAdvance.Navmesh;
 public unsafe class MoveManager
@@ -30,7 +20,7 @@ public unsafe class MoveManager
     private void Log(string message)
     {
         PluginLog.Debug($"[MoveManager] {message}");
-        if (P.config.NavStatusChat)
+        if (C.NavStatusChat)
         {
             ChatPrinter.PrintColored(UIColor.WarmSeaBlue, $"[TextAdvance] {message}");
         }
@@ -109,7 +99,7 @@ public unsafe class MoveManager
     public void MoveToQuest()
     {
         if (!Player.Available) return;
-        //P.EntityOverlay.AutoFrame = CSFramework.Instance()->FrameCounter + 1;
+        //S.EntityOverlay.AutoFrame = CSFramework.Instance()->FrameCounter + 1;
         if (EzThrottler.Throttle("WarnMTQ", int.MaxValue))
         {
             //ChatPrinter.Red($"[TextAdvance] MoveToQuest function may not work correctly until complete Dalamud update");
@@ -152,7 +142,7 @@ public unsafe class MoveManager
     {
         this.SpecialAdjust(data);
         P.NavmeshManager.Stop();
-        P.EntityOverlay.TaskManager.Abort();
+        S.EntityOverlay.TaskManager.Abort();
         /*if (Svc.Condition[ConditionFlag.InFlight])
         {
             Svc.Toasts.ShowError("[TextAdvance] Flying pathfinding is not supported");
@@ -160,20 +150,20 @@ public unsafe class MoveManager
         }*/
         if (data.Mount ?? Vector3.Distance(data.Position, Player.Object.Position) > 20f)
         {
-            P.EntityOverlay.TaskManager.Enqueue(this.MountIfCan);
+            S.EntityOverlay.TaskManager.Enqueue(this.MountIfCan);
         }
-        if (data.Fly != false) P.EntityOverlay.TaskManager.Enqueue(this.FlyIfCan);
-        P.EntityOverlay.TaskManager.Enqueue(() => this.MoveToPosition(data, distance));
-        P.EntityOverlay.TaskManager.Enqueue(() => this.WaitUntilArrival(data, distance), 10 * 60 * 1000);
-        P.EntityOverlay.TaskManager.Enqueue(P.NavmeshManager.Stop);
+        if (data.Fly != false) S.EntityOverlay.TaskManager.Enqueue(this.FlyIfCan);
+        S.EntityOverlay.TaskManager.Enqueue(() => this.MoveToPosition(data, distance));
+        S.EntityOverlay.TaskManager.Enqueue(() => this.WaitUntilArrival(data, distance), 10 * 60 * 1000);
+        S.EntityOverlay.TaskManager.Enqueue(P.NavmeshManager.Stop);
         if (C.NavmeshAutoInteract && !data.NoInteract)
         {
-            P.EntityOverlay.TaskManager.Enqueue(() =>
+            S.EntityOverlay.TaskManager.Enqueue(() =>
             {
                 var obj = data.GetIGameObject();
                 if (obj != null)
                 {
-                    P.EntityOverlay.TaskManager.Insert(() => this.InteractWithDataID(obj.DataId));
+                    S.EntityOverlay.TaskManager.Insert(() => this.InteractWithDataID(obj.DataId));
                 }
             });
         }
@@ -272,7 +262,7 @@ public unsafe class MoveManager
                 this.LastPosition = Player.Position;
             }
         }
-        if (data.Mount != false && P.config.Mount != -1 && Vector3.Distance(data.Position, Player.Object.Position) > 20f && !Svc.Condition[ConditionFlag.Mounted] && ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, 9) == 0)
+        if (data.Mount != false && C.Mount != -1 && Vector3.Distance(data.Position, Player.Object.Position) > 20f && !Svc.Condition[ConditionFlag.Mounted] && ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, 9) == 0)
         {
             this.EnqueueMoveAndInteract(data, distance);
             return false;
@@ -325,7 +315,7 @@ public unsafe class MoveManager
                 return null;
             }
         }
-        if (Vector3.Distance(Player.Object.Position, pos) > 12f && !Svc.Condition[ConditionFlag.Mounted] && !Svc.Condition[ConditionFlag.InCombat] && !Player.IsAnimationLocked && P.config.UseSprintPeloton)
+        if (Vector3.Distance(Player.Object.Position, pos) > 12f && !Svc.Condition[ConditionFlag.Mounted] && !Svc.Condition[ConditionFlag.InCombat] && !Player.IsAnimationLocked && C.UseSprintPeloton)
         {
             if (ActionManager.Instance()->GetActionStatus(ActionType.Action, 3) == 0 && !Player.Object.StatusList.Any(z => z.StatusId == 50))
             {

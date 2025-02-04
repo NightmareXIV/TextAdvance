@@ -1,8 +1,4 @@
-﻿using Dalamud.Utility.Timing;
-using ECommons.ExcelServices;
-using System;
-
-namespace TextAdvance;
+﻿namespace TextAdvance;
 
 internal static class Lang
 {

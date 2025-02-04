@@ -1,23 +1,19 @@
-﻿using ECommons.Configuration;
-using ECommons.Funding;
-using NightmareUI;
+﻿using ECommons.Funding;
+using ECommons.SimpleGui;
 
 namespace TextAdvance.Gui;
 
-internal class ConfigGui : Window, IDisposable
+public class ConfigGui : ConfigWindow
 {
-    private TextAdvance p;
-    internal WindowSystem ws = new();
-    public ConfigGui(TextAdvance plugin) : base("TextAdvance config")
+    Overlay Overlay = new();
+    WaitOverlay WaitOverlay = new();
+    ProgressOverlay ProgressOverlay = new();
+    private ConfigGui()
     {
-        this.p = plugin;
-        this.SizeConstraints = new WindowSizeConstraints()
-        {
-            MinimumSize = new Vector2(400, 200),
-            MaximumSize = new Vector2(99999, 99999),
-        };
-        this.ws.AddWindow(this);
-        Svc.PluginInterface.UiBuilder.Draw += this.ws.Draw;
+        EzConfigGui.Init(this);
+        EzConfigGui.WindowSystem.AddWindow(Overlay);
+        EzConfigGui.WindowSystem.AddWindow(WaitOverlay);
+        EzConfigGui.WindowSystem.AddWindow(ProgressOverlay);
     }
 
     public override void Draw()
@@ -40,17 +36,5 @@ internal class ConfigGui : Window, IDisposable
     public override void PreDraw()
     {
         base.PreDraw();
-    }
-
-    public override void OnClose()
-    {
-        EzConfig.Save();
-        Notify.Success("Configuration saved");
-        base.OnClose();
-    }
-
-    public void Dispose()
-    {
-        Svc.PluginInterface.UiBuilder.Draw -= this.ws.Draw;
     }
 }

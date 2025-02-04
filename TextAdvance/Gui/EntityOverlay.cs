@@ -1,21 +1,10 @@
 ﻿using Dalamud.Game.ClientState.Objects.Enums;
-using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Interface.Utility;
-using ECommons.Automation;
 using ECommons.Automation.LegacyTaskManager;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.Interop;
-using ECommons.SimpleGui;
-using ECommons.SplatoonAPI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting;
-using System.Text;
-using System.Threading.Tasks;
-using TextAdvance.Navmesh;
 using static TextAdvance.SplatoonHandler;
 
 namespace TextAdvance.Gui;
@@ -41,8 +30,8 @@ public sealed unsafe class EntityOverlay : IDisposable
     {
         if (!(C.Navmesh && P.NavmeshManager.IsReady())) return;
         if (Utils.ShouldHideUI()) return;
-        var qtaEnabled = (P.config.QTAEnabledWhenTADisable || P.IsEnabled()) && P.config.GetQTAQuestEnabled();
-        var finderEnabled = (P.config.QTAFinderEnabledWhenTADisable || P.IsEnabled());
+        var qtaEnabled = (C.QTAEnabledWhenTADisable || P.IsEnabled()) && C.GetQTAQuestEnabled();
+        var finderEnabled = (C.QTAFinderEnabledWhenTADisable || P.IsEnabled());
         foreach (var x in Svc.Objects)
         {
             var id = x.Struct()->NamePlateIconId;
@@ -57,13 +46,13 @@ public sealed unsafe class EntityOverlay : IDisposable
             else if (x.IsTargetable && finderEnabled)
             {
                 var display = false;
-                if (x.ObjectKind == ObjectKind.EventObj && P.config.EObjFinder)
+                if (x.ObjectKind == ObjectKind.EventObj && C.EObjFinder)
                 {
-                    display = P.config.FinderKey == LimitedKeys.None || IsKeyPressed(P.config.FinderKey);
+                    display = C.FinderKey == LimitedKeys.None || IsKeyPressed(C.FinderKey);
                 }
-                if (x.ObjectKind == ObjectKind.EventNpc && P.config.ENpcFinder)
+                if (x.ObjectKind == ObjectKind.EventNpc && C.ENpcFinder)
                 {
-                    display = P.config.FinderKey == LimitedKeys.None || IsKeyPressed(P.config.FinderKey);
+                    display = C.FinderKey == LimitedKeys.None || IsKeyPressed(C.FinderKey);
                 }
                 if (display)
                 {
@@ -76,10 +65,10 @@ public sealed unsafe class EntityOverlay : IDisposable
     private void DrawButton(IGameObject obj)
     {
         if (Vector3.Distance(obj.Position, Player.Object.Position) < 3f) return;
-        if (P.config.GetQTAQuestTether())
+        if (C.GetQTAQuestTether())
         {
             var e = P.SplatoonHandler.GetFreeElement(obj.Position);
-            Splatoon.DisplayOnce(e);
+            P.QueuedSplatoonElements.Enqueue(e);
         }
         if (CSFramework.Instance()->FrameCounter == this.AutoFrame)
         {
@@ -121,7 +110,7 @@ public sealed unsafe class EntityOverlay : IDisposable
 
         void Move()
         {
-            P.EntityOverlay.TaskManager.Abort();
+            S.EntityOverlay.TaskManager.Abort();
             S.MoveManager.EnqueueMoveAndInteract(new(obj.Position, obj.DataId, false), 3f);
         }
     }

@@ -8,7 +8,7 @@ internal static class TabChars
 
         ImGui.Text("Auto-enable plugin when you log in with characters:");
         string dele = null;
-        foreach (var s in P.config.AutoEnableNames)
+        foreach (var s in C.AutoEnableNames)
         {
             ImGui.Text(s);
             ImGui.SameLine();
@@ -19,7 +19,7 @@ internal static class TabChars
         }
         if (ImGui.Button("Add current character") && Svc.ClientState.LocalPlayer != null)
         {
-            P.config.AutoEnableNames.Add(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.Value.Name.ToString());
+            C.AutoEnableNames.Add(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.Value.Name.ToString());
         }
         ImGui.SameLine();
         ImGui.SetNextItemWidth(200f);
@@ -27,12 +27,12 @@ internal static class TabChars
         ImGui.SameLine();
         if (ImGui.Button("Add"))
         {
-            P.config.AutoEnableNames.Add(Name);
+            C.AutoEnableNames.Add(Name);
             Name = "";
         }
         if (dele != null)
         {
-            P.config.AutoEnableNames.Remove(dele);
+            C.AutoEnableNames.Remove(dele);
         }
     }
 }

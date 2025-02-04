@@ -14,7 +14,7 @@ internal class Overlay : Window
 
     public override bool DrawConditions()
     {
-        return P.config.EnableOverlay && P.IsEnabled(true);
+        return C.EnableOverlay && P.IsEnabled(true);
     }
 
     public override void PreDraw()
@@ -39,50 +39,50 @@ internal class Overlay : Window
         ImGui.SameLine(0, 0);
         if (!blocked || Environment.TickCount64 % 2000 > 1000)
         {
-            ImGuiEx.Text(P.config.GetEnableQuestAccept() ? col : ImGuiColors.DalamudGrey2, "QA");
+            ImGuiEx.Text(C.GetEnableQuestAccept() ? col : ImGuiColors.DalamudGrey2, "QA");
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
-            ImGuiEx.Text(P.config.GetEnableQuestComplete() ? col : ImGuiColors.DalamudGrey2, "QC");
+            ImGuiEx.Text(C.GetEnableQuestComplete() ? col : ImGuiColors.DalamudGrey2, "QC");
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
-            ImGuiEx.Text(P.config.GetEnableRewardPick() ? col : ImGuiColors.DalamudGrey2, "RP");
+            ImGuiEx.Text(C.GetEnableRewardPick() ? col : ImGuiColors.DalamudGrey2, "RP");
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
-            ImGuiEx.Text(P.config.GetEnableCutsceneEsc() ? col : ImGuiColors.DalamudGrey2, "CS");
+            ImGuiEx.Text(C.GetEnableCutsceneEsc() ? col : ImGuiColors.DalamudGrey2, "CS");
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
-            ImGuiEx.Text(P.config.GetEnableCutsceneSkipConfirm() ? col : ImGuiColors.DalamudGrey2, "CC");
+            ImGuiEx.Text(C.GetEnableCutsceneSkipConfirm() ? col : ImGuiColors.DalamudGrey2, "CC");
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
-            ImGuiEx.Text(P.config.GetEnableRequestHandin() ? col : ImGuiColors.DalamudGrey2, "RH");
+            ImGuiEx.Text(C.GetEnableRequestHandin() ? col : ImGuiColors.DalamudGrey2, "RH");
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
-            ImGuiEx.Text(P.config.GetEnableRequestFill() ? col : ImGuiColors.DalamudGrey2, "RF");
+            ImGuiEx.Text(C.GetEnableRequestFill() ? col : ImGuiColors.DalamudGrey2, "RF");
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
-            ImGuiEx.Text(P.config.GetEnableTalkSkip() ? col : ImGuiColors.DalamudGrey2, "TS");
+            ImGuiEx.Text(C.GetEnableTalkSkip() ? col : ImGuiColors.DalamudGrey2, "TS");
             ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
-            ImGuiEx.Text(P.config.GetEnableAutoInteract() ? col : ImGuiColors.DalamudGrey2, "IN");
+            ImGuiEx.Text(C.GetEnableAutoInteract() ? col : ImGuiColors.DalamudGrey2, "IN");
             /*ImGui.SameLine(0, 0);
             ImGuiEx.Text(ImGuiColors.DalamudGrey, " | ");
             ImGui.SameLine(0, 0);
-            ImGuiEx.Text(P.config.GetEnableAutoSnipe() ? col : ImGuiColors.DalamudGrey2, "SN");*/
+            ImGuiEx.Text(C.GetEnableAutoSnipe() ? col : ImGuiColors.DalamudGrey2, "SN");*/
         }
         else
         {
             ImGuiEx.Text(ImGuiColors.DalamudRed, $"paused externally");
         }
 
-        this.Position = ImGuiHelpers.MainViewport.Pos + new Vector2(ImGuiHelpers.MainViewport.Size.X / 2 - ImGui.GetWindowSize().X / 2, 0) - P.config.OverlayOffset;
+        this.Position = ImGuiHelpers.MainViewport.Pos + new Vector2(ImGuiHelpers.MainViewport.Size.X / 2 - ImGui.GetWindowSize().X / 2, 0) - C.OverlayOffset;
     }
 
     public override void PostDraw()

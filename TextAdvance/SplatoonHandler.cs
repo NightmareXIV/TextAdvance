@@ -1,14 +1,4 @@
-﻿using Dalamud.Game.ClientState.Objects.Enums;
-using Dalamud.Game.ClientState.Objects.SubKinds;
-using ECommons.GameFunctions;
-using ECommons.Interop;
-using ECommons.SplatoonAPI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Dalamud.Interface.Utility.Raii.ImRaii;
+﻿using ECommons.SplatoonAPI;
 
 namespace TextAdvance
 {
@@ -73,9 +63,9 @@ namespace TextAdvance
 
         private void ApplySettings(Element e)
         {
-            e.thicc = P.config.GetQTAQuestThickness();
-            e.color = P.config.GetQTAQuestColor().ToUint();
-            e.tether = P.config.GetQTAQuestTether();
+            e.thicc = C.GetQTAQuestThickness();
+            e.color = C.GetQTAQuestColor().ToUint();
+            e.tether = C.GetQTAQuestTether();
         }
 
     }

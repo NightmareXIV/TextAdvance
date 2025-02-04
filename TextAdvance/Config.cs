@@ -1,6 +1,4 @@
-﻿using Dalamud.Configuration;
-using Dalamud.Plugin.Ipc.Exceptions;
-using ECommons.Configuration;
+﻿using ECommons.Configuration;
 using ECommons.Interop;
 
 namespace TextAdvance;

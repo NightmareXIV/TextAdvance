@@ -9,7 +9,7 @@ internal static class TabTerritory
     private static string Filter = string.Empty;
     internal static void Draw()
     {
-        ImGui.Checkbox("Global enable overrides local settings", ref P.config.GlobalOverridesLocal);
+        ImGui.Checkbox("Global enable overrides local settings", ref C.GlobalOverridesLocal);
         ImGuiEx.TextWrapped("If this checkbox is checked, when enabling plugin with /at command per area settings will become irrelevant " +
             "and global settings will be used.\nOtherwise per area settings will always be used, regardless of plugin's global state.");
         ImGuiEx.Text("Current plugin state: globally ");
@@ -34,8 +34,8 @@ internal static class TabTerritory
             foreach (var x in P.TerritoryNames)
             {
                 if (Filter != string.Empty && !x.Value.Contains(Filter, StringComparison.OrdinalIgnoreCase)) continue;
-                if (OnlyModded && !P.config.TerritoryConditions.ContainsKey(x.Key)) continue;
-                if (ImGui.Selectable(x.Value, P.config.TerritoryConditions.ContainsKey(x.Key)))
+                if (OnlyModded && !C.TerritoryConditions.ContainsKey(x.Key)) continue;
+                if (ImGui.Selectable(x.Value, C.TerritoryConditions.ContainsKey(x.Key)))
                 {
                     SelectedKey = x.Key;
                 }
@@ -48,11 +48,11 @@ internal static class TabTerritory
         }
         if (P.TerritoryNames.ContainsKey(SelectedKey))
         {
-            if (P.config.TerritoryConditions.TryGetValue(SelectedKey, out var settings))
+            if (C.TerritoryConditions.TryGetValue(SelectedKey, out var settings))
             {
                 if (ImGui.Button("Remove custom settings"))
                 {
-                    P.config.TerritoryConditions.Remove(SelectedKey);
+                    C.TerritoryConditions.Remove(SelectedKey);
                 }
                 ImGui.Checkbox("Automatic quest accept", ref settings.EnableQuestAccept);
                 ImGui.Checkbox("Automatic quest complete", ref settings.EnableQuestComplete);
@@ -76,7 +76,7 @@ internal static class TabTerritory
                 ImGuiEx.Text("No custom settings are present for this area.");
                 if (ImGui.Button("Create custom settings"))
                 {
-                    P.config.TerritoryConditions[SelectedKey] = new();
+                    C.TerritoryConditions[SelectedKey] = new();
                 }
             }
         }

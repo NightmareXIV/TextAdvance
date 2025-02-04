@@ -1,20 +1,17 @@
 ﻿using Dalamud.Game.Command;
 using Dalamud.Game.Gui.Toast;
-using ECommons;
 using ECommons.Automation;
 using ECommons.Automation.LegacyTaskManager;
 using ECommons.Configuration;
 using ECommons.Events;
 using ECommons.EzEventManager;
 using ECommons.EzIpcManager;
+using ECommons.SimpleGui;
 using ECommons.Singletons;
-using ECommons.Throttlers;
-using FFXIVClientStructs.FFXIV.Client.Game;
+using ECommons.SplatoonAPI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
-using System.Security.Principal;
 using TextAdvance.Executors;
-using TextAdvance.Gui;
 using TextAdvance.Navmesh;
 using TextAdvance.Services;
 
@@ -22,29 +19,25 @@ namespace TextAdvance;
 
 public unsafe class TextAdvance : IDalamudPlugin
 {
-    public static Config C => P.config;
+    public static Config C => P.Config;
 
     internal bool InCutscene = false;
     internal bool WasInCutscene = false;
     internal bool Enabled = false;
     private bool CanPressEsc = false;
     //static string[] HandOverStr = { "Hand Over" };
-    internal Config config;
-    internal ConfigGui configGui;
-    private bool loggedIn = false;
+    private Config Config;
+    private bool LoggedIn = false;
     internal static TextAdvance P;
     internal Dictionary<uint, string> TerritoryNames = [];
-    private Overlay overlay;
 
     internal const string BlockListNamespace = "TextAdvance.StopRequests";
     internal HashSet<string> BlockList;
     internal TaskManager TaskManager;
-    internal WaitOverlay WaitOverlay;
     internal SplatoonHandler SplatoonHandler;
     internal Memory Memory;
-    public EntityOverlay EntityOverlay;
-    public ProgressOverlay ProgressOverlay;
     public NavmeshManager NavmeshManager;
+    public Queue<Element> QueuedSplatoonElements = [];
 
     public string Name => "TextAdvance";
 
@@ -53,7 +46,6 @@ public unsafe class TextAdvance : IDalamudPlugin
         Svc.Commands.RemoveHandler("/at");
         Safe(ExecSkipTalk.Shutdown);
         Safe(ExecPickReward.Shutdown);
-        Safe(() => this.EntityOverlay?.Dispose());
         ECommonsMain.Dispose();
         P = null;
     }
@@ -65,14 +57,11 @@ public unsafe class TextAdvance : IDalamudPlugin
         new TickScheduler(delegate
         {
             EzConfig.Migrate<Config>();
-            this.config = EzConfig.Init<Config>();
+            this.Config = EzConfig.Init<Config>();
             new EzFrameworkUpdate(this.Tick);
             new EzLogout(this.Logout);
             ProperOnLogin.RegisterAvailable(this.Login);
-            this.configGui = new ConfigGui(this);
-            this.overlay = new();
             this.SplatoonHandler = new();
-            Svc.PluginInterface.UiBuilder.OpenConfigUi += delegate { this.configGui.IsOpen = true; };
             Svc.Commands.AddHandler("/at", new CommandInfo(this.HandleCommand)
             {
                 ShowInHelp = true,
@@ -88,12 +77,8 @@ public unsafe class TextAdvance : IDalamudPlugin
             });
             if (Svc.ClientState.IsLoggedIn)
             {
-                this.loggedIn = true;
+                this.LoggedIn = true;
             }
-            this.overlay = new();
-            this.configGui.ws.AddWindow(this.overlay);
-            this.WaitOverlay = new();
-            this.configGui.ws.AddWindow(this.WaitOverlay);
 
             this.TerritoryNames = Svc.Data.GetExcelSheet<TerritoryType>().Where(x => x.PlaceName.ValueNullable?.Name.ToString().Length > 0)
             .ToDictionary(
@@ -110,10 +95,7 @@ public unsafe class TextAdvance : IDalamudPlugin
             ExecSkipTalk.Init();
             ExecPickReward.Init();
             this.Memory = new();
-            this.EntityOverlay = new();
-            this.ProgressOverlay = new();
             this.NavmeshManager = new();
-            //ExecAutoSnipe.Init(); // must init after memory
             SingletonServiceManager.Initialize(typeof(ServiceManager));
             EzIPC.OnSafeInvocationException += this.EzIPC_OnSafeInvocationException;
         });
@@ -136,13 +118,13 @@ public unsafe class TextAdvance : IDalamudPlugin
         {
             if (TryGetAddonByName<AtkUnitBase>("FadeMiddle", out var addon) && addon->IsVisible) return false;
         }
-        return !P.Locked && (!P.IsDisableButtonHeld() || !P.IsEnabled()) && P.IsEnabled() && P.config.GetEnableCutsceneEsc();
+        return !P.Locked && (!P.IsDisableButtonHeld() || !P.IsEnabled()) && P.IsEnabled() && C.GetEnableCutsceneEsc();
     }
 
     private void Logout()
     {
         this.SplatoonHandler.Reset();
-        if (!this.config.DontAutoDisable)
+        if (!this.Config.DontAutoDisable)
         {
             this.Enabled = false;
         }
@@ -151,7 +133,7 @@ public unsafe class TextAdvance : IDalamudPlugin
     private void Login()
     {
         this.SplatoonHandler.Reset();
-        this.loggedIn = true;
+        this.LoggedIn = true;
     }
 
     private void HandleCommand(string command, string arguments)
@@ -170,12 +152,12 @@ public unsafe class TextAdvance : IDalamudPlugin
         }
         else if (arguments.EqualsIgnoreCaseAny("s", "settings", "c", "config"))
         {
-            this.configGui.IsOpen = true;
+            EzConfigGui.Open();
         }
         else if (arguments.EqualsIgnoreCaseAny("g", "gui"))
         {
-            this.config.QTIEnabled = !this.config.QTIEnabled;
-            if (this.config.QTIEnabled)
+            this.Config.QTIEnabled = !this.Config.QTIEnabled;
+            if (this.Config.QTIEnabled)
             {
                 Notify.Info($"Quest target indicators enabled");
             }
@@ -194,7 +176,7 @@ public unsafe class TextAdvance : IDalamudPlugin
         }
         else if (arguments.EqualsIgnoreCaseAny("mtqstop"))
         {
-            P.EntityOverlay.TaskManager.Abort();
+            S.EntityOverlay.TaskManager.Abort();
             if (C.Navmesh) P.NavmeshManager.Stop();
         }
         else if (arguments.EqualsIgnoreCase("d"))
@@ -204,7 +186,7 @@ public unsafe class TextAdvance : IDalamudPlugin
         else
         {
             this.Enabled = arguments.EqualsIgnoreCaseAny("enable", "e", "yes", "y") || (!arguments.EqualsIgnoreCaseAny("disable", "d", "no", "n") && !this.Enabled);
-            if (!P.config.NotifyDisableManualState)
+            if (!C.NotifyDisableManualState)
             {
                 Svc.Toasts.ShowQuest("Auto advance " + (this.Enabled ? "globally enabled" : "disabled (except custom territories)"),
                     new QuestToastOptions() { PlaySound = true, DisplayCheckmark = true });
@@ -225,23 +207,30 @@ public unsafe class TextAdvance : IDalamudPlugin
         {
             return false;
         }
-        return P.config.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var cfg) && cfg.IsEnabled();
+        return C.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var cfg) && cfg.IsEnabled();
     }
 
     private void Tick()
     {
         try
         {
+            while (QueuedSplatoonElements.TryDequeue(out var element))
+            {
+                if (element.IsValid())
+                {
+                    Splatoon.DisplayOnce(element);
+                }
+            }
             ExecSkipTalk.IsEnabled = false;
             ExecPickReward.IsEnabled = false;
             ExecAutoSnipe.IsEnabled = false;
-            if (this.loggedIn && Svc.ClientState.LocalPlayer != null)
+            if (this.LoggedIn && Svc.ClientState.LocalPlayer != null)
             {
-                this.loggedIn = false;
-                if (this.config.AutoEnableNames.Contains(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.ValueNullable?.Name.ToString()))
+                this.LoggedIn = false;
+                if (this.Config.AutoEnableNames.Contains(Svc.ClientState.LocalPlayer.Name.ToString() + "@" + Svc.ClientState.LocalPlayer.HomeWorld.ValueNullable?.Name.ToString()))
                 {
                     this.Enabled = true;
-                    if (!P.config.NotifyDisableOnLogin)
+                    if (!C.NotifyDisableOnLogin)
                     {
                         Notify.Success("Auto text advance has been automatically enabled on this character");
                     }
@@ -255,11 +244,11 @@ public unsafe class TextAdvance : IDalamudPlugin
                 {
                     if (this.IsEnabled())
                     {
-                        if (this.config.GetEnableCutsceneSkipConfirm() && this.InCutscene)
+                        if (this.Config.GetEnableCutsceneSkipConfirm() && this.InCutscene)
                         {
                             ExecConfirmCutsceneSkip.Tick();
                         }
-                        if (this.config.GetEnableAutoInteract()) ExecAutoInteract.Tick();
+                        if (this.Config.GetEnableAutoInteract()) ExecAutoInteract.Tick();
                     }
                     if (this.IsEnabled() &&
                         (Svc.Condition[ConditionFlag.OccupiedInQuestEvent] ||
@@ -275,13 +264,13 @@ public unsafe class TextAdvance : IDalamudPlugin
                         Svc.Condition[ConditionFlag.CarryingItem] ||
                         this.InCutscene))
                     {
-                        if (this.config.GetEnableTalkSkip()) ExecSkipTalk.IsEnabled = true;
-                        if (this.config.GetEnableQuestComplete()) ExecQuestComplete.Tick();
-                        if (this.config.GetEnableQuestAccept()) ExecQuestAccept.Tick();
-                        if (this.config.GetEnableRequestHandin()) ExecRequestComplete.Tick();
-                        if (this.config.GetEnableRequestFill()) ExecRequestFill.Tick();
-                        if (this.config.GetEnableRewardPick()) ExecPickReward.IsEnabled = true;
-                        if (this.config.GetEnableAutoSnipe()) ExecAutoSnipe.IsEnabled = true;
+                        if (this.Config.GetEnableTalkSkip()) ExecSkipTalk.IsEnabled = true;
+                        if (this.Config.GetEnableQuestComplete()) ExecQuestComplete.Tick();
+                        if (this.Config.GetEnableQuestAccept()) ExecQuestAccept.Tick();
+                        if (this.Config.GetEnableRequestHandin()) ExecRequestComplete.Tick();
+                        if (this.Config.GetEnableRequestFill()) ExecRequestFill.Tick();
+                        if (this.Config.GetEnableRewardPick()) ExecPickReward.IsEnabled = true;
+                        if (this.Config.GetEnableAutoSnipe()) ExecAutoSnipe.IsEnabled = true;
                     }
                 }
             }
@@ -300,17 +289,17 @@ public unsafe class TextAdvance : IDalamudPlugin
 
     internal bool IsDisableButtonHeld()
     {
-        if (this.config.TempDisableButton == Button.ALT && ImGui.GetIO().KeyAlt) return !CSFramework.Instance()->WindowInactive;
-        if (this.config.TempDisableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return !CSFramework.Instance()->WindowInactive;
-        if (this.config.TempDisableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return !CSFramework.Instance()->WindowInactive;
+        if (this.Config.TempDisableButton == Button.ALT && ImGui.GetIO().KeyAlt) return !CSFramework.Instance()->WindowInactive;
+        if (this.Config.TempDisableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return !CSFramework.Instance()->WindowInactive;
+        if (this.Config.TempDisableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return !CSFramework.Instance()->WindowInactive;
         return false;
     }
 
     private bool IsEnableButtonHeld()
     {
-        if (this.config.TempEnableButton == Button.ALT && ImGui.GetIO().KeyAlt) return !CSFramework.Instance()->WindowInactive;
-        if (this.config.TempEnableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return !CSFramework.Instance()->WindowInactive;
-        if (this.config.TempEnableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return !CSFramework.Instance()->WindowInactive;
+        if (this.Config.TempEnableButton == Button.ALT && ImGui.GetIO().KeyAlt) return !CSFramework.Instance()->WindowInactive;
+        if (this.Config.TempEnableButton == Button.CTRL && ImGui.GetIO().KeyCtrl) return !CSFramework.Instance()->WindowInactive;
+        if (this.Config.TempEnableButton == Button.SHIFT && ImGui.GetIO().KeyShift) return !CSFramework.Instance()->WindowInactive;
         return false;
     }
 }

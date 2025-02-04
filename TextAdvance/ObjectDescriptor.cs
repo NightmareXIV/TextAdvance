@@ -2,11 +2,6 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Configuration;
 using ECommons.ExcelServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TextAdvance;
 public struct ObjectDescriptor : IEquatable<ObjectDescriptor>

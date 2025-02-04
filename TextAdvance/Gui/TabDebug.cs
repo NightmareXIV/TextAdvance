@@ -1,18 +1,10 @@
-﻿using Dalamud.Game.Gui.Toast;
-using Dalamud.Game.Network.Structures;
-using Dalamud.Memory;
-using ECommons.Automation;
+﻿using ECommons.Automation;
 using ECommons.Automation.LegacyTaskManager;
 using ECommons.GameHelpers;
-using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Lumina.Excel.Sheets;
-using System.Diagnostics;
 using TextAdvance.Executors;
-using Level = Lumina.Excel.Sheets.Level;
-using QuestLinkMarker = FFXIVClientStructs.FFXIV.Client.UI.Agent.QuestLinkMarker;
 
 namespace TextAdvance.Gui;
 

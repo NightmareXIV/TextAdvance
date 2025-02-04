@@ -1,10 +1,4 @@
 ﻿using ECommons.EzIpcManager;
-using ECommons.GameHelpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TextAdvance.Navmesh;
 
 namespace TextAdvance.Services;
@@ -49,16 +43,16 @@ public class IPCProvider
     }
 
     [EzIPC] public bool IsEnabled() => P.IsEnabled(true);
-    [EzIPC] public bool GetEnableQuestAccept() => P.config.GetEnableQuestAccept();
-    [EzIPC] public bool GetEnableQuestComplete() => P.config.GetEnableQuestComplete();
-    [EzIPC] public bool GetEnableRewardPick() => P.config.GetEnableRewardPick();
-    [EzIPC] public bool GetEnableCutsceneEsc() => P.config.GetEnableCutsceneEsc();
-    [EzIPC] public bool GetEnableCutsceneSkipConfirm() => P.config.GetEnableCutsceneSkipConfirm();
-    [EzIPC] public bool GetEnableRequestHandin() => P.config.GetEnableRequestHandin();
-    [EzIPC] public bool GetEnableRequestFill() => P.config.GetEnableRequestFill();
-    [EzIPC] public bool GetEnableTalkSkip() => P.config.GetEnableTalkSkip();
-    [EzIPC] public bool GetEnableAutoInteract() => P.config.GetEnableAutoInteract();
-    [EzIPC] public bool GetEnableAutoSnipe() => P.config.GetEnableAutoSnipe();
+    [EzIPC] public bool GetEnableQuestAccept() => C.GetEnableQuestAccept();
+    [EzIPC] public bool GetEnableQuestComplete() => C.GetEnableQuestComplete();
+    [EzIPC] public bool GetEnableRewardPick() => C.GetEnableRewardPick();
+    [EzIPC] public bool GetEnableCutsceneEsc() => C.GetEnableCutsceneEsc();
+    [EzIPC] public bool GetEnableCutsceneSkipConfirm() => C.GetEnableCutsceneSkipConfirm();
+    [EzIPC] public bool GetEnableRequestHandin() => C.GetEnableRequestHandin();
+    [EzIPC] public bool GetEnableRequestFill() => C.GetEnableRequestFill();
+    [EzIPC] public bool GetEnableTalkSkip() => C.GetEnableTalkSkip();
+    [EzIPC] public bool GetEnableAutoInteract() => C.GetEnableAutoInteract();
+    [EzIPC] public bool GetEnableAutoSnipe() => C.GetEnableAutoSnipe();
     [EzIPC] public bool IsPaused() => P.BlockList.Count != 0;
 
     [EzIPC]
@@ -82,12 +76,12 @@ public class IPCProvider
     [EzIPC]
     public void Stop()
     {
-        P.EntityOverlay.TaskManager.Abort();
+        S.EntityOverlay.TaskManager.Abort();
         if (C.Navmesh) P.NavmeshManager.Stop();
     }
     [EzIPC]
     public bool IsBusy()
     {
-        return P.EntityOverlay.TaskManager.IsBusy;
+        return S.EntityOverlay.TaskManager.IsBusy;
     }
 }

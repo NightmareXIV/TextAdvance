@@ -1,20 +1,11 @@
-﻿using Dalamud.Game.Addon.Events;
-using Dalamud.Game.Addon.Lifecycle;
+﻿using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using ECommons.Automation;
-using ECommons.Automation.NeoTaskManager;
 using ECommons.ChatMethods;
 using ECommons.ExcelServices;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
-using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TextAdvance.Executors
 {
@@ -49,13 +40,13 @@ namespace TextAdvance.Executors
                             return;
                         }
                     }
-                    foreach (var x in P.config.PickRewardOrder)
+                    foreach (var x in C.PickRewardOrder)
                     {
                         {
                             if (x == PickRewardMethod.Gil_sacks && TrySelectGil(r.OptionalRewards, out var index))
                             {
                                 PluginLog.Information($"Selecting {index} = {r.OptionalRewards[index].Name} because it's gil sack");
-                                if (!P.config.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (gil)");
+                                if (!C.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (gil)");
                                 P.Memory.PickRewardItemUnsafe((nint)canvas, index);
                                 return;
                             }
@@ -64,7 +55,7 @@ namespace TextAdvance.Executors
                             if (x == PickRewardMethod.Highest_vendor_value && TrySelectHighestVendorValue(r.OptionalRewards, out var index))
                             {
                                 PluginLog.Information($"Selecting {index} = {r.OptionalRewards[index].Name} because it's highest vendor value");
-                                if (!P.config.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (highest value)");
+                                if (!C.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (highest value)");
                                 P.Memory.PickRewardItemUnsafe((nint)canvas, index);
                                 return;
                             }
@@ -73,7 +64,7 @@ namespace TextAdvance.Executors
                             if (x == PickRewardMethod.Gear_coffer && TrySelectCoffer(r.OptionalRewards, out var index))
                             {
                                 PluginLog.Information($"Selecting {index} = {r.OptionalRewards[index].Name} because it's coffer");
-                                if (!P.config.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (coffer)");
+                                if (!C.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (coffer)");
                                 P.Memory.PickRewardItemUnsafe((nint)canvas, index);
                                 return;
                             }
@@ -82,7 +73,7 @@ namespace TextAdvance.Executors
                             if (x == PickRewardMethod.Equipable_item_for_current_job && TrySelectCurrentJobItem(r.OptionalRewards, out var index))
                             {
                                 PluginLog.Information($"Selecting {index} = {r.OptionalRewards[index].Name} because it's current job item");
-                                if (!P.config.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (equipable)");
+                                if (!C.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (equipable)");
                                 P.Memory.PickRewardItemUnsafe((nint)canvas, index);
                                 return;
                             }
@@ -91,7 +82,7 @@ namespace TextAdvance.Executors
                             if (x == PickRewardMethod.High_quality_gear && TrySelectHighQualityGear(r.OptionalRewards, out var index))
                             {
                                 PluginLog.Information($"Selecting {index} = {r.OptionalRewards[index].Name} because it's high quality gear item");
-                                if (!P.config.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (HQ gear item)");
+                                if (!C.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (HQ gear item)");
                                 P.Memory.PickRewardItemUnsafe((nint)canvas, index);
                                 return;
                             }
@@ -99,7 +90,7 @@ namespace TextAdvance.Executors
                     }
                     var rand = Random.Next(r.OptionalRewards.Count);
                     PluginLog.Information($"Selecting random reward: {rand} - {r.OptionalRewards[rand].Name}");
-                    if (!P.config.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {rand + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[rand].Name} (random)");
+                    if (!C.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {rand + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[rand].Name} (random)");
                     P.Memory.PickRewardItemUnsafe((nint)canvas, rand);
                     return;
                 }

@@ -1,16 +1,9 @@
 ﻿using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
-using ECommons.Automation.UIInput;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
-using ECommons.Reflection;
 using ECommons.Throttlers;
-using ECommons.UIHelpers.AddonMasterImplementations;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
-using FFXIVClientStructs.FFXIV.Component.GUI;
-using FFXIVClientStructs.FFXIV.Component.SteamApi.Callbacks;
-using System.Collections.Frozen;
-using System.Reflection;
 using static TextAdvance.SplatoonHandler;
 
 namespace TextAdvance.Executors;
@@ -135,9 +128,9 @@ public static unsafe class ExecAutoInteract
         if (obj.ObjectKind == ObjectKind.Aetheryte) ret = 8f;
         else if (obj.ObjectKind == ObjectKind.EventNpc) ret = 6f + obj.HitboxRadius;
         else if (obj.ObjectKind == ObjectKind.EventObj) ret = 3f;
-        if (ret > P.config.AutoInteractMaxRadius)
+        if (ret > C.AutoInteractMaxRadius)
         {
-            ret = P.config.AutoInteractMaxRadius;
+            ret = C.AutoInteractMaxRadius;
         }
         return ret;
     }
@@ -149,7 +142,7 @@ public static unsafe class ExecAutoInteract
         {
             if (obj.IsTargetable && Vector3.Distance(Player.Object.Position, obj.Position) < GetMinDistance(obj) && !Player.IsAnimationLocked && Utils.ThrottleAutoInteract())
             {
-                P.EntityOverlay.TaskManager.Abort();
+                S.EntityOverlay.TaskManager.Abort();
                 P.NavmeshManager.Stop();
                 RecordInteractionWith(obj);
                 TargetSystem.Instance()->InteractWithObject(Svc.Targets.Target.Struct(), false);
@@ -159,7 +152,7 @@ public static unsafe class ExecAutoInteract
         {
             if (obj.IsTargetable && Vector3.Distance(Player.Object.Position, obj.Position) < GetMinDistance(obj) && !IsOccupied() && EzThrottler.Throttle("SetTargetIN"))
             {
-                P.EntityOverlay.TaskManager.Abort();
+                S.EntityOverlay.TaskManager.Abort();
                 P.NavmeshManager.Stop();
                 Svc.Targets.Target = obj;
             }
