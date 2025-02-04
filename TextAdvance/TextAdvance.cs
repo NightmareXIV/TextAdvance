@@ -35,7 +35,6 @@ public unsafe class TextAdvance : IDalamudPlugin
     internal HashSet<string> BlockList;
     internal TaskManager TaskManager;
     internal SplatoonHandler SplatoonHandler;
-    internal Memory Memory;
     public NavmeshManager NavmeshManager;
     public Queue<Element> QueuedSplatoonElements = [];
 
@@ -94,7 +93,6 @@ public unsafe class TextAdvance : IDalamudPlugin
             new EzTerritoryChanged(this.ClientState_TerritoryChanged);
             ExecSkipTalk.Init();
             ExecPickReward.Init();
-            this.Memory = new();
             this.NavmeshManager = new();
             SingletonServiceManager.Initialize(typeof(ServiceManager));
             EzIPC.OnSafeInvocationException += this.EzIPC_OnSafeInvocationException;
@@ -270,7 +268,6 @@ public unsafe class TextAdvance : IDalamudPlugin
                         if (this.Config.GetEnableRequestHandin()) ExecRequestComplete.Tick();
                         if (this.Config.GetEnableRequestFill()) ExecRequestFill.Tick();
                         if (this.Config.GetEnableRewardPick()) ExecPickReward.IsEnabled = true;
-                        if (this.Config.GetEnableAutoSnipe()) ExecAutoSnipe.IsEnabled = true;
                     }
                 }
             }

@@ -125,7 +125,7 @@ public static unsafe class Utils
         return Svc.Data.GetExcelSheet<Mount>().GetRow((uint)id).Singular.ExtractText();
     }
 
-    public static bool CanFly() => C.EnableFlight && P.Memory.IsFlightProhibited(P.Memory.FlightAddr) == 0;
+    public static bool CanFly() => C.EnableFlight && S.Memory.IsFlightProhibited(S.Memory.FlightAddr) == 0;
 
     public static bool ThrottleAutoInteract() => EzThrottler.Throttle("AutoInteract");
     public static bool ReThrottleAutoInteract() => EzThrottler.Throttle("AutoInteract", rethrottle: true);

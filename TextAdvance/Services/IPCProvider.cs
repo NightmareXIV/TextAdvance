@@ -52,7 +52,6 @@ public class IPCProvider
     [EzIPC] public bool GetEnableRequestFill() => C.GetEnableRequestFill();
     [EzIPC] public bool GetEnableTalkSkip() => C.GetEnableTalkSkip();
     [EzIPC] public bool GetEnableAutoInteract() => C.GetEnableAutoInteract();
-    [EzIPC] public bool GetEnableAutoSnipe() => C.GetEnableAutoSnipe();
     [EzIPC] public bool IsPaused() => P.BlockList.Count != 0;
 
     [EzIPC]

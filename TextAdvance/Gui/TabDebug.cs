@@ -107,7 +107,7 @@ internal static unsafe class TabDebug
                 {
                     if (ImGui.Button($"{i}"))
                     {
-                        P.Memory.PickRewardItemUnsafe((nint)canvas->GetComponent(), i);
+                        S.Memory.PickRewardItemUnsafe((nint)canvas->GetComponent(), i);
                     }
                 }
                 if (ImGui.Button("Stress test"))
@@ -116,7 +116,7 @@ internal static unsafe class TabDebug
                     for (var i = 0; i < 1000; i++)
                     {
                         var x = i % 5;
-                        TestTaskManager.Enqueue(() => P.Memory.PickRewardItemUnsafe((nint)canvas->GetComponent(), x));
+                        TestTaskManager.Enqueue(() => S.Memory.PickRewardItemUnsafe((nint)canvas->GetComponent(), x));
                     }
                 }
                 if (TestTaskManager != null)

@@ -47,7 +47,7 @@ namespace TextAdvance.Executors
                             {
                                 PluginLog.Information($"Selecting {index} = {r.OptionalRewards[index].Name} because it's gil sack");
                                 if (!C.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (gil)");
-                                P.Memory.PickRewardItemUnsafe((nint)canvas, index);
+                                S.Memory.PickRewardItemUnsafe((nint)canvas, index);
                                 return;
                             }
                         }
@@ -56,7 +56,7 @@ namespace TextAdvance.Executors
                             {
                                 PluginLog.Information($"Selecting {index} = {r.OptionalRewards[index].Name} because it's highest vendor value");
                                 if (!C.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (highest value)");
-                                P.Memory.PickRewardItemUnsafe((nint)canvas, index);
+                                S.Memory.PickRewardItemUnsafe((nint)canvas, index);
                                 return;
                             }
                         }
@@ -65,7 +65,7 @@ namespace TextAdvance.Executors
                             {
                                 PluginLog.Information($"Selecting {index} = {r.OptionalRewards[index].Name} because it's coffer");
                                 if (!C.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (coffer)");
-                                P.Memory.PickRewardItemUnsafe((nint)canvas, index);
+                                S.Memory.PickRewardItemUnsafe((nint)canvas, index);
                                 return;
                             }
                         }
@@ -74,7 +74,7 @@ namespace TextAdvance.Executors
                             {
                                 PluginLog.Information($"Selecting {index} = {r.OptionalRewards[index].Name} because it's current job item");
                                 if (!C.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (equipable)");
-                                P.Memory.PickRewardItemUnsafe((nint)canvas, index);
+                                S.Memory.PickRewardItemUnsafe((nint)canvas, index);
                                 return;
                             }
                         }
@@ -83,7 +83,7 @@ namespace TextAdvance.Executors
                             {
                                 PluginLog.Information($"Selecting {index} = {r.OptionalRewards[index].Name} because it's high quality gear item");
                                 if (!C.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {index + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[index].Name} (HQ gear item)");
-                                P.Memory.PickRewardItemUnsafe((nint)canvas, index);
+                                S.Memory.PickRewardItemUnsafe((nint)canvas, index);
                                 return;
                             }
                         }
@@ -91,7 +91,7 @@ namespace TextAdvance.Executors
                     var rand = Random.Next(r.OptionalRewards.Count);
                     PluginLog.Information($"Selecting random reward: {rand} - {r.OptionalRewards[rand].Name}");
                     if (!C.PickRewardSilent) ChatPrinter.Green($"[TextAdvance] Auto-selected optional reward {rand + 1}/{r.OptionalRewards.Count}: {r.OptionalRewards[rand].Name} (random)");
-                    P.Memory.PickRewardItemUnsafe((nint)canvas, rand);
+                    S.Memory.PickRewardItemUnsafe((nint)canvas, rand);
                     return;
                 }
             }

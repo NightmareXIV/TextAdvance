@@ -84,8 +84,6 @@ internal static class TabConfig
             ImGuiComponents.HelpMarker("Automatically confirms cutscene skips upon pressing ESC.");
             ImGui.Checkbox("Automatic interaction with quest-related object (IN)", ref C.MainConfig.EnableAutoInteract);
             ImGuiComponents.HelpMarker("Automatically interacts with nearby quest-related NPCs and objects.");
-            ImGui.Checkbox("Automatic completion of \"snipe\" quest sequences (SN)", ref C.MainConfig.EnableAutoSnipe);
-            ImGuiComponents.HelpMarker("Automatically completes snipe quest sequences when the relevant sequence loads. This will not do the quest, but rather end it immediately as if it was completed.");
         })
 
         .Section("Overlay")

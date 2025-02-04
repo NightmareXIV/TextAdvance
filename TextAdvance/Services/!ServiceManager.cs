@@ -10,4 +10,5 @@ public static class ServiceManager
     public static IPCTester IPCTester;
     public static TeleporterIPC TeleporterIPC;
     public static EntityOverlay EntityOverlay;
+    public static Memory Memory;
 }
