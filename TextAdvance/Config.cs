@@ -21,7 +21,7 @@ public class Config : IEzConfig
     public List<PickRewardMethod> PickRewardOrder = [PickRewardMethod.Gear_coffer, PickRewardMethod.High_quality_gear, PickRewardMethod.Highest_vendor_value, PickRewardMethod.Gil_sacks, PickRewardMethod.Equipable_item_for_current_job];
     public bool PickRewardSilent = false;
     public bool ENpcFinder = false;
-    public bool EObjFinder = true;
+    public bool EObjFinder = false;
     public LimitedKeys FinderKey = LimitedKeys.LeftControlKey;
     public bool DontAutoDisable = false;
     public bool Navmesh = false;

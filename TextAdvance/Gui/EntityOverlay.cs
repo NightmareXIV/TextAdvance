@@ -28,7 +28,7 @@ public sealed unsafe class EntityOverlay : IDisposable
 
     public void Draw()
     {
-        if (!(C.Navmesh && P.NavmeshManager.IsReady())) return;
+        var navmeshAvail = C.Navmesh && P.NavmeshManager.IsReady();
         if (Utils.ShouldHideUI()) return;
         var qtaEnabled = (C.QTAEnabledWhenTADisable || P.IsEnabled()) && C.GetQTAQuestEnabled();
         var finderEnabled = (C.QTAFinderEnabledWhenTADisable || P.IsEnabled());
@@ -37,11 +37,11 @@ public sealed unsafe class EntityOverlay : IDisposable
             var id = x.Struct()->NamePlateIconId;
             if (qtaEnabled && (Markers.MSQ.Contains(id) || Markers.ImportantSideProgress.Contains(id) || Markers.SideProgress.Contains(id)))
             {
-                this.DrawButton(x);
+                this.DrawButtonAndPath(x, navmeshAvail);
             }
             else if (qtaEnabled && x.ObjectKind == ObjectKind.EventObj && x.IsTargetable && (Markers.EventObjWhitelist.Contains(x.DataId) || Markers.EventObjNameWhitelist.ContainsIgnoreCase(x.Name.ToString())))
             {
-                this.DrawButton(x);
+                this.DrawButtonAndPath(x, navmeshAvail);
             }
             else if (x.IsTargetable && finderEnabled)
             {
@@ -56,13 +56,13 @@ public sealed unsafe class EntityOverlay : IDisposable
                 }
                 if (display)
                 {
-                    this.DrawButton(x);
+                    this.DrawButtonAndPath(x, navmeshAvail);
                 }
             }
         }
     }
 
-    private void DrawButton(IGameObject obj)
+    private void DrawButtonAndPath(IGameObject obj, bool drawButton)
     {
         if (Vector3.Distance(obj.Position, Player.Object.Position) < 3f) return;
         if (C.GetQTAQuestTether())
@@ -70,42 +70,45 @@ public sealed unsafe class EntityOverlay : IDisposable
             var e = P.SplatoonHandler.GetFreeElement(obj.Position);
             P.QueuedSplatoonElements.Enqueue(e);
         }
-        if (CSFramework.Instance()->FrameCounter == this.AutoFrame)
+        if (drawButton)
         {
-            Move();
-            this.AutoFrame = 0;
-        }
-        if (Svc.GameGui.WorldToScreen(obj.Position, out var pos))
-        {
-            var size = ImGuiHelpers.GetButtonSize(FontAwesomeIcon.PersonWalkingArrowRight.ToIconString());
-            ImGuiHelpers.ForceNextWindowMainViewport();
-            ImGuiHelpers.SetNextWindowPosRelativeMainViewport((pos - size - ImGuiHelpers.MainViewport.Pos));
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
-            if (ImGui.Begin($"##TextAdvanceButton-{obj.Address}", ImGuiEx.OverlayFlags & ~ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.AlwaysUseWindowPadding))
+            if (CSFramework.Instance()->FrameCounter == this.AutoFrame)
             {
-                ImGui.PopStyleVar();
-                ImGui.PushFont(UiBuilder.IconFont);
-                ImGui.SetWindowFontScale(2f);
-                if (ImGui.Button(FontAwesomeIcon.PersonWalkingArrowRight.ToIconString() + $"##{obj.Address}"))
+                Move();
+                this.AutoFrame = 0;
+            }
+            if (Svc.GameGui.WorldToScreen(obj.Position, out var pos))
+            {
+                var size = ImGuiHelpers.GetButtonSize(FontAwesomeIcon.PersonWalkingArrowRight.ToIconString());
+                ImGuiHelpers.ForceNextWindowMainViewport();
+                ImGuiHelpers.SetNextWindowPosRelativeMainViewport((pos - size - ImGuiHelpers.MainViewport.Pos));
+                ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.Zero);
+                if (ImGui.Begin($"##TextAdvanceButton-{obj.Address}", ImGuiEx.OverlayFlags & ~ImGuiWindowFlags.NoMouseInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.AlwaysUseWindowPadding))
                 {
-                    try
+                    ImGui.PopStyleVar();
+                    ImGui.PushFont(UiBuilder.IconFont);
+                    ImGui.SetWindowFontScale(2f);
+                    if (ImGui.Button(FontAwesomeIcon.PersonWalkingArrowRight.ToIconString() + $"##{obj.Address}"))
                     {
-                        Move();
+                        try
+                        {
+                            Move();
+                        }
+                        catch (Exception e)
+                        {
+                            e.Log();
+                        }
                     }
-                    catch (Exception e)
-                    {
-                        e.Log();
-                    }
+                    ImGui.PopFont();
+                    ImGui.SetWindowFontScale(1f);
+                    ImGuiEx.Tooltip($"{obj.Name}");
                 }
-                ImGui.PopFont();
-                ImGui.SetWindowFontScale(1f);
-                ImGuiEx.Tooltip($"{obj.Name}");
+                else
+                {
+                    ImGui.PopStyleVar();
+                }
+                ImGui.End();
             }
-            else
-            {
-                ImGui.PopStyleVar();
-            }
-            ImGui.End();
         }
 
         void Move()
