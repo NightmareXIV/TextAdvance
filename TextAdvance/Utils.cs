@@ -2,6 +2,7 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
+using ECommons.SplatoonAPI;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
@@ -11,6 +12,19 @@ using static TextAdvance.SplatoonHandler;
 namespace TextAdvance;
 public static unsafe class Utils
 {
+    private static bool SplatoonAvailableInternal = false;
+    public static bool SplatoonAvailable
+    {
+        get
+        {
+            if(EzThrottler.Throttle("SplatoonCheck", 10000))
+            {
+                SplatoonAvailableInternal = Svc.PluginInterface.InstalledPlugins.Any(x => x.InternalName == "Splatoon" && x.IsLoaded && Svc.PluginInterface.GetIpcSubscriber<bool>("Splatoon.IsLoaded").HasFunction);
+            }
+            return SplatoonAvailableInternal;
+        }
+    }
+
     public static uint GetInstallationID()
     {
         var uniqueId = Svc.PluginInterface.AssemblyLocation.FullName;

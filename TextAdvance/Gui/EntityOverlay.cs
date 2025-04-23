@@ -5,6 +5,7 @@ using ECommons.Automation.LegacyTaskManager;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.Interop;
+using ECommons.SplatoonAPI;
 using static TextAdvance.SplatoonHandler;
 
 namespace TextAdvance.Gui;
@@ -65,7 +66,7 @@ public sealed unsafe class EntityOverlay : IDisposable
     private void DrawButtonAndPath(IGameObject obj, bool drawButton)
     {
         if (Vector3.Distance(obj.Position, Player.Object.Position) < 3f) return;
-        if (C.GetQTAQuestTether())
+        if (Splatoon.IsConnected() && C.GetQTAQuestTether())
         {
             var e = P.SplatoonHandler.GetFreeElement(obj.Position);
             P.QueuedSplatoonElements.Enqueue(e);

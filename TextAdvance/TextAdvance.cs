@@ -214,7 +214,7 @@ public unsafe class TextAdvance : IDalamudPlugin
         {
             while (QueuedSplatoonElements.TryDequeue(out var element))
             {
-                if (element.IsValid())
+                if (Splatoon.IsConnected() && element.IsValid())
                 {
                     Splatoon.DisplayOnce(element);
                 }
