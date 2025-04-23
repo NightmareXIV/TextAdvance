@@ -2,11 +2,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>NightmareXIV</Authors>
-		<Version>3.2.4.4</Version>
+		<Version>3.2.4.5</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<TargetFramework>net8.0-windows</TargetFramework>
+		<TargetFramework>net9.0-windows</TargetFramework>
 		<Platforms>x64</Platforms>
 		<LangVersion>preview</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -60,6 +60,10 @@
 			<HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
+      <Reference Include="InteropGenerator.Runtime">
+          <HintPath>$(DalamudLibPath)InteropGenerator.Runtime.dll</HintPath>
+          <Private>False</Private>
+      </Reference>
 	</ItemGroup>
 
 	<ItemGroup>

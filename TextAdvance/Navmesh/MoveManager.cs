@@ -11,6 +11,9 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
+using Lumina.Excel.Sheets;
+using System.Linq;
+using UIColor = ECommons.ChatMethods.UIColor;
 
 namespace TextAdvance.Navmesh;
 public unsafe class MoveManager
@@ -29,7 +32,7 @@ public unsafe class MoveManager
     public void MoveToFlag()
     {
         if (!Player.Available) return;
-        if (AgentMap.Instance()->IsFlagMarkerSet == 0)
+        if (AgentMap.Instance()->IsFlagMarkerSet == false)
         {
             DuoLog.Warning($"Flag is not set");
             return;
@@ -200,7 +203,7 @@ public unsafe class MoveManager
             return true;
         }
         if (C.Mount == -1) return true;
-        if (Svc.Condition[ConditionFlag.Unknown57] || Svc.Condition[ConditionFlag.Casting])
+        if (Svc.Condition[ConditionFlag.MountOrOrnamentTransition] || Svc.Condition[ConditionFlag.Casting])
         {
             EzThrottler.Throttle("CheckMount", 2000, true);
         }
@@ -208,21 +211,24 @@ public unsafe class MoveManager
         if (ActionManager.Instance()->GetActionStatus(ActionType.GeneralAction, 9) == 0)
         {
             var mount = C.Mount;
-            if (!PlayerState.Instance()->IsMountUnlocked((uint)mount))
+            if (mount == 0 || !PlayerState.Instance()->IsMountUnlocked((uint)mount))
             {
-                DuoLog.Warning($"Mount {Utils.GetMountName(mount)} is not unlocking. Falling back to Mount roulette.");
-                mount = 0;
-            }
-            if (!Player.IsAnimationLocked && EzThrottler.Throttle("SummonMount"))
-            {
-                if (mount == 0)
+                var mounts = Svc.Data.GetExcelSheet<Mount>().Where(x => x.Singular != "" && PlayerState.Instance()->IsMountUnlocked(x.RowId));
+                if (mounts.Any())
                 {
-                    Chat.Instance.ExecuteCommand($"/generalaction \"{Utils.GetGeneralActionName(9)}\"");
+                    var newMount = (int)mounts.GetRandom().RowId;
+                    PluginLog.Warning($"Mount {Utils.GetMountName(mount)} is not unlocked. Randomly selecting {Utils.GetMountName(newMount)}.");
+                    mount = newMount;
                 }
                 else
                 {
-                    Chat.Instance.ExecuteCommand($"/mount \"{Utils.GetMountName(C.Mount)}\"");
+                    PluginLog.Warning("No unlocked mounts found");
+                    return true;
                 }
+            }
+            if (!Player.IsAnimationLocked && EzThrottler.Throttle("SummonMount"))
+            {
+                Chat.Instance.ExecuteCommand($"/mount \"{Utils.GetMountName(mount)}\"");
             }
         }
         else
