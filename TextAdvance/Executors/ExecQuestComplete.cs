@@ -11,7 +11,7 @@ internal static unsafe class ExecQuestComplete
     {
         if (TryGetAddonByName<AtkUnitBase>("JournalResult", out var addon) && IsAddonReady(addon))
         {
-            var button = addon->GetButtonNodeById(37);
+            var button = addon->GetComponentButtonById(37);
             if (button->IsEnabled)
             {
                 if (EzThrottler.Throttle("JournalResultComplete"))

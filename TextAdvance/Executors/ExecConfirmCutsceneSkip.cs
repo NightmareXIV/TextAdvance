@@ -2,6 +2,7 @@
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using Callback = ECommons.Automation.Callback;
 
 namespace TextAdvance.Executors;
 
@@ -11,7 +12,7 @@ internal static unsafe class ExecConfirmCutsceneSkip
     {
         var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
         if (addon == IntPtr.Zero) return;
-        var selectStrAddon = (AddonSelectString*)addon;
+        var selectStrAddon = (AddonSelectString*)addon.Address;
         if (!IsAddonReady(&selectStrAddon->AtkUnitBase))
         {
             return;
@@ -21,7 +22,7 @@ internal static unsafe class ExecConfirmCutsceneSkip
         if (EzThrottler.Throttle("SkipCutsceneConfirm"))
         {
             PluginLog.Debug("Selecting cutscene skipping");
-            Callback.Fire((AtkUnitBase*)addon, true, 0);
+            Callback.Fire((AtkUnitBase*)addon.Address, true, 0);
         }
     }
 }

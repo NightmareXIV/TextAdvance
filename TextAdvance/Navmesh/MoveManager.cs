@@ -3,6 +3,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Automation;
 using ECommons.ChatMethods;
 using ECommons.CircularBuffers;
+using ECommons.CSExtensions;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.MathHelpers;

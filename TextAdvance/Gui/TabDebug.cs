@@ -5,6 +5,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using TextAdvance.Executors;
+using Callback = ECommons.Automation.Callback;
 
 namespace TextAdvance.Gui;
 
@@ -77,9 +78,9 @@ internal static unsafe class TabDebug
                 var marker = markers[i];
                 if (ThreadLoadImageHandler.TryGetIconTextureWrap(marker.IconId, false, out var tex))
                 {
-                    ImGui.Image(tex.ImGuiHandle, tex.Size);
+                    ImGui.Image(tex.Handle, tex.Size);
                 }
-                ImGuiEx.Text($"{marker.IconId} / {marker.X} / {marker.Y} / {marker.Z} / {Vector3.Distance(Player.Position, new(marker.X, marker.Y, marker.Z))}");
+                ImGuiEx.Text($"{marker.IconId} / {marker.Position} / {Vector3.Distance(Player.Position, marker.Position)}");
                 ImGui.Separator();
             }
         }

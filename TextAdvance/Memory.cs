@@ -8,10 +8,6 @@ public unsafe class Memory
     [EzHook("48 89 5C 24 ?? 48 89 74 24 ?? 4C 89 4C 24 ?? 55")]
     private EzHook<AtkComponentJournalCanvas_ReceiveEventDelegate> AtkComponentJournalCanvas_ReceiveEventHook;
 
-    internal delegate nint IsFlightProhibitedDelegate(nint a1);
-    internal IsFlightProhibitedDelegate IsFlightProhibited = EzDelegate.Get<IsFlightProhibitedDelegate>("40 53 48 83 EC 20 48 8B 1D ?? ?? ?? ?? 48 85 DB 0F 84 ?? ?? ?? ?? 80 3D");
-    internal nint FlightAddr = Svc.SigScanner.TryScanText("48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 84 C0 75 11", out var result) ? result : default;
-
     private Memory()
     {
         EzSignatureHelper.Initialize(this);

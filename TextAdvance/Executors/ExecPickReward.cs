@@ -23,7 +23,7 @@ namespace TextAdvance.Executors
 
         private static void OnJournalResultSetup(AddonEvent type, AddonArgs args)
         {
-            var addon = (AtkUnitBase*)args.Addon;
+            var addon = (AtkUnitBase*)args.Addon.Address;
             var canvas = ((AtkComponentNode*)addon->UldManager.NodeList[7])->Component;
             PluginLog.Information($"Component: {(nint)canvas:X16}");
             if (IsEnabled)

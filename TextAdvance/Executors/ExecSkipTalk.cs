@@ -24,7 +24,7 @@ internal static unsafe class ExecSkipTalk
 
     private static void Click(AddonEvent type, AddonArgs args)
     {
-        if (IsEnabled && ((AtkUnitBase*)args.Addon)->IsVisible)
+        if (IsEnabled && ((AtkUnitBase*)args.Addon.Address)->IsVisible)
         {
             new AddonMaster.Talk(args.Addon).Click();
         }
