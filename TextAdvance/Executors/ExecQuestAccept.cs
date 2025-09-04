@@ -10,7 +10,7 @@ internal static unsafe class ExecQuestAccept
     {
         if (TryGetAddonByName<AtkUnitBase>("JournalAccept", out var addon) && IsAddonReady(addon))
         {
-            var button = addon->GetButtonNodeById(44);
+            var button = addon->GetComponentButtonById(44);
             if (button->IsEnabled)
             {
                 if (EzThrottler.Throttle("JournalAcceptAccept"))

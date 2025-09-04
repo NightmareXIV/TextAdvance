@@ -5,6 +5,7 @@ using ECommons.GameHelpers;
 using ECommons.SplatoonAPI;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.Control;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using Lumina.Excel.Sheets;
 using static TextAdvance.SplatoonHandler;
@@ -65,19 +66,19 @@ public static unsafe class Utils
                 var id = marker.IconId;
                 if (SplatoonHandler.Markers.Map.MSQ.Contains(id) || SplatoonHandler.Markers.Map.ImportantSideProgress.Contains(id))
                 {
-                    ret.Add(new(marker.X, marker.Y, marker.Z));
+                    ret.Add(marker.Position);
                 }
                 else if (SplatoonHandler.Markers.Map.MSQXZ.Contains(id))
                 {
-                    PluginLog.Debug($"Marker {new Vector3(marker.X, marker.Y, marker.Z)} is MSQXZ");
+                    PluginLog.Debug($"Marker {marker.Position} is MSQXZ");
                     try
                     {
                         PluginLog.Debug($"Trying to pathfind");
-                        var result = P.NavmeshManager.Pathfind(playerPos, new(marker.X, marker.Y, marker.Z), false).Result;
+                        var result = P.NavmeshManager.Pathfind(playerPos, marker.Position, false).Result;
                         if (result != null && result.Count > 0)
                         {
                             PluginLog.Debug($"Direct path found");
-                            ret.Add(new(marker.X, marker.Y, marker.Z));
+                            ret.Add(marker.Position);
                         }
                         else
                         {
@@ -93,9 +94,9 @@ public static unsafe class Utils
 
                     void FindIngoringHeight()
                     {
-                        var alt = P.NavmeshManager.PointOnFloor(new(marker.X, 1024, marker.Z), false, 5);
+                        var alt = P.NavmeshManager.PointOnFloor(new(marker.Position.X, 1024, marker.Position.Z), false, 5);
                         PluginLog.Debug($"Trying point on floor: result = {alt}");
-                        alt ??= P.NavmeshManager.NearestPoint(new(marker.X, marker.Y, marker.Z), 5, 5);
+                        alt ??= P.NavmeshManager.NearestPoint(marker.Position, 5, 5);
                         PluginLog.Debug($"Trying nearest point: result = {alt}");
                         if (alt != null)
                         {
@@ -139,7 +140,7 @@ public static unsafe class Utils
         return Svc.Data.GetExcelSheet<Mount>().GetRow((uint)id).Singular.ExtractText();
     }
 
-    public static bool CanFly() => C.EnableFlight && S.Memory.IsFlightProhibited(S.Memory.FlightAddr) == 0;
+    public static bool CanFly() => Control.GetFlightAllowedStatus() == 0;
 
     public static bool ThrottleAutoInteract() => EzThrottler.Throttle("AutoInteract");
     public static bool ReThrottleAutoInteract() => EzThrottler.Throttle("AutoInteract", rethrottle: true);

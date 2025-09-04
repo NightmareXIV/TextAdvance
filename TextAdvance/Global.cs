@@ -8,7 +8,7 @@ global using ECommons.DalamudServices;
 global using ECommons.ImGuiMethods;
 global using ECommons.Logging;
 global using ECommons.Schedulers;
-global using ImGuiNET;
+global using Dalamud.Bindings.ImGui;
 global using System;
 global using System.Collections.Generic;
 global using System.Linq;

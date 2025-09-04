@@ -3,6 +3,7 @@ using ECommons.Automation.LegacyTaskManager;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using Callback = ECommons.Automation.Callback;
 
 namespace TextAdvance.Executors;
 
@@ -46,7 +47,7 @@ internal static unsafe class ExecRequestFill
     {
         if (SlotsFilled.Contains(i)) return true;
 
-        var contextMenu = (AtkUnitBase*)Svc.GameGui.GetAddonByName("ContextIconMenu", 1);
+        var contextMenu = (AtkUnitBase*)Svc.GameGui.GetAddonByName("ContextIconMenu", 1).Address;
 
         if (contextMenu is null || !contextMenu->IsVisible)
         {
