@@ -1,5 +1,6 @@
 ﻿using ECommons.Automation;
 using ECommons.Throttlers;
+using ECommons.UIHelpers.AddonMasterImplementations;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Callback = ECommons.Automation.Callback;
@@ -10,19 +11,19 @@ internal static unsafe class ExecConfirmCutsceneSkip
 {
     internal static void Tick()
     {
-        var addon = Svc.GameGui.GetAddonByName("SelectString", 1);
-        if (addon == IntPtr.Zero) return;
-        var selectStrAddon = (AddonSelectString*)addon.Address;
-        if (!IsAddonReady(&selectStrAddon->AtkUnitBase))
+        if(TryGetAddonMaster<AddonMaster.SelectString>(out var m) && m.IsAddonReady)
         {
-            return;
-        }
-        PluginLog.Debug($"1: {selectStrAddon->GetTextNodeById(2)->NodeText.ToString()}");
-        if (!Lang.SkipCutsceneStr.Contains(selectStrAddon->AtkUnitBase.UldManager.NodeList[3]->GetAsAtkTextNode()->NodeText.ToString())) return;
-        if (EzThrottler.Throttle("SkipCutsceneConfirm"))
-        {
-            PluginLog.Debug("Selecting cutscene skipping");
-            Callback.Fire((AtkUnitBase*)addon.Address, true, 0);
+            foreach(var x in m.Entries)
+            {
+                if (Lang.SkipCutsceneStr.Contains(x.Text))
+                {
+                    if (EzThrottler.Throttle("SkipCutsceneConfirm"))
+                    {
+                        x.Select();
+                    }
+                    return;
+                }
+            }
         }
     }
 }
