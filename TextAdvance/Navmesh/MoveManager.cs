@@ -183,7 +183,11 @@ public unsafe class MoveManager
             }
             else
             {
-                if (Svc.Condition[ConditionFlag.Jumping]) EzThrottler.Throttle("Jump", 500, true);
+                if (Svc.Condition[ConditionFlag.Jumping])
+                {
+                    EzThrottler.Throttle("Jump", 500, true);
+                    Chat.Instance.ExecuteCommand($"/generalaction \"{Utils.GetGeneralActionName(2)}\"");
+                }
                 if (EzThrottler.Throttle("Jump"))
                 {
                     Chat.Instance.ExecuteCommand($"/generalaction \"{Utils.GetGeneralActionName(2)}\"");
