@@ -7,5 +7,5 @@
 		"ApplicableVersion": "any",
 		"RepoUrl": "https://github.com/NightmareXIV/TextAdvance",
 		"LoadPriority": 0,
-		"DalamudApiLevel": 13
+		"DalamudApiLevel": 14
 }
