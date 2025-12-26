@@ -78,6 +78,24 @@ internal static class TabConfig
             ImGuiComponents.HelpMarker("Automatically confirms most of item requests once filled. Some requests may not be automatically confirmed.");
             ImGui.Checkbox("Automatic request fill (RF)", ref C.MainConfig.EnableRequestFill);
             ImGuiComponents.HelpMarker("Automatically fills item request window. Some requests may not be automatically filled.");
+            if (C.MainConfig.EnableRequestFill)
+            {
+                ImGui.Indent();
+                ImGui.SetNextItemWidth(200f);
+                if (ImGui.BeginCombo("##RequestFillQuality", C.MainConfig.RequestFillQualityPreference.ToString()))
+                {
+                    if (ImGui.Selectable("NQ", C.MainConfig.RequestFillQualityPreference == RequestFillQualityPreference.NQ))
+                        C.MainConfig.RequestFillQualityPreference = RequestFillQualityPreference.NQ;
+                    if (ImGui.Selectable("HQ", C.MainConfig.RequestFillQualityPreference == RequestFillQualityPreference.HQ))
+                        C.MainConfig.RequestFillQualityPreference = RequestFillQualityPreference.HQ;
+                    if (ImGui.Selectable("Any", C.MainConfig.RequestFillQualityPreference == RequestFillQualityPreference.Any))
+                        C.MainConfig.RequestFillQualityPreference = RequestFillQualityPreference.Any;
+                    ImGui.EndCombo();
+                }
+                ImGui.SameLine();
+                ImGuiComponents.HelpMarker("NQ: Use Normal Quality items first, preserving valuable HQ items.\nHQ: Use High Quality items first.\nAny: Use first available (game default).");
+                ImGui.Unindent();
+            }
             ImGui.Checkbox("Automatic ESC press during cutscene (CS)", ref C.MainConfig.EnableCutsceneEsc);
             ImGuiComponents.HelpMarker("Automatically presses ESC key during cutscene when cutscene is skippable. Does not skips normally unskippable cutscenes.");
             ImGui.Checkbox("Automatic cutscene skip confirmation (CC)", ref C.MainConfig.EnableCutsceneSkipConfirm);
