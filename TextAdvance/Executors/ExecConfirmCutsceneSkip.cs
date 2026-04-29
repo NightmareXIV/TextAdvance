@@ -11,11 +11,11 @@ internal static unsafe class ExecConfirmCutsceneSkip
 {
     internal static void Tick()
     {
-        if(TryGetAddonMaster<AddonMaster.SelectString>(out var m) && m.IsAddonReady)
+        if(TryGetAddonMaster<AddonMaster.SelectString>(out var m) && m.IsAddonReady && m.Text.ContainsAny(StringComparison.OrdinalIgnoreCase, Lang.SkipCutsceneStr))
         {
             foreach(var x in m.Entries)
             {
-                if (Lang.SkipCutsceneStr.Contains(x.Text))
+                if (Lang.YesStr.Contains(x.Text))
                 {
                     if (EzThrottler.Throttle("SkipCutsceneConfirm"))
                     {
