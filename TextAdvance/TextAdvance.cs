@@ -104,7 +104,7 @@ public unsafe class TextAdvance : IDalamudPlugin
         InternalLog.Error($"IPC error: {obj}");
     }
 
-    private void ClientState_TerritoryChanged(ushort obj)
+    private void ClientState_TerritoryChanged(uint obj)
     {
         this.SplatoonHandler.Reset();
         ExecAutoInteract.InteractedObjects.Clear();
@@ -112,7 +112,7 @@ public unsafe class TextAdvance : IDalamudPlugin
 
     private bool CutsceneSkipHandler(nint ptr)
     {
-        if (Svc.ClientState.TerritoryType.EqualsAny<ushort>(670))
+        if (Svc.ClientState.TerritoryType.EqualsAny(670u))
         {
             if (TryGetAddonByName<AtkUnitBase>("FadeMiddle", out var addon) && addon->IsVisible) return false;
         }
