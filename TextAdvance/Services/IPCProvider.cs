@@ -52,6 +52,8 @@ public class IPCProvider
     [EzIPC] public bool GetEnableRequestFill() => C.GetEnableRequestFill();
     [EzIPC] public RequestFillQualityPreference GetRequestFillQualityPreference() => C.GetRequestFillQualityPreference();
     [EzIPC] public bool GetEnableTalkSkip() => C.GetEnableTalkSkip();
+    [EzIPC] public bool GetSkipTalkInCutscenes() => C.GetSkipTalkInCutscenes();
+    [EzIPC] public bool GetSkipVoicedDialogue() => C.GetSkipVoicedDialogue();
     [EzIPC] public bool GetEnableAutoInteract() => C.GetEnableAutoInteract();
     [EzIPC] public bool IsPaused() => P.BlockList.Count != 0;
 

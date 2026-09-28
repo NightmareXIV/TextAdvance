@@ -45,6 +45,7 @@ public unsafe class TextAdvance : IDalamudPlugin
         Svc.Commands.RemoveHandler("/at");
         Safe(ExecSkipTalk.Shutdown);
         Safe(ExecPickReward.Shutdown);
+        Safe(() => S.VoiceTracker?.Dispose());
         ECommonsMain.Dispose();
         P = null;
     }
@@ -108,6 +109,8 @@ public unsafe class TextAdvance : IDalamudPlugin
     {
         this.SplatoonHandler.Reset();
         ExecAutoInteract.InteractedObjects.Clear();
+        ExecSkipTalk.Reset();
+        S.VoiceTracker?.Reset();
     }
 
     private bool CutsceneSkipHandler(nint ptr)
@@ -270,6 +273,11 @@ public unsafe class TextAdvance : IDalamudPlugin
                         if (this.Config.GetEnableRewardPick()) ExecPickReward.IsEnabled = true;
                     }
                 }
+            }
+            if (this.WasInCutscene && !this.InCutscene)
+            {
+                ExecSkipTalk.Reset();
+                S.VoiceTracker?.Reset();
             }
             this.WasInCutscene = this.InCutscene;
         }

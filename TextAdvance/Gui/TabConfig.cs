@@ -74,6 +74,20 @@ internal static class TabConfig
             ImGuiComponents.HelpMarker("Automatically picks quest completion reward based on simple rules that are configured below");
             ImGui.Checkbox("Automatic talk skip (TS)", ref C.MainConfig.EnableTalkSkip);
             ImGuiComponents.HelpMarker("Automatically advances most of the subtitles. Some subtitles may only be advanced manually still.");
+            if (C.MainConfig.EnableTalkSkip)
+            {
+                ImGui.Indent();
+                ImGui.Checkbox("Skip talk during cutscenes", ref C.MainConfig.SkipTalkInCutscenes);
+                ImGuiComponents.HelpMarker("Automatically advances dialogue boxes even while inside a cutscene.");
+                if (C.MainConfig.SkipTalkInCutscenes)
+                {
+                    ImGui.Indent();
+                    ImGui.Checkbox("Skip voiced dialogue", ref C.MainConfig.SkipVoicedDialogue);
+                    ImGuiComponents.HelpMarker("When disabled, prevents automatic skipping when a dialogue line has voice acting, allowing you to listen to it or let the game's built-in Auto-Advance feature progress the dialogue.");
+                    ImGui.Unindent();
+                }
+                ImGui.Unindent();
+            }
             ImGui.Checkbox("Auto-confirm request handins (RH)", ref C.MainConfig.EnableRequestHandin);
             ImGuiComponents.HelpMarker("Automatically confirms most of item requests once filled. Some requests may not be automatically confirmed.");
             ImGui.Checkbox("Automatic request fill (RF)", ref C.MainConfig.EnableRequestFill);

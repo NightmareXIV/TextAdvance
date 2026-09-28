@@ -184,6 +184,24 @@ public class Config : IEzConfig
         }
         return this.MainConfig.EnableAutoInteract;
     }
+    public bool GetSkipVoicedDialogue()
+    {
+        if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(this.MainConfig).SkipVoicedDialogue;
+        if (!(this.GlobalOverridesLocal && P.Enabled) && this.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+        {
+            return val.SkipVoicedDialogue;
+        }
+        return this.MainConfig.SkipVoicedDialogue;
+    }
+    public bool GetSkipTalkInCutscenes()
+    {
+        if (S.IPCProvider.IsInExternalControl()) return S.IPCProvider.ExternalConfig.Merge(this.MainConfig).SkipTalkInCutscenes;
+        if (!(this.GlobalOverridesLocal && P.Enabled) && this.TerritoryConditions.TryGetValue(Svc.ClientState.TerritoryType, out var val))
+        {
+            return val.SkipTalkInCutscenes;
+        }
+        return this.MainConfig.SkipTalkInCutscenes;
+    }
 }
 
 public enum Button
@@ -201,6 +219,8 @@ public class TerritoryConfig
     public bool EnableCutsceneEsc = true;
     public bool EnableCutsceneSkipConfirm = true;
     public bool EnableTalkSkip = true;
+    public bool SkipTalkInCutscenes = true;
+    public bool SkipVoicedDialogue = true;
     public bool EnableRequestFill = true;
     public RequestFillQualityPreference RequestFillQualityPreference = RequestFillQualityPreference.Any;
     public bool EnableAutoInteract = false;
@@ -238,6 +258,8 @@ public class ExternalTerritoryConfig
     public bool? EnableCutsceneEsc = null;
     public bool? EnableCutsceneSkipConfirm = null;
     public bool? EnableTalkSkip = null;
+    public bool? SkipTalkInCutscenes = null;
+    public bool? SkipVoicedDialogue = null;
     public bool? EnableRequestFill = null;
     public RequestFillQualityPreference? RequestFillQualityPreference = null;
     public bool? EnableAutoInteract = null;
@@ -254,6 +276,8 @@ public class ExternalTerritoryConfig
         ret.EnableCutsceneEsc = this.EnableCutsceneEsc ?? other.EnableCutsceneEsc;
         ret.EnableCutsceneSkipConfirm = this.EnableCutsceneSkipConfirm ?? other.EnableCutsceneSkipConfirm;
         ret.EnableTalkSkip = this.EnableTalkSkip ?? other.EnableTalkSkip;
+        ret.SkipTalkInCutscenes = this.SkipTalkInCutscenes ?? other.SkipTalkInCutscenes;
+        ret.SkipVoicedDialogue = this.SkipVoicedDialogue ?? other.SkipVoicedDialogue;
         ret.EnableRequestFill = this.EnableRequestFill ?? other.EnableRequestFill;
         ret.RequestFillQualityPreference = this.RequestFillQualityPreference ?? other.RequestFillQualityPreference;
         ret.EnableAutoInteract = this.EnableAutoInteract ?? other.EnableAutoInteract;

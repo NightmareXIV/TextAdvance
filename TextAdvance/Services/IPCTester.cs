@@ -46,6 +46,8 @@ public class IPCTester
     [EzIPC] public Func<bool> GetEnableRequestFill;
     [EzIPC] public Func<RequestFillQualityPreference> GetRequestFillQualityPreference;
     [EzIPC] public Func<bool> GetEnableTalkSkip;
+    [EzIPC] public Func<bool> GetSkipTalkInCutscenes;
+    [EzIPC] public Func<bool> GetSkipVoicedDialogue;
     [EzIPC] public Func<bool> GetEnableAutoInteract;
 
     private IPCTester()

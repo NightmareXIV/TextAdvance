@@ -26,6 +26,8 @@ internal static unsafe class TabDebug
                 GetEnableRequestHandin {S.IPCTester.GetEnableRequestHandin()}
                 GetEnableRequestFill {S.IPCTester.GetEnableRequestFill()}
                 GetEnableTalkSkip {S.IPCTester.GetEnableTalkSkip()}
+                GetSkipTalkInCutscenes {S.IPCTester.GetSkipTalkInCutscenes()}
+                GetSkipVoicedDialogue {S.IPCTester.GetSkipVoicedDialogue()}
                 GetEnableAutoInteract {S.IPCTester.GetEnableAutoInteract()}
                 IsPaused {S.IPCTester.IsPaused()}
                 """);
@@ -42,6 +44,8 @@ internal static unsafe class TabDebug
             ImGuiEx.Checkbox("EnableRequestHandin", ref opts.EnableRequestHandin);
             ImGuiEx.Checkbox("EnableRewardPick", ref opts.EnableRewardPick);
             ImGuiEx.Checkbox("EnableTalkSkip", ref opts.EnableTalkSkip);
+            ImGuiEx.Checkbox("SkipTalkInCutscenes", ref opts.SkipTalkInCutscenes);
+            ImGuiEx.Checkbox("SkipVoicedDialogue", ref opts.SkipVoicedDialogue);
             ImGuiEx.Text($"Is in external control: {S.IPCTester.IsInExternalControl()}");
             if (ImGui.Button("Enable external control (Plugin1)")) DuoLog.Information(S.IPCTester.EnableExternalControl("Plugin1", opts).ToString());
             if (ImGui.Button("Enable external control (Plugin2)")) DuoLog.Information(S.IPCTester.EnableExternalControl("Plugin2", opts).ToString());
